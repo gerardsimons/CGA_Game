@@ -45,6 +45,19 @@ void dealWithUserInput(int x, int y)
 void draw( )
 {
 	//glutSolidSphere(1.0 ,10,10);
+	int width = 10;
+	glBegin(GL_QUADS);
+		for(int x = 0 ; x < width ; x++)
+		{
+
+			glNormal3d(0, 0, -1);
+
+			glVertex3f(width,0,0);
+			glVertex3f(width+1,0,0);
+			glVertex3f(width+1,0,1);
+			glVertex3f(0,0,width+1);
+		}
+	glEnd();
 }
 
 void idle()
