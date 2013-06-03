@@ -14,6 +14,8 @@
 #include "mesh.h"
 #include "terrain.h"
 
+//#include <time.h>
+
 
 
 //std::vector<SpaceShip>
@@ -29,6 +31,9 @@ int zFar = 10;
 enum DisplayModeType {GAME=1, CAMERA=2, LIGHT=3};
 // set default mode
 DisplayModeType displayMode = GAME;
+
+// timer
+//clock_t initTimer;
 
 float BackgroundColor[]={0,0,0};
 
@@ -182,24 +187,36 @@ void animate()
 
 	}*/
 
+	std::vector< int > dumpBulList;
+	std::vector< int > dumpOppList;
+
 	// detect collision
-	for(unsigned int i = 0; i< playerSpaceShip.getBulletList().size(); i++)
+	for(unsigned int i = 0; i<playerSpaceShip.getBulletList().size(); i++)
 	{
-		for(unsigned int j = 0; j< opponents.size(); j++)
+		for (unsigned int j = 0; j< opponents.size(); j++ )
 		{
 			if( playerSpaceShip.getBulletList().at(i).hasCollision( opponents.at(j) ) ) // collision with a bullet?
 			{
-				// remove opponentSpaceShip
-				OpponentSpaceShip curOpp = opponents.at(j);
-				opponents.erase(opponents.begin() + j);
-				//delete curOpp;
-
-				// remove bullet
-				//Bullet curBul = playerSpaceShip.getBulletList().at(i);
-				playerSpaceShip.removeBullet(i);
+				// register in order to avoid problems within the for loop
+				dumpOppList.push_back( j );
+				dumpBulList.push_back( i );
 			}
 		}
+
 	}
+	// remove bullets
+	for(unsigned int i = 0; i< dumpBulList.size(); i++)
+	{
+		playerSpaceShip.removeBullet( dumpBulList.at(i) );
+	}
+	dumpBulList.clear();
+	// remove opponents
+	for(unsigned int i = 0; i< dumpOppList.size(); i++)
+	{
+		opponents.erase( opponents.begin() + dumpOppList.at(i) );
+	}
+	dumpOppList.clear();
+
 
 	// animate opponents
 	for(unsigned int i = 0; i<opponents.size(); i++)
@@ -207,6 +224,20 @@ void animate()
 		opponents.at(i).updateX(opponents.at(i).getPositionX() - GameSettings::OPPONENT_SPEED);
 	}
 
+}
+
+void opponentFlow()
+{
+	/*
+	clock_t currentTimer = clock();
+	printf("t waiting: %f", ((float)currentTimer-(float)initTimer));
+	if( ( (float)currentTimer - (float)initTimer ) > 500000 )
+	{
+
+		opponents.push_back( OpponentSpaceShip(2,0) );
+		opponents.push_back( OpponentSpaceShip(2,.5) );
+		opponents.push_back( OpponentSpaceShip(2,1) );
+	}*/
 }
 
 void idle()
@@ -217,11 +248,9 @@ void idle()
 
 void spaceShipSetUp()
 {
-
 	// init player spaceship
 	playerSpaceShip = SpaceShip(-1,0);
 
-	// init opponents
 	opponents.push_back( OpponentSpaceShip(2,0) );
 	opponents.push_back( OpponentSpaceShip(2,.5) );
 	opponents.push_back( OpponentSpaceShip(2,1) );
@@ -279,9 +308,11 @@ int main(int argc, char** argv)
     
     // Game Set Up
     spaceShipSetUp();
-
-
     createTerrain(10,10,1);
+
+    // set initial timer
+    //initTimer = clock();
+
     // cablage des callback
     glutReshapeFunc(reshape);
     glutKeyboardFunc(keyboard);
@@ -355,6 +386,8 @@ void display(void)
     tbVisuTransform(); // origine et orientation de la scene
 
     drawCoordSystem();
+
+    //opponentFlow();
 
     animate();
 

@@ -87,7 +87,8 @@ std::vector<Bullet> SpaceShip::getBulletList()
 
 void SpaceShip::removeBullet( int index )
 {
-	bullitsShot.erase(bullitsShot.begin() + index);
+	//printf( "removebullet: %f", bullitsShot.at(index).getPositionX() );
+	bullitsShot.erase( bullitsShot.begin() + index );
 }
 
 void SpaceShip::shoot(){
