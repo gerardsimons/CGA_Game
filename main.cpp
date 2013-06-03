@@ -14,7 +14,7 @@
 #include "mesh.h"
 #include "terrain.h"
 
-//#include <time.h>
+#include <time.h>
 
 
 
@@ -33,7 +33,7 @@ enum DisplayModeType {GAME=1, CAMERA=2, LIGHT=3};
 DisplayModeType displayMode = GAME;
 
 // timer
-//clock_t initTimer;
+clock_t initTimer;
 
 float BackgroundColor[]={0,0,0};
 
@@ -158,6 +158,7 @@ void dealWithUserInput(int x, int y)
 
 void draw( )
 {
+
 	//glutSolidSphere(1.0 ,10,10);
 	glLightfv(GL_LIGHT0,GL_POSITION,LightPos);
 	drawLight();
@@ -228,16 +229,16 @@ void animate()
 
 void opponentFlow()
 {
-	/*
+
 	clock_t currentTimer = clock();
-	printf("t waiting: %f", ((float)currentTimer-(float)initTimer));
+	printf("t waiting: %f \n", ((float)currentTimer-(float)initTimer));
 	if( ( (float)currentTimer - (float)initTimer ) > 500000 )
 	{
-
+		initTimer = currentTimer;
 		opponents.push_back( OpponentSpaceShip(2,0) );
 		opponents.push_back( OpponentSpaceShip(2,.5) );
 		opponents.push_back( OpponentSpaceShip(2,1) );
-	}*/
+	}
 }
 
 void idle()
@@ -311,7 +312,7 @@ int main(int argc, char** argv)
     createTerrain(10,10,1);
 
     // set initial timer
-    //initTimer = clock();
+    initTimer = clock();
 
     // cablage des callback
     glutReshapeFunc(reshape);
@@ -387,7 +388,7 @@ void display(void)
 
     drawCoordSystem();
 
-    //opponentFlow();
+    opponentFlow();
 
     animate();
 
