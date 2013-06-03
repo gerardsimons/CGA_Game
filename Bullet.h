@@ -19,7 +19,8 @@ class SpaceShip;
 
 class Bullet {
 private:
-	float x; float y;
+	float x;
+	float y;
 public:
 	Bullet();
 	Bullet(float x, float y);

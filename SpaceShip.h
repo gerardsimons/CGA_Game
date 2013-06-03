@@ -27,8 +27,7 @@ protected:
 	Vec3Df position;
 	float direction;
 	float speed;
-	std::vector<Bullet> bullitsShot;
-	std::vector<GLuint> Texture;
+	std::vector<Bullet> * bullitsShot;
 
 public:
 	SpaceShip();
@@ -41,11 +40,13 @@ public:
 	float getPositionY();
 	Vec3Df getPosition();
 
-	std::vector<Bullet> getBulletList();
+	std::vector<Bullet> * getBulletList();
 
 	void removeBullet( int index );
 
 	void shoot();
+
+	bool hasCollision( SpaceShip s );
 };
 
 #endif /* SPACESHIP_H */

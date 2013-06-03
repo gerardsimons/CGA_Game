@@ -16,6 +16,8 @@
 
 #include <time.h>
 
+#include "loadppm.h"
+
 
 
 //std::vector<SpaceShip>
@@ -178,25 +180,42 @@ void draw( )
 
 void animate()
 {
-	/*
-	Bullet curBullet;
-	// animate player's bullets
-	for(unsigned int i = 0; i< playerSpaceShip.getBulletList().size(); i++)
-	{
-		curBullet = playerSpaceShip.getBulletList().at(i);
-		curBullet.updateX( (curBullet.getPositionX()+GameSettings::BULLET_SPEED)  );
+	// TODO: bullets update here instead of in the spaceShip function
+	// SOLVED: referenced
 
-	}*/
+	// animate player's bullets
+	for(unsigned int i = 0; i< playerSpaceShip.getBulletList()->size(); i++)
+	{
+		Bullet curBullet = playerSpaceShip.getBulletList()->at(i);
+		playerSpaceShip.getBulletList()->at(i).updateX( curBullet.getPositionX()+GameSettings::BULLET_SPEED  );
+	}
+
+	// TODO: SIMPLIFY...
+
+	// animate opponent's bullets
+	for (unsigned int j = 0; j< opponents.size(); j++ )
+	{
+		for(unsigned int i = 0; i< opponents.at(j).getBulletList()->size(); i++)
+		{
+			Bullet curBullet = opponents.at(j).getBulletList()->at(i);
+			opponents.at(j).getBulletList()->at(i).updateX( curBullet.getPositionX()-GameSettings::BULLET_SPEED  );
+		}
+	}
+
 
 	std::vector< int > dumpBulList;
 	std::vector< int > dumpOppList;
 
+	/*
+	 * BULLET --> OPPONENT UPDATE
+	 */
+
 	// detect collision
-	for(unsigned int i = 0; i<playerSpaceShip.getBulletList().size(); i++)
+	for(unsigned int i = 0; i<playerSpaceShip.getBulletList()->size(); i++)
 	{
 		for (unsigned int j = 0; j< opponents.size(); j++ )
 		{
-			if( playerSpaceShip.getBulletList().at(i).hasCollision( opponents.at(j) ) ) // collision with a bullet?
+			if( playerSpaceShip.getBulletList()->at(i).hasCollision( opponents.at(j) ) ) // collision with a bullet?
 			{
 				// register in order to avoid problems within the for loop
 				dumpOppList.push_back( j );
@@ -219,6 +238,43 @@ void animate()
 	dumpOppList.clear();
 
 
+	/*
+	 * OPPONENT BULLET --> PLAYER
+	 */
+
+	// detect collision
+	for (unsigned int j = 0; j< opponents.size(); j++ )
+	{
+		for(unsigned int i = 0; i<opponents.at(j).getBulletList()->size(); i++)
+		{
+			if( opponents.at(j).getBulletList()->at(i).hasCollision( playerSpaceShip ) ) // collision with a bullet?
+			{
+				// register in order to avoid problems within the for loop
+				printf("- Collision with bullet: HIT!! \n");
+				dumpBulList.push_back( i );
+			}
+		}
+
+		// remove bullets
+		for(unsigned int i = 0; i< dumpBulList.size(); i++)
+		{
+			opponents.at(j).removeBullet( dumpBulList.at(i) );
+		}
+		dumpBulList.clear();
+	}
+
+	/*
+	 * SHIP --> OPPONENT UPDATE
+	 */
+	for (unsigned int j = 0; j< opponents.size(); j++ )
+	{
+		if( playerSpaceShip.hasCollision( opponents.at(j) ) ) // collision with an opponent
+		{
+			// register in order to avoid problems within the for loop
+			printf("game over!! \n");
+		}
+	}
+
 	// animate opponents
 	for(unsigned int i = 0; i<opponents.size(); i++)
 	{
@@ -231,14 +287,49 @@ void opponentFlow()
 {
 
 	clock_t currentTimer = clock();
-	printf("t waiting: %f \n", ((float)currentTimer-(float)initTimer));
-	if( ( (float)currentTimer - (float)initTimer ) > 500000 )
+	//printf("t waiting: %f \n", ((float)currentTimer-(float)initTimer));
+	if( ( (float)currentTimer - (float)initTimer ) > GameSettings::NEXT_FLOW_TIME )
 	{
+		// TODO introduce randomly with random directions...
 		initTimer = currentTimer;
-		opponents.push_back( OpponentSpaceShip(2,0) );
-		opponents.push_back( OpponentSpaceShip(2,.5) );
-		opponents.push_back( OpponentSpaceShip(2,1) );
+
+		for(unsigned int i = 0; i<3; i++)
+		{
+			OpponentSpaceShip oppShip = OpponentSpaceShip(2,float(i/2));
+			opponents.push_back( oppShip );
+			oppShip.shoot();
+		}
 	}
+}
+
+void initTextures()
+{
+
+		GameSettings::Texture.resize(3);
+		GameSettings::Texture[0]=0;
+		GameSettings::Texture[1]=0;
+		GameSettings::Texture[2]=0;
+
+		PPMImage image("ufo.ppm");
+		glGenTextures(1, &GameSettings::Texture[0]);
+		glBindTexture(GL_TEXTURE_2D, GameSettings::Texture[0]);
+		gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, image.sizeX, image.sizeY,
+			GL_RGB, GL_UNSIGNED_BYTE, image.data);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		PPMImage image2("ufo_opp.ppm");
+		glGenTextures(1, &GameSettings::Texture[1]);
+		glBindTexture(GL_TEXTURE_2D, GameSettings::Texture[1]);
+		gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, image2.sizeX, image2.sizeY,
+			GL_RGB, GL_UNSIGNED_BYTE, image2.data);
+		glBindTexture(GL_TEXTURE_2D, 1);
+
+		PPMImage image3("bullet.ppm");
+		glGenTextures(1, &GameSettings::Texture[2]);
+		glBindTexture(GL_TEXTURE_2D, GameSettings::Texture[2]);
+		gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, image3.sizeX, image3.sizeY,
+			GL_RGB, GL_UNSIGNED_BYTE, image3.data);
+		glBindTexture(GL_TEXTURE_2D, 1);
 }
 
 void idle()
@@ -252,9 +343,11 @@ void spaceShipSetUp()
 	// init player spaceship
 	playerSpaceShip = SpaceShip(-1,0);
 
-	opponents.push_back( OpponentSpaceShip(2,0) );
-	opponents.push_back( OpponentSpaceShip(2,.5) );
-	opponents.push_back( OpponentSpaceShip(2,1) );
+
+	// TODO: using opponentFlow()
+	//opponents.push_back( OpponentSpaceShip(2,0) );
+	//opponents.push_back( OpponentSpaceShip(2,.5) );
+	//opponents.push_back( OpponentSpaceShip(2,1) );
 }
 
 
@@ -310,6 +403,8 @@ int main(int argc, char** argv)
     // Game Set Up
     spaceShipSetUp();
     createTerrain(10,10,1);
+
+    initTextures();
 
     // set initial timer
     initTimer = clock();

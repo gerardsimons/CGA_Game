@@ -10,14 +10,12 @@
 #include <GL/glut.h>
 #include "SpaceShip.h"
 
-Bullet::Bullet(){
 
-}
 
 Bullet::Bullet(float xNew, float yNew) {
 	//printf("I'm a weird bullet, created at (%f,%f) \n", x, y );
-	x = xNew;
-	y = yNew;
+	x = xNew+(GameSettings::AIRPLANE_SIZE[0]/2);
+	y = yNew+(GameSettings::AIRPLANE_SIZE[1]/4);
 
 }
 
@@ -27,25 +25,39 @@ Bullet::~Bullet() {
 
 void Bullet::display(){
 
-		// TODO: in main
-		x = getPositionX() + GameSettings::BULLET_SPEED;
-		//printf("x: %f", x);
+
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, GameSettings::Texture[2]);
 
 		//remember all states of the GPU
 		glPushAttrib(GL_ALL_ATTRIB_BITS);
-		glColor3f(1,1,0);
+		glColor3f(1,1,1);
 		glNormal3d(0, 0, 1);
+
+		// texture addition
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,  GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,  GL_REPEAT);
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,  GL_LINEAR);
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,  GL_NEAREST);
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
 		glBegin(GL_QUADS);
 
-			glVertex3f(x,								y+GameSettings::BULLET_SIZE[1],		0.9);
-			glVertex3f(x,								y,									0.9);
-			glVertex3f(x+GameSettings::BULLET_SIZE[0],	y,									0.9);
-			glVertex3f(x+GameSettings::BULLET_SIZE[0],	y+GameSettings::BULLET_SIZE[1],		0.9);
+			glTexCoord2f(0.0f,0.0f);
+			glVertex3f(x,								y+GameSettings::BULLET_SIZE[1],		1.1);
+			glTexCoord2f(0.0f,1.0f);
+			glVertex3f(x,								y,									1.1);
+			glTexCoord2f(1.0f,1.0f);
+			glVertex3f(x+GameSettings::BULLET_SIZE[0],	y,									1.1);
+			glTexCoord2f(1.0f,0.0f);
+			glVertex3f(x+GameSettings::BULLET_SIZE[0],	y+GameSettings::BULLET_SIZE[1],		1.1);
 
 		glEnd();
 
 		//reset to previous state
 		glPopAttrib();
+
+	glDisable(GL_TEXTURE_2D);
 
 }
 
