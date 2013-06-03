@@ -77,15 +77,15 @@ void createTerrain(int xSize, int ySize, float surfaceSize)
 
 			SurfaceVertices3f[i+3]=x+surfaceSize;
 			SurfaceVertices3f[i+4]=y;
-			SurfaceVertices3f[i+5]=cos(x+surfaceSize);
+			SurfaceVertices3f[i+5]=cos(x+surfaceSize) + sin(y);
 
 			SurfaceVertices3f[i+6]=x+surfaceSize;
 			SurfaceVertices3f[i+7]=y+surfaceSize;
-			SurfaceVertices3f[i+8]=cos(x+surfaceSize);
+			SurfaceVertices3f[i+8]=cos(x+surfaceSize) + sin(y+surfaceSize);
 
 			SurfaceVertices3f[i+9]=x;
 			SurfaceVertices3f[i+10]=y+surfaceSize;
-			SurfaceVertices3f[i+11]=cos(x);
+			SurfaceVertices3f[i+11]=cos(x) + sin(y+surfaceSize);
 			
 			i += 12;
 		}
