@@ -5,9 +5,12 @@
 #include <Windows.h>
 #endif
 
+#include <stdlib.h>
 
 #include "stdio.h"
+#include <vector>
 #include "Vec3D.h"
+#include "Bullet.h"
 
 
 /* SpaceShip.h
@@ -18,18 +21,24 @@
 
 
 class SpaceShip {
-private:
+protected:
 	Vec3Df position;
-	Vec3Df direction;
+	float direction;
 	float speed;
-	//std::vector<Bullet> bullitsShot;
+	std::vector<Bullet> bullitsShot;
 
 public:
 	SpaceShip();
+	SpaceShip(float x, float y);
 	virtual ~SpaceShip();
 	void display();
-	void updateX();
-	void updateY();
+	void updateX(float x);
+	void updateY(float y);
+	float getPositionX();
+	float getPositionY();
+	Vec3Df getPosition();
+
+	void shoot();
 };
 
 #endif /* SPACESHIP_H */

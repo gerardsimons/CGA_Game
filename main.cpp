@@ -6,11 +6,13 @@
 #include <math.h>
 #include <assert.h>
 #include "traqueboule.h"
+
+#include "SpaceShip.h"
+#include "OpponentSpaceShip.h"
+
 #include "mesh.h"
 
-
-
-//std::vector<SpaceShip>
+//std::vector<SpaceShip>  s = new SpaceShip();
 
 using namespace std;
 
@@ -18,6 +20,7 @@ unsigned int W_fen = 800;  // largeur fenetre
 unsigned int H_fen = 800;  // hauteur fenetre
 int zNear = 1;
 int zFar = 10;
+
 
 float BackgroundColor[]={0,0,0};
 
@@ -31,12 +34,46 @@ vector<float> SurfaceVertices3f;
 void createVertices(int,int,float);
 void drawSurface();
 
-//SpaceShip * s = new SpaceShip();
 
+// init player space ship with position
+SpaceShip playerSpaceShip;
+// opponent space ship vector
+std::vector<SpaceShip> opponents;
 
 void keyboard(unsigned char key, int x, int y)
 {
     printf("key %d pressed at %d,%d\n",key,x,y);
+
+    if(key == 'd') // right
+    {
+    			printf("Move right \n");
+    			playerSpaceShip.updateX(playerSpaceShip.getPositionX()+.05);
+
+    }
+    if(key == 'a') // left
+    {
+    			printf("Move left \n");
+    			playerSpaceShip.updateX(playerSpaceShip.getPositionX()-.05);
+
+    }
+    if(key == 'w')	//up
+    {
+    			printf("Move up \n");
+    			playerSpaceShip.updateY(playerSpaceShip.getPositionY()+.05);
+
+    }
+    if(key == 's')	//down
+    {
+    			printf("Move down \n");
+    			playerSpaceShip.updateY(playerSpaceShip.getPositionY()-.05);
+
+    }
+    if(key == ' ')	//shoot
+    {
+    			printf("Fire!!! \n");
+    			playerSpaceShip.shoot();
+    }
+
 }
 
 
@@ -57,12 +94,33 @@ void draw( )
 {
 	//glutSolidSphere(1.0 ,10,10);
 	drawSurface();
+
+	// render player spaceship
+	playerSpaceShip.display();
+
+	// render opponent spaceships
+	for(unsigned int i = 0; i<opponents.size(); i++)
+	{
+		//printf("main: draw opponent %f", i);
+		opponents.at(i).display();
+	}
+
 }
 
 void idle()
 {
 	CamPos=getCameraPosition();
 	glutPostRedisplay();
+}
+
+void spaceShipSetUp()
+{
+
+	// init player spaceship
+	playerSpaceShip = SpaceShip(-1,0);
+
+	// init opponents
+	opponents.push_back( OpponentSpaceShip(2,0) );
 }
 
 
@@ -155,10 +213,10 @@ int main(int argc, char** argv)
     glEnable(GL_COLOR_MATERIAL);
     glEnable(GL_NORMALIZE);
     
-    //ss->display();
-
-
+    // Game Set Up
     createTerrain(3,3,1);
+    spaceShipSetUp();
+
     // cablage des callback
     glutReshapeFunc(reshape);
     glutKeyboardFunc(keyboard);
