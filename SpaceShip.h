@@ -12,6 +12,8 @@
 #include "Vec3D.h"
 #include "Bullet.h"
 
+#include <GL/glut.h>
+
 
 /* SpaceShip.h
  *
@@ -26,6 +28,7 @@ protected:
 	float direction;
 	float speed;
 	std::vector<Bullet> bullitsShot;
+	std::vector<GLuint> Texture;
 
 public:
 	SpaceShip();

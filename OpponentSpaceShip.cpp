@@ -33,7 +33,7 @@ void OpponentSpaceShip::display() {
 
 	//remember all states of the GPU
 	glPushAttrib(GL_ALL_ATTRIB_BITS);
-	glColor3f(.0,.0,.5);
+	glColor3f(1,0,0);
 	glNormal3d(0, 0, 1);
 	glBegin(GL_QUADS);
 

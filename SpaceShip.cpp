@@ -1,6 +1,8 @@
 #include "SpaceShip.h"
 #include "GameSettings.h"
-#include <GL/glut.h>
+
+#include "loadppm.h"
+
 
 
 /*
@@ -16,6 +18,19 @@ SpaceShip::SpaceShip(float x, float y) {
 	printf("Hi, I'm a weird SpaceShip \n");
 	position  = Vec3Df(x,y,0.0f);
 	bullitsShot = std::vector<Bullet>();
+
+	Texture.resize(3);
+	Texture[0]=0;
+	Texture[1]=0;
+	Texture[2]=0;
+
+	PPMImage image("spaceShip.PPM");
+	glGenTextures(1, &Texture[0]);
+	glBindTexture(GL_TEXTURE_2D, Texture[0]);
+	gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, image.sizeX, image.sizeY,
+		GL_RGB, GL_UNSIGNED_BYTE, image.data);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
 }
 
 SpaceShip::~SpaceShip() {
@@ -24,32 +39,48 @@ SpaceShip::~SpaceShip() {
 
 void SpaceShip::display(){
 
-	//("drawing plane \n");
-
-	// get x
+	// get x,y
 	float x = getPositionX();
-	// get y
 	float y = getPositionY();
 
-	//remember all states of the GPU
-	glPushAttrib(GL_ALL_ATTRIB_BITS);
-	glColor3f(.0,.0,.5);
-	glNormal3d(0, 0, 1);
-	glBegin(GL_QUADS);
 
-		glVertex3f(x,									y+GameSettings::AIRPLANE_SIZE[1],		1);
-		glVertex3f(x,									y,										1);
-		glVertex3f(x+GameSettings::AIRPLANE_SIZE[0],	y,										1);
-		glVertex3f(x+GameSettings::AIRPLANE_SIZE[0],	y+GameSettings::AIRPLANE_SIZE[1],		1);
 
-		//glVertex3f(0,1,1);
-		//glVertex3f(0,0,1);
-		//glVertex3f(1,0,1);
-		//glVertex3f(1,1,1);
-	glEnd();
-	//reset to previous state
-	glPopAttrib();
 
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, Texture[0]);
+
+
+
+
+		//remember all states of the GPU
+		glPushAttrib(GL_ALL_ATTRIB_BITS);
+		glColor3f(1,1,1);
+		glNormal3d(0, 0, 1);
+
+		// texture addition
+			//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,  GL_REPEAT);
+			//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,  GL_REPEAT);
+			//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,  GL_LINEAR);
+			//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,  GL_NEAREST);
+
+
+		glBegin(GL_QUADS);
+
+			glTexCoord2f(0.0f,1.0f);
+			glVertex3f(x,									y+GameSettings::AIRPLANE_SIZE[1],		1);
+			glTexCoord2f(0.0f,0.0f);
+			glVertex3f(x,									y,										1);
+			glTexCoord2f(1.0f,0.0f);
+			glVertex3f(x+GameSettings::AIRPLANE_SIZE[0],	y,										1);
+			glTexCoord2f(1.0f,1.0f);
+			glVertex3f(x+GameSettings::AIRPLANE_SIZE[0],	y+GameSettings::AIRPLANE_SIZE[1],		1);
+
+		glEnd();
+		//reset to previous state
+		glPopAttrib();
+
+	glBindTexture(GL_TEXTURE_2D,1);
+	glDisable(GL_TEXTURE_2D);
 
 	// render bullets
 	for(unsigned int i = 0; i<bullitsShot.size(); i++)
