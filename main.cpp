@@ -9,6 +9,9 @@
 #include "mesh.h"
 
 
+
+//std::vector<SpaceShip>
+
 using namespace std;
 
 unsigned int W_fen = 800;  // largeur fenetre
@@ -27,6 +30,9 @@ vector<float> SurfaceVertices3f;
 
 void createVertices(int,int,float);
 void drawSurface();
+
+//SpaceShip * s = new SpaceShip();
+
 
 void keyboard(unsigned char key, int x, int y)
 {
@@ -75,6 +81,7 @@ void createTerrain(int xSize, int ySize, float surfaceSize)
 			SurfaceVertices3f[i+1]=y;
 			SurfaceVertices3f[i+2]=cos(x);
 
+			glNormal3d(0, 0, 1);
 			SurfaceVertices3f[i+3]=x+surfaceSize;
 			SurfaceVertices3f[i+4]=y;
 			SurfaceVertices3f[i+5]=cos(x+surfaceSize) + sin(y);
@@ -88,6 +95,7 @@ void createTerrain(int xSize, int ySize, float surfaceSize)
 			SurfaceVertices3f[i+11]=cos(x) + sin(y+surfaceSize);
 			
 			i += 12;
+
 		}
 	}
 }
@@ -120,7 +128,6 @@ void reshape(int w, int h);
 void keyboard(unsigned char key, int x, int y);
 
 
-
 /************************************************************
  * Programme principal
  ************************************************************/
@@ -148,6 +155,9 @@ int main(int argc, char** argv)
     glEnable(GL_COLOR_MATERIAL);
     glEnable(GL_NORMALIZE);
     
+    //ss->display();
+
+
     createTerrain(3,3,1);
     // cablage des callback
     glutReshapeFunc(reshape);
@@ -173,6 +183,34 @@ int main(int argc, char** argv)
     return 0;  // instruction jamais ex\E9cut\E9e
 }
 
+//function to draw coordinate axes with a certain length (1 as a default)
+void drawCoordSystem(float length=1)
+{
+	//draw simply colored axes
+
+	//remember all states of the GPU
+	glPushAttrib(GL_ALL_ATTRIB_BITS);
+	//deactivate the lighting state
+	glDisable(GL_LIGHTING);
+	//draw axes
+	glBegin(GL_LINES);
+		glColor3f(1,0,0);
+		glVertex3f(0,0,0);
+		glVertex3f(length,0,0);
+
+		glColor3f(0,1,0);
+		glVertex3f(0,0,0);
+		glVertex3f(0,length,0);
+
+		glColor3f(0,0,1);
+		glVertex3f(0,0,0);
+		glVertex3f(0,0,length);
+	glEnd();
+
+	//reset to previous state
+	glPopAttrib();
+}
+
 
 /************************************************************
  * Fonctions de gestion opengl \E0 ne pas toucher
@@ -186,6 +224,8 @@ void display(void)
 	glLoadIdentity();  // repere camera
 
     tbVisuTransform(); // origine et orientation de la scene
+
+    drawCoordSystem();
 
     draw();    
 
