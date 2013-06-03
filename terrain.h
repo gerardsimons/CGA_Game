@@ -21,6 +21,8 @@
 class Terrain {
 private:
 	std::vector<float> SurfaceVertices3f;
+	std::vector<float> SurfaceNormals3f;
+	std::vector<float> SurfaceColors3f;
 
 public:
 	Terrain(int,int,float);

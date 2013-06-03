@@ -22,7 +22,7 @@ int zFar = 10;
 
 float BackgroundColor[]={0,0,0};
 
-std::vector<Vec3Df> LightPos;
+float LightPos[4] = {0,3,2,1};
 std::vector<Vec3Df> LightColor;
 
 Vec3Df CamPos = Vec3Df(0.0f,2.0f,-4.0f);
@@ -31,8 +31,8 @@ Vec3Df CamPos = Vec3Df(0.0f,2.0f,-4.0f);
 
 Terrain *terrain;
 
-void createVertices(int,int,float);
 void drawSurface();
+void drawLight();
 
 //SpaceShip * s = new SpaceShip();
 
@@ -59,7 +59,10 @@ void dealWithUserInput(int x, int y)
 void draw( )
 {
 	//glutSolidSphere(1.0 ,10,10);
+	glLightfv(GL_LIGHT0,GL_POSITION,LightPos);
+	drawLight();
 	drawSurface();
+	drawLight();
 }
 
 void idle()
@@ -114,14 +117,14 @@ int main(int argc, char** argv)
     tbInitTransform();     // initialisation du point de vue
     tbHelp();                      // affiche l'aide sur la traqueboule
 
-    glDisable( GL_LIGHTING );
+    //glDisable( GL_LIGHTING );
     glEnable(GL_COLOR_MATERIAL);
     glEnable(GL_NORMALIZE);
     
     //ss->display();
 
 
-    createTerrain(3,3,1);
+    createTerrain(10,10,1);
     // cablage des callback
     glutReshapeFunc(reshape);
     glutKeyboardFunc(keyboard);
@@ -129,6 +132,12 @@ int main(int argc, char** argv)
     glutMouseFunc(tbMouseFunc);    // traqueboule utilise la souris
     glutMotionFunc(tbMotionFunc);  // traqueboule utilise la souris
     glutIdleFunc(idle);
+
+
+    glEnable( GL_LIGHTING );
+        glEnable( GL_LIGHT0 );
+        glEnable(GL_COLOR_MATERIAL);
+        glEnable(GL_NORMALIZE);
 
 
     // Details sur le mode de trac\E9
@@ -193,6 +202,24 @@ void display(void)
     draw();    
 
     glutSwapBuffers();
+}
+
+//function that draws the light source as a sphere
+void drawLight()
+{
+	//remember all states of the GPU
+	glPushAttrib(GL_ALL_ATTRIB_BITS);
+	//deactivate the lighting state
+	glDisable(GL_LIGHTING);
+	//yellow sphere at light position
+	glColor3f(1,1,0);
+	glPushMatrix();
+	glTranslatef(LightPos[0], LightPos[1], LightPos[2]);
+	glutSolidSphere(0.1,6,6);
+	glPopMatrix();
+
+	//reset to previous state
+	glPopAttrib();
 }
 
 // pour changement de taille ou desiconification
