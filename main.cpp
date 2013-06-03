@@ -24,7 +24,12 @@ float BackgroundColor[]={0,0,0};
 std::vector<Vec3Df> LightPos;
 std::vector<Vec3Df> LightColor;
 
-Vec3Df CamPos = Vec3Df(0.0f,0.0f,-4.0f);
+Vec3Df CamPos = Vec3Df(0.0f,2.0f,-4.0f);
+
+vector<float> SurfaceVertices3f;
+
+void createVertices(int,int,float);
+void drawSurface();
 
 //SpaceShip * s = new SpaceShip();
 
@@ -51,31 +56,71 @@ void dealWithUserInput(int x, int y)
 void draw( )
 {
 	//glutSolidSphere(1.0 ,10,10);
-	int width = 10;
-	glBegin(GL_QUADS);
-		for(int x = 0 ; x < width ; x++)
-		{
-
-			glNormal3d(0, 0, 1);
-
-			glVertex3f(width,0,0);
-			glVertex3f(width+1,0,0);
-			glVertex3f(width+1,0,1);
-			glVertex3f(0,0,width+1);
-
-
-			//glVertex3f(width,1,3);
-			//glVertex3f(width,0,3);
-			//glVertex3f(width+1,0,3);
-			//glVertex3f(width+1,1,3);
-		}
-	glEnd();
+	drawSurface();
 }
 
 void idle()
 {
 	CamPos=getCameraPosition();
 	glutPostRedisplay();
+}
+
+
+void createTerrain(int xSize, int ySize, float surfaceSize)
+{
+	//12 vertices per loop
+	int i = 0;
+	SurfaceVertices3f.resize(ySize * xSize * 12);
+	for(float x = 0 ; x < xSize ; x += surfaceSize)
+	{
+		for(float y = 0 ; y < ySize ; y += surfaceSize)
+		{
+			
+				//define 
+			SurfaceVertices3f[i]=x;
+			SurfaceVertices3f[i+1]=y;
+			SurfaceVertices3f[i+2]=cos(x);
+
+			glNormal3d(0, 0, 1);
+			SurfaceVertices3f[i+3]=x+surfaceSize;
+			SurfaceVertices3f[i+4]=y;
+			SurfaceVertices3f[i+5]=cos(x+surfaceSize);
+
+			SurfaceVertices3f[i+6]=x+surfaceSize;
+			SurfaceVertices3f[i+7]=y+surfaceSize;
+			SurfaceVertices3f[i+8]=cos(x+surfaceSize);
+
+			SurfaceVertices3f[i+9]=x;
+			SurfaceVertices3f[i+10]=y+surfaceSize;
+			SurfaceVertices3f[i+11]=cos(x);
+			
+			i += 12;
+
+		}
+	}
+}
+
+void drawSurface()
+{
+	//printf("-------------------|| DRAW SURFACE ||-------------------\n");
+	//printf("Triangle %d\n",t/3);
+	glBegin(GL_QUADS);
+	//printf("SurfaceVertices3f.size() = %d\n",SurfaceVertices3f.size());
+	for (int vIndex = 0 ; vIndex < SurfaceVertices3f.size() ; vIndex += 3)
+	{
+		//glTexCoord2fv(&(SurfaceTexCoords2f[2*vIndex]));
+		//glNormal3fv(&(SurfaceNormals3f[3*vIndex]));
+		//glColor3fv(&(SurfaceColors3f[3*vIndex]));
+
+		float *vertex = &(SurfaceVertices3f[vIndex]);
+
+		//printf("Drawing vertex #%d = (%f,%f,%f)\n",i,&vertex,&(vertex+1),&(vertex+2));
+
+		glVertex3f(*vertex,*(vertex+1),*(vertex+2));
+	}
+	glEnd();
+
+	//printf("--------------------------------------------------------\n");
 }
 
 void display(void);
@@ -113,6 +158,7 @@ int main(int argc, char** argv)
     //ss->display();
 
 
+    createTerrain(3,3,1);
     // cablage des callback
     glutReshapeFunc(reshape);
     glutKeyboardFunc(keyboard);
