@@ -14,8 +14,8 @@ public:
 	static float AIRPLANE_SIZE[];
 	static float BULLET_SIZE[];
 	static float OPPONENT_SPEED;
+	static float BULLET_SPEED;
 	GameSettings();
 	virtual ~GameSettings();
 };
-
 #endif /* GAMESETTINGS_H_ */

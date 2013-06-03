@@ -31,12 +31,16 @@ public:
 	SpaceShip();
 	SpaceShip(float x, float y);
 	virtual ~SpaceShip();
-	void display();
+	virtual void display();
 	void updateX(float x);
 	void updateY(float y);
 	float getPositionX();
 	float getPositionY();
 	Vec3Df getPosition();
+
+	std::vector<Bullet> getBulletList();
+
+	void removeBullet( int index );
 
 	void shoot();
 };

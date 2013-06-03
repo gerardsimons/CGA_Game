@@ -24,12 +24,10 @@ OpponentSpaceShip::~OpponentSpaceShip() {
 	// TODO Auto-generated destructor stub
 }
 
-void OpponentSpaceShip::display(){
-
-	printf("drawing opponent plane \n");
+void OpponentSpaceShip::display() {
 
 	// get x
-	float x = getPositionX()-GameSettings::OPPONENT_SPEED;
+	float x = getPositionX();
 	// get y
 	float y = getPositionY();
 

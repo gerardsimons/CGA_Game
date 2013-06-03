@@ -15,10 +15,13 @@
 #include "stdio.h"
 #include "Vec3D.h"
 
+class SpaceShip;
+
 class Bullet {
 private:
-	Vec3Df position;
+	float x; float y;
 public:
+	Bullet();
 	Bullet(float x, float y);
 	virtual ~Bullet();
 	void display();
@@ -26,6 +29,8 @@ public:
 	void updateY(float y);
 	float getPositionX();
 	float getPositionY();
+
+	bool hasCollision( SpaceShip s );
 };
 
 #endif /* BULLET_H_ */

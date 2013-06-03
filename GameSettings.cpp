@@ -16,7 +16,8 @@ GameSettings::~GameSettings() {
 	// TODO Auto-generated destructor stub
 }
 
-float GameSettings::GAME_SPEED = .2;
+float GameSettings::GAME_SPEED = .02;
 float GameSettings::AIRPLANE_SIZE[] = {.5, .3};
 float GameSettings::BULLET_SIZE[] = {.1, .05};
-float GameSettings::OPPONENT_SPEED = .2;
+float GameSettings::OPPONENT_SPEED = .005;
+float GameSettings::BULLET_SPEED = 0.02;

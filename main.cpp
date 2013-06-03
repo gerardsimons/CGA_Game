@@ -9,6 +9,7 @@
 
 #include "SpaceShip.h"
 #include "OpponentSpaceShip.h"
+#include "GameSettings.h"
 
 #include "mesh.h"
 #include "terrain.h"
@@ -17,10 +18,15 @@
 
 using namespace std;
 
-unsigned int W_fen = 800;  // largeur fenetre
+unsigned int W_fen = 1200;  // largeur fenetre (default: 800)
 unsigned int H_fen = 800;  // hauteur fenetre
 int zNear = 1;
 int zFar = 10;
+
+// control modes
+enum DisplayModeType {GAME=1, CAMERA=2, LIGHT=3};
+// set default mode
+DisplayModeType displayMode = GAME;
 
 
 float BackgroundColor[]={0,0,0};
@@ -28,7 +34,7 @@ float BackgroundColor[]={0,0,0};
 std::vector<Vec3Df> LightPos;
 std::vector<Vec3Df> LightColor;
 
-Vec3Df CamPos = Vec3Df(0.0f,2.0f,-4.0f);
+Vec3Df CamPos = Vec3Df(0.0f,0.0f,-4.0f);
 
 //vector<float> SurfaceVertices3f;
 
@@ -41,41 +47,90 @@ void drawSurface();
 // init player space ship with position
 SpaceShip playerSpaceShip;
 // opponent space ship vector
-std::vector<SpaceShip> opponents;
+std::vector<OpponentSpaceShip> opponents;
 
 void keyboard(unsigned char key, int x, int y)
 {
     printf("key %d pressed at %d,%d\n",key,x,y);
 
-    if(key == 'd') // right
-    {
-    			printf("Move right \n");
-    			playerSpaceShip.updateX(playerSpaceShip.getPositionX()+.05);
+	if ((key>='1')&&(key<='9'))
+	{
+		displayMode = (DisplayModeType) (key- '0');
+		printf("Changed mode to %d\n",displayMode);
+	}
 
-    }
-    if(key == 'a') // left
-    {
-    			printf("Move left \n");
-    			playerSpaceShip.updateX(playerSpaceShip.getPositionX()-.05);
+	switch (displayMode)
+	{
+		case GAME:
+		{
+			if(key == 'd') // right
+			{
+						printf("Move right \n");
+						playerSpaceShip.updateX(playerSpaceShip.getPositionX()+.05);
 
-    }
-    if(key == 'w')	//up
-    {
-    			printf("Move up \n");
-    			playerSpaceShip.updateY(playerSpaceShip.getPositionY()+.05);
+			}
+			if(key == 'a') // left
+			{
+						printf("Move left \n");
+						playerSpaceShip.updateX(playerSpaceShip.getPositionX()-.05);
 
-    }
-    if(key == 's')	//down
-    {
-    			printf("Move down \n");
-    			playerSpaceShip.updateY(playerSpaceShip.getPositionY()-.05);
+			}
+			if(key == 'w')	//up
+			{
+						printf("Move up \n");
+						playerSpaceShip.updateY(playerSpaceShip.getPositionY()+.05);
 
-    }
-    if(key == ' ')	//shoot
-    {
-    			printf("Fire!!! \n");
-    			playerSpaceShip.shoot();
-    }
+			}
+			if(key == 's')	//down
+			{
+						printf("Move down \n");
+						playerSpaceShip.updateY(playerSpaceShip.getPositionY()-.05);
+
+			}
+			if(key == ' ')	//shoot
+			{
+						printf("Fire!!! \n");
+						playerSpaceShip.shoot();
+			}
+		}
+		case CAMERA:
+		{
+			if(key == 'd') // right
+			{
+						printf("Move CAM right \n");
+						printf("Campos old: %f \n",CamPos[0]);
+						CamPos[0] = CamPos[0]+0.1f;
+						printf("Campos new: %f \n",CamPos[0]);
+
+
+			}
+			if(key == 'a') // left
+			{
+						printf("Move CAM  left \n");
+						CamPos[0] = CamPos[0]-0.1f;
+
+			}
+			if(key == 'w')	//up
+			{
+						printf("Move CAM  up \n");
+						CamPos[0] = CamPos[1]+0.1f;
+
+			}
+			if(key == 's')	//down
+			{
+						printf("Move CAM  down \n");
+						CamPos[0] = CamPos[1]-0.1f;
+
+			}
+
+		}
+		case LIGHT:
+		{
+
+		}
+	}
+
+
 
 }
 
@@ -110,6 +165,45 @@ void draw( )
 
 }
 
+void animate()
+{
+	/*
+	Bullet curBullet;
+	// animate player's bullets
+	for(unsigned int i = 0; i< playerSpaceShip.getBulletList().size(); i++)
+	{
+		curBullet = playerSpaceShip.getBulletList().at(i);
+		curBullet.updateX( (curBullet.getPositionX()+GameSettings::BULLET_SPEED)  );
+
+	}*/
+
+	// detect collision
+	for(unsigned int i = 0; i< playerSpaceShip.getBulletList().size(); i++)
+	{
+		for(unsigned int j = 0; j< opponents.size(); j++)
+		{
+			if( playerSpaceShip.getBulletList().at(i).hasCollision( opponents.at(j) ) ) // collision with a bullet?
+			{
+				// remove opponentSpaceShip
+				OpponentSpaceShip curOpp = opponents.at(j);
+				opponents.erase(opponents.begin() + j);
+				//delete curOpp;
+
+				// remove bullet
+				//Bullet curBul = playerSpaceShip.getBulletList().at(i);
+				playerSpaceShip.removeBullet(i);
+			}
+		}
+	}
+
+	// animate opponents
+	for(unsigned int i = 0; i<opponents.size(); i++)
+	{
+		opponents.at(i).updateX(opponents.at(i).getPositionX() - GameSettings::OPPONENT_SPEED);
+	}
+
+}
+
 void idle()
 {
 	CamPos=getCameraPosition();
@@ -124,6 +218,8 @@ void spaceShipSetUp()
 
 	// init opponents
 	opponents.push_back( OpponentSpaceShip(2,0) );
+	opponents.push_back( OpponentSpaceShip(2,.5) );
+	opponents.push_back( OpponentSpaceShip(2,1) );
 }
 
 
@@ -140,7 +236,7 @@ void drawSurface()
 	//printf("-------------------|| DRAW SURFACE ||-------------------\n");
 	//printf("Triangle %d\n",t/3);
 	//Moved to terrain
-	terrain->display();
+	//terrain->display();
 	//printf("--------------------------------------------------------\n");
 }
 
@@ -247,6 +343,8 @@ void display(void)
     tbVisuTransform(); // origine et orientation de la scene
 
     drawCoordSystem();
+
+    animate();
 
     draw();    
 

@@ -24,7 +24,7 @@ SpaceShip::~SpaceShip() {
 
 void SpaceShip::display(){
 
-	printf("drawing plane \n");
+	//("drawing plane \n");
 
 	// get x
 	float x = getPositionX();
@@ -54,6 +54,7 @@ void SpaceShip::display(){
 	// render bullets
 	for(unsigned int i = 0; i<bullitsShot.size(); i++)
 	{
+		//printf("- render bullet \n");
 		bullitsShot.at(i).display();
 	}
 
@@ -79,6 +80,15 @@ void SpaceShip::updateY(float y){
 	position[1] = y;
 }
 
+std::vector<Bullet> SpaceShip::getBulletList()
+{
+	return bullitsShot;
+}
+
+void SpaceShip::removeBullet( int index )
+{
+	bullitsShot.erase(bullitsShot.begin() + index);
+}
 
 void SpaceShip::shoot(){
 	Bullet b = Bullet(getPositionX(), getPositionY());
