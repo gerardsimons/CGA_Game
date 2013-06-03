@@ -6,6 +6,10 @@
 #include <math.h>
 #include <assert.h>
 #include "traqueboule.h"
+
+#include "SpaceShip.h"
+#include "OpponentSpaceShip.h"
+
 #include "mesh.h"
 #include "terrain.h"
 
@@ -31,15 +35,51 @@ Vec3Df CamPos = Vec3Df(0.0f,2.0f,-4.0f);
 
 Terrain *terrain;
 
+void createVertices(int,int,float);
 void drawSurface();
 void drawLight();
 
 //SpaceShip * s = new SpaceShip();
 
+// init player space ship with position
+SpaceShip playerSpaceShip;
+// opponent space ship vector
+std::vector<SpaceShip> opponents;
 
 void keyboard(unsigned char key, int x, int y)
 {
     printf("key %d pressed at %d,%d\n",key,x,y);
+
+    if(key == 'd') // right
+    {
+    			printf("Move right \n");
+    			playerSpaceShip.updateX(playerSpaceShip.getPositionX()+.05);
+
+    }
+    if(key == 'a') // left
+    {
+    			printf("Move left \n");
+    			playerSpaceShip.updateX(playerSpaceShip.getPositionX()-.05);
+
+    }
+    if(key == 'w')	//up
+    {
+    			printf("Move up \n");
+    			playerSpaceShip.updateY(playerSpaceShip.getPositionY()+.05);
+
+    }
+    if(key == 's')	//down
+    {
+    			printf("Move down \n");
+    			playerSpaceShip.updateY(playerSpaceShip.getPositionY()-.05);
+
+    }
+    if(key == ' ')	//shoot
+    {
+    			printf("Fire!!! \n");
+    			playerSpaceShip.shoot();
+    }
+
 }
 
 
@@ -62,13 +102,33 @@ void draw( )
 	glLightfv(GL_LIGHT0,GL_POSITION,LightPos);
 	drawLight();
 	drawSurface();
-	drawLight();
+
+	// render player spaceship
+	playerSpaceShip.display();
+
+	// render opponent spaceships
+	for(unsigned int i = 0; i<opponents.size(); i++)
+	{
+		//printf("main: draw opponent %f", i);
+		opponents.at(i).display();
+	}
+
 }
 
 void idle()
 {
 	CamPos=getCameraPosition();
 	glutPostRedisplay();
+}
+
+void spaceShipSetUp()
+{
+
+	// init player spaceship
+	playerSpaceShip = SpaceShip(-1,0);
+
+	// init opponents
+	opponents.push_back( OpponentSpaceShip(2,0) );
 }
 
 
@@ -121,7 +181,8 @@ int main(int argc, char** argv)
     glEnable(GL_COLOR_MATERIAL);
     glEnable(GL_NORMALIZE);
     
-    //ss->display();
+    // Game Set Up
+    spaceShipSetUp();
 
 
     createTerrain(10,10,1);
