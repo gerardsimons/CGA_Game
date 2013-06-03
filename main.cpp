@@ -102,6 +102,7 @@ void keyboard(unsigned char key, int x, int y)
 						printf("Fire!!! \n");
 						playerSpaceShip.shoot();
 			}
+			break;
 		}
 		case CAMERA:
 		{
@@ -132,11 +133,12 @@ void keyboard(unsigned char key, int x, int y)
 						CamPos[0] = CamPos[1]-0.1f;
 
 			}
+			break;
 
 		}
 		case LIGHT:
 		{
-
+			break;
 		}
 	}
 
