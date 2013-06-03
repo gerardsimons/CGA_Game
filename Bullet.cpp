@@ -15,7 +15,7 @@ Bullet::Bullet(){
 }
 
 Bullet::Bullet(float xNew, float yNew) {
-	printf("I'm a weird bullet, created at (%f,%f)", x, y );
+	//printf("I'm a weird bullet, created at (%f,%f) \n", x, y );
 	x = xNew;
 	y = yNew;
 

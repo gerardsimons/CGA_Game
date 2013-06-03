@@ -93,6 +93,6 @@ void SpaceShip::removeBullet( int index )
 void SpaceShip::shoot(){
 	Bullet b = Bullet(getPositionX(), getPositionY());
 	bullitsShot.push_back( b );
-	printf("I have shoot %d times \n", bullitsShot.size());
+	//printf("I have shot %d times \n", bullitsShot.size());
 
 }
