@@ -11,6 +11,7 @@
 #include "OpponentSpaceShip.h"
 
 #include "mesh.h"
+#include "terrain.h"
 
 //std::vector<SpaceShip>  s = new SpaceShip();
 
@@ -29,7 +30,9 @@ std::vector<Vec3Df> LightColor;
 
 Vec3Df CamPos = Vec3Df(0.0f,2.0f,-4.0f);
 
-vector<float> SurfaceVertices3f;
+//vector<float> SurfaceVertices3f;
+
+Terrain *terrain;
 
 void createVertices(int,int,float);
 void drawSurface();
@@ -127,57 +130,17 @@ void spaceShipSetUp()
 void createTerrain(int xSize, int ySize, float surfaceSize)
 {
 	//12 vertices per loop
-	int i = 0;
-	SurfaceVertices3f.resize(ySize * xSize * 12);
-	for(float x = 0 ; x < xSize ; x += surfaceSize)
-	{
-		for(float y = 0 ; y < ySize ; y += surfaceSize)
-		{
-			
-				//define 
-			SurfaceVertices3f[i]=x;
-			SurfaceVertices3f[i+1]=y;
-			SurfaceVertices3f[i+2]=cos(x);
-
-			glNormal3d(0, 0, 1);
-			SurfaceVertices3f[i+3]=x+surfaceSize;
-			SurfaceVertices3f[i+4]=y;
-			SurfaceVertices3f[i+5]=cos(x+surfaceSize);
-
-			SurfaceVertices3f[i+6]=x+surfaceSize;
-			SurfaceVertices3f[i+7]=y+surfaceSize;
-			SurfaceVertices3f[i+8]=cos(x+surfaceSize);
-
-			SurfaceVertices3f[i+9]=x;
-			SurfaceVertices3f[i+10]=y+surfaceSize;
-			SurfaceVertices3f[i+11]=cos(x);
-			
-			i += 12;
-
-		}
-	}
+	
+	terrain = new Terrain(xSize,ySize,surfaceSize);
+	//Move to terrain class
 }
 
 void drawSurface()
 {
 	//printf("-------------------|| DRAW SURFACE ||-------------------\n");
 	//printf("Triangle %d\n",t/3);
-	glBegin(GL_QUADS);
-	//printf("SurfaceVertices3f.size() = %d\n",SurfaceVertices3f.size());
-	for (int vIndex = 0 ; vIndex < SurfaceVertices3f.size() ; vIndex += 3)
-	{
-		//glTexCoord2fv(&(SurfaceTexCoords2f[2*vIndex]));
-		//glNormal3fv(&(SurfaceNormals3f[3*vIndex]));
-		//glColor3fv(&(SurfaceColors3f[3*vIndex]));
-
-		float *vertex = &(SurfaceVertices3f[vIndex]);
-
-		//printf("Drawing vertex #%d = (%f,%f,%f)\n",i,&vertex,&(vertex+1),&(vertex+2));
-
-		glVertex3f(*vertex,*(vertex+1),*(vertex+2));
-	}
-	glEnd();
-
+	//Moved to terrain
+	terrain->display();
 	//printf("--------------------------------------------------------\n");
 }
 
