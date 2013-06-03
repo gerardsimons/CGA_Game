@@ -9,6 +9,9 @@
 #include "mesh.h"
 
 
+
+//std::vector<SpaceShip>
+
 using namespace std;
 
 unsigned int W_fen = 800;  // largeur fenetre
@@ -22,6 +25,9 @@ std::vector<Vec3Df> LightPos;
 std::vector<Vec3Df> LightColor;
 
 Vec3Df CamPos = Vec3Df(0.0f,0.0f,-4.0f);
+
+//SpaceShip * s = new SpaceShip();
+
 
 void keyboard(unsigned char key, int x, int y)
 {
@@ -50,12 +56,18 @@ void draw( )
 		for(int x = 0 ; x < width ; x++)
 		{
 
-			glNormal3d(0, 0, -1);
+			glNormal3d(0, 0, 1);
 
 			glVertex3f(width,0,0);
 			glVertex3f(width+1,0,0);
 			glVertex3f(width+1,0,1);
 			glVertex3f(0,0,width+1);
+
+
+			//glVertex3f(width,1,3);
+			//glVertex3f(width,0,3);
+			//glVertex3f(width+1,0,3);
+			//glVertex3f(width+1,1,3);
 		}
 	glEnd();
 }
@@ -69,7 +81,6 @@ void idle()
 void display(void);
 void reshape(int w, int h);
 void keyboard(unsigned char key, int x, int y);
-
 
 
 /************************************************************
@@ -99,6 +110,9 @@ int main(int argc, char** argv)
     glEnable(GL_COLOR_MATERIAL);
     glEnable(GL_NORMALIZE);
     
+    //ss->display();
+
+
     // cablage des callback
     glutReshapeFunc(reshape);
     glutKeyboardFunc(keyboard);
@@ -123,6 +137,34 @@ int main(int argc, char** argv)
     return 0;  // instruction jamais ex\E9cut\E9e
 }
 
+//function to draw coordinate axes with a certain length (1 as a default)
+void drawCoordSystem(float length=1)
+{
+	//draw simply colored axes
+
+	//remember all states of the GPU
+	glPushAttrib(GL_ALL_ATTRIB_BITS);
+	//deactivate the lighting state
+	glDisable(GL_LIGHTING);
+	//draw axes
+	glBegin(GL_LINES);
+		glColor3f(1,0,0);
+		glVertex3f(0,0,0);
+		glVertex3f(length,0,0);
+
+		glColor3f(0,1,0);
+		glVertex3f(0,0,0);
+		glVertex3f(0,length,0);
+
+		glColor3f(0,0,1);
+		glVertex3f(0,0,0);
+		glVertex3f(0,0,length);
+	glEnd();
+
+	//reset to previous state
+	glPopAttrib();
+}
+
 
 /************************************************************
  * Fonctions de gestion opengl \E0 ne pas toucher
@@ -136,6 +178,8 @@ void display(void)
 	glLoadIdentity();  // repere camera
 
     tbVisuTransform(); // origine et orientation de la scene
+
+    drawCoordSystem();
 
     draw();    
 
