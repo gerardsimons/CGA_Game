@@ -9,6 +9,7 @@
 #include "GameSettings.h"
 #include <GL/glut.h>
 #include "SpaceShip.h"
+#include "AssistentSpaceShip.h"
 
 
 
@@ -103,6 +104,43 @@ bool Bullet::hasCollision( SpaceShip s )
 	else if( (x+GameSettings::BULLET_SIZE[0]) >= s.getPositionX() && (x+GameSettings::BULLET_SIZE[0]) <= s.getPositionX()+GameSettings::AIRPLANE_SIZE[0]
 		&&
 		(y+GameSettings::BULLET_SIZE[1]) >= s.getPositionY() && (y+GameSettings::BULLET_SIZE[1]) <= s.getPositionY()+GameSettings::AIRPLANE_SIZE[1]
+	)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+
+}
+
+bool Bullet::hasCollision( AssistentSpaceShip * ass )
+{
+	if( x >= ass->getPositionX() && x <= (ass->getPositionX()+GameSettings::ASSISTENT_SIZE[0])
+		&&
+		(y+GameSettings::BULLET_SIZE[1]) >= ass->getPositionY() && (y+GameSettings::BULLET_SIZE[1]) <= ass->getPositionY()+GameSettings::ASSISTENT_SIZE[1]
+	)
+	{
+		return true;
+	}
+	else if( x >= ass->getPositionX() && x <= ass->getPositionX()+GameSettings::ASSISTENT_SIZE[0]
+		&&
+		(y) >= ass->getPositionY() && y <= ass->getPositionY()+GameSettings::ASSISTENT_SIZE[1]
+	)
+	{
+		return true;
+	}
+	else if( (x+GameSettings::BULLET_SIZE[0]) >= ass->getPositionX() && (x+GameSettings::BULLET_SIZE[0]) <= ass->getPositionX()+GameSettings::ASSISTENT_SIZE[0]
+		&&
+		y >= ass->getPositionY() && y <= ass->getPositionY()+GameSettings::ASSISTENT_SIZE[1]
+	)
+	{
+		return true;
+	}
+	else if( (x+GameSettings::BULLET_SIZE[0]) >= ass->getPositionX() && (x+GameSettings::BULLET_SIZE[0]) <= ass->getPositionX()+GameSettings::ASSISTENT_SIZE[0]
+		&&
+		(y+GameSettings::BULLET_SIZE[1]) >= ass->getPositionY() && (y+GameSettings::BULLET_SIZE[1]) <= ass->getPositionY()+GameSettings::ASSISTENT_SIZE[1]
 	)
 	{
 		return true;

@@ -16,6 +16,11 @@ SpaceShip::SpaceShip(float x, float y) {
 	printf("Hi, I'm a weird SpaceShip \n");
 	position  = Vec3Df(x,y,0.0f);
 	bullitsShot = new std::vector<Bullet>();
+	assSpaceShip = AssistentSpaceShip(
+							x+(GameSettings::AIRPLANE_SIZE[0]/2),
+							y+(GameSettings::AIRPLANE_SIZE[1]/2),
+							0
+							);
 }
 
 SpaceShip::~SpaceShip() {
@@ -31,7 +36,6 @@ void SpaceShip::display(){
 	float y = getPositionY();
 
 	glEnable(GL_TEXTURE_2D);
-
 	glBindTexture(GL_TEXTURE_2D, GameSettings::Texture[0]);
 
 		//remember all states of the GPU
@@ -149,4 +153,9 @@ bool SpaceShip::hasCollision( SpaceShip s )
 		return false;
 	}
 
+}
+
+AssistentSpaceShip * SpaceShip::getAssistent()
+{
+	return &(assSpaceShip);
 }

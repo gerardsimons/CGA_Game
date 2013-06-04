@@ -11,6 +11,7 @@
 #include <vector>
 #include "Vec3D.h"
 #include "Bullet.h"
+#include "AssistentSpaceShip.h"
 
 #include <GL/glut.h>
 
@@ -28,6 +29,7 @@ protected:
 	float direction;
 	float speed;
 	std::vector<Bullet> * bullitsShot;
+	AssistentSpaceShip assSpaceShip;
 
 public:
 	SpaceShip();
@@ -47,6 +49,8 @@ public:
 	void shoot();
 
 	bool hasCollision( SpaceShip s );
+
+	AssistentSpaceShip * getAssistent();
 };
 
 #endif /* SPACESHIP_H */

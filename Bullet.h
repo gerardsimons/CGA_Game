@@ -14,8 +14,10 @@
 #include <stdlib.h>
 #include "stdio.h"
 #include "Vec3D.h"
+#include "AssistentSpaceShip.h"
 
 class SpaceShip;
+//class AssistentSpaceShip;
 
 class Bullet {
 private:
@@ -32,6 +34,7 @@ public:
 	float getPositionY();
 
 	bool hasCollision( SpaceShip s );
+	bool hasCollision( AssistentSpaceShip * ass );
 
 	bool outOfRange();
 };

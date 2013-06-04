@@ -141,7 +141,7 @@ void Terrain::initTexture()
 {
 
 
-
+/*
 	PPMImage imageSand("sand.ppm");
 	glGenTextures(1, &GameSettings::GameSettings::Texture[3]);
 	glBindTexture(GL_TEXTURE_2D, GameSettings::Texture[3]);
@@ -149,7 +149,6 @@ void Terrain::initTexture()
 		GL_RGB, GL_UNSIGNED_BYTE, imageSand.data);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-/*
 	PPMImage bricks("brick.ppm");
 	glGenTextures(1, &GameSettings::GameSettings::Texture[4]);
 	glBindTexture(GL_TEXTURE_2D, GameSettings::Texture[4]);

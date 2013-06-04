@@ -78,30 +78,47 @@ void keyboard(unsigned char key, int x, int y)
 			{
 						printf("Move right \n");
 						playerSpaceShip.updateX(playerSpaceShip.getPositionX()+.05);
+						playerSpaceShip.getAssistent()->updatePivot(
+								(playerSpaceShip.getPositionX()+(GameSettings::AIRPLANE_SIZE[0]/2)),
+								(playerSpaceShip.getPositionY()+(GameSettings::AIRPLANE_SIZE[1]/2))
+						);
+
 
 			}
 			if(key == 'a') // left
 			{
 						printf("Move left \n");
 						playerSpaceShip.updateX(playerSpaceShip.getPositionX()-.05);
+						playerSpaceShip.getAssistent()->updatePivot(
+								(playerSpaceShip.getPositionX()+(GameSettings::AIRPLANE_SIZE[0]/2)),
+								(playerSpaceShip.getPositionY()+(GameSettings::AIRPLANE_SIZE[1]/2))
+						);
 
 			}
 			if(key == 'w')	//up
 			{
 						printf("Move up \n");
 						playerSpaceShip.updateY(playerSpaceShip.getPositionY()+.05);
+						playerSpaceShip.getAssistent()->updatePivot(
+								(playerSpaceShip.getPositionX()+(GameSettings::AIRPLANE_SIZE[0]/2)),
+								(playerSpaceShip.getPositionY()+(GameSettings::AIRPLANE_SIZE[1]/2))
+						);
 
 			}
 			if(key == 's')	//down
 			{
 						printf("Move down \n");
 						playerSpaceShip.updateY(playerSpaceShip.getPositionY()-.05);
+						playerSpaceShip.getAssistent()->updatePivot(
+								(playerSpaceShip.getPositionX()+(GameSettings::AIRPLANE_SIZE[0]/2)),
+								(playerSpaceShip.getPositionY()+(GameSettings::AIRPLANE_SIZE[1]/2))
+						);
 
 			}
 			if(key == ' ')	//shoot
 			{
-						printf("Fire!!! \n");
-						playerSpaceShip.shoot();
+					printf("Fire!!! \n");
+					playerSpaceShip.shoot();
 			}
 			break;
 		}
@@ -179,6 +196,9 @@ void draw( )
 		opponents.at(i).display();
 	}
 
+	// render assistent
+	playerSpaceShip.getAssistent()->display();
+
 }
 
 void animate()
@@ -205,12 +225,15 @@ void animate()
 		}
 	}
 
+	// animate assistent
+	// TODO: currently in the Assistentclass
+
+
 
 	std::vector< int > dumpBulList;
 	std::vector< int > dumpOppList;
-
 	/*
-	 * BULLET --> OPPONENT UPDATE
+	 * BULLET --> OPPONENT // ASSISTENT UPDATE
 	 */
 
 	// detect collision
@@ -258,6 +281,14 @@ void animate()
 	{
 		for(unsigned int i = 0; i<opponents.at(j).getBulletList()->size(); i++)
 		{
+
+			if( opponents.at(j).getBulletList()->at(i).hasCollision( playerSpaceShip.getAssistent() ) )	// bullit out of range ?
+			{
+				printf("BAM, saved by the bell =) \n");
+				// register in order to avoid problems within the for loop
+				dumpBulList.push_back( i );
+			}
+
 			if( opponents.at(j).getBulletList()->at(i).hasCollision( playerSpaceShip ) ) // collision with a bullet?
 			{
 				// register in order to avoid problems within the for loop
@@ -282,7 +313,7 @@ void animate()
 		if( playerSpaceShip.hasCollision( opponents.at(j) ) ) // collision with an opponent
 		{
 			// register in order to avoid problems within the for loop
-			printf("game over!! \n");
+			printf("--- game over!! \n");
 		}
 	}
 
@@ -328,6 +359,8 @@ void initTextures()
 		gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, image.sizeX, image.sizeY,
 			GL_RGB, GL_UNSIGNED_BYTE, image.data);
 		glBindTexture(GL_TEXTURE_2D, 0);
+
+		printf("ufo size: %i %i \n", image.sizeX, image.sizeY);
 
 		PPMImage image2("ufo_opp.ppm");
 		glGenTextures(1, &GameSettings::Texture[1]);
