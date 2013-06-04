@@ -215,13 +215,21 @@ void animate()
 	// detect collision
 	for(unsigned int i = 0; i<playerSpaceShip.getBulletList()->size(); i++)
 	{
-		for (unsigned int j = 0; j< opponents.size(); j++ )
+		if(playerSpaceShip.getBulletList()->at(i).outOfRange() )	// bullit out of range ?
 		{
-			if( playerSpaceShip.getBulletList()->at(i).hasCollision( opponents.at(j) ) ) // collision with a bullet?
+			// register in order to avoid problems within the for loop
+			dumpBulList.push_back( i );
+		}
+		else
+		{
+			for (unsigned int j = 0; j< opponents.size(); j++ )
 			{
-				// register in order to avoid problems within the for loop
-				dumpOppList.push_back( j );
-				dumpBulList.push_back( i );
+				if( playerSpaceShip.getBulletList()->at(i).hasCollision( opponents.at(j) ) ) // collision with a bullet?
+				{
+					// register in order to avoid problems within the for loop
+					dumpOppList.push_back( j );
+					dumpBulList.push_back( i );
+				}
 			}
 		}
 
@@ -311,7 +319,6 @@ void initTextures()
 		GameSettings::Texture[0]=0;
 		GameSettings::Texture[1]=0;
 		GameSettings::Texture[2]=0;
-
 		PPMImage image("ufo.ppm");
 		glGenTextures(1, &GameSettings::Texture[0]);
 		glBindTexture(GL_TEXTURE_2D, GameSettings::Texture[0]);

@@ -22,6 +22,8 @@ public:
 	static float OPPONENT_SPEED;
 	static float BULLET_SPEED;
 
+	static float MAX_RANGE;
+
 	static float NEXT_FLOW_TIME;
 
 	static std::vector<GLuint> Texture;

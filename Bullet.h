@@ -32,6 +32,8 @@ public:
 	float getPositionY();
 
 	bool hasCollision( SpaceShip s );
+
+	bool outOfRange();
 };
 
 #endif /* BULLET_H_ */

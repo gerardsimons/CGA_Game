@@ -113,3 +113,10 @@ bool Bullet::hasCollision( SpaceShip s )
 	}
 
 }
+
+bool Bullet::outOfRange()
+{
+	if( abs(x) > GameSettings::MAX_RANGE  )	{ return true; }
+	return false;
+
+}
