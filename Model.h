@@ -23,6 +23,7 @@ public:
 	Vec3Df lambertianLighting(Vec3Df &vertexPos,Vec3Df &normal, Vec3Df &color);
 	Vec3Df ambientLighting(Vec3Df &color);
 	void drawModel();
+	float getPositionX();
 	void move(float,float,float);
 	void rotate(float,float,float);
 	virtual ~Model();

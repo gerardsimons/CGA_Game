@@ -123,12 +123,17 @@ void Model::drawModel()
 	computeLighting();
 
 	glPushMatrix();
-	glRotatef(rotX,1,0,0);
-	glRotatef(rotY,0,1,0);
-	glRotatef(rotZ,0,0,1);
-	//glTranslatef(x,y,z);
+	//glRotatef(rotX,1,0,0);
+	//glRotatef(rotY,0,1,0);
+	//glRotatef(rotZ,0,0,1);
+	glTranslatef(x,y,z);
 
 	mesh.drawWithColors(lighting);
 
 	glPopMatrix();
+}
+
+float Model::getPositionX()
+{
+	return this->x;
 }

@@ -42,6 +42,9 @@ clock_t shootTimer;
 // current FLOW
 int CUR_FLOW = 3;
 
+// BOSS FLOW ??
+bool bossEnabled = false;
+
 float BackgroundColor[]={0,0,0};
 
 void updateCamera();
@@ -254,9 +257,12 @@ void updateCamera()
 
 void animate()
 {
-	boss->rotate(0.0f,0.7f,0.0f);
+	//boss->rotate(0.0f,0.7f,0.0f);
 	// TODO: doesnt work yet
-	//boss->move(-1.0f, 0.0f, 0.0f);
+	if(bossEnabled == true && (boss->getPositionX() > 3.0f) )
+	{
+		boss->move(-0.02f, 0.0f, 0.0f);
+	}
 
 	// animate player's bullets
 	for(unsigned int i = 0; i< playerSpaceShip.getBulletList()->size(); i++)
@@ -391,8 +397,7 @@ void opponentFlow()
 			if( CUR_FLOW >= GameSettings::NUMBER_OF_FLOWS )
 			{
 				// TODO eindbaas
-				//OpponentSpaceShip oppShip = OpponentSpaceShip(4,1.0f);
-				//opponents.push_back( oppShip );
+				bossEnabled = true;
 			}
 			else
 			{
@@ -520,8 +525,7 @@ int main(int argc, char** argv)
 
     initTextures();
 
-    // TODO: initial position doesnt work yet...
-    boss = new Model("ufo_v3.obj",0,1,5);
+    boss = new Model("ufo_v3.obj",6,1,1);
 
     // set initial timer
     initTimer = clock();
