@@ -61,7 +61,7 @@ std::vector<OpponentSpaceShip> opponents;
 
 void keyboard(unsigned char key, int x, int y)
 {
-    printf("key %d pressed at %d,%d\n",key,x,y);
+    //printf("key %d pressed at %d,%d\n",key,x,y);
 
 	if ((key>='1')&&(key<='9'))
 	{
@@ -284,7 +284,7 @@ void animate()
 
 			if( opponents.at(j).getBulletList()->at(i).hasCollision( playerSpaceShip.getAssistent() ) )	// bullit out of range ?
 			{
-				printf("BAM, saved by the bell =) \n");
+				printf("# BAM!!! Saved by the bell =) \n");
 				// register in order to avoid problems within the for loop
 				dumpBulList.push_back( i );
 			}
@@ -292,7 +292,7 @@ void animate()
 			if( opponents.at(j).getBulletList()->at(i).hasCollision( playerSpaceShip ) ) // collision with a bullet?
 			{
 				// register in order to avoid problems within the for loop
-				printf("- Collision with bullet: HIT!! \n");
+				printf("# Collision with bullet: WE ARE HIT!! \n");
 				dumpBulList.push_back( i );
 			}
 		}
