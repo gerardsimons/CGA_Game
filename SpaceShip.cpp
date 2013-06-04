@@ -1,5 +1,6 @@
 #include "SpaceShip.h"
 #include "GameSettings.h"
+#include <GL/glut.h>
 
 
 /*
@@ -26,6 +27,7 @@ void SpaceShip::display(){
 
 	// get x,y
 	float x = getPositionX();
+	// get y
 	float y = getPositionY();
 
 	glEnable(GL_TEXTURE_2D);

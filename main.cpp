@@ -349,6 +349,7 @@ void idle()
 
 void spaceShipSetUp()
 {
+
 	// init player spaceship
 	playerSpaceShip = SpaceShip(-1,0);
 
@@ -373,7 +374,7 @@ void drawSurface()
 	//printf("-------------------|| DRAW SURFACE ||-------------------\n");
 	//printf("Triangle %d\n",t/3);
 	//Moved to terrain
-	//terrain->display();
+	terrain->display();
 	//printf("--------------------------------------------------------\n");
 }
 
