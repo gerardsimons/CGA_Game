@@ -182,7 +182,7 @@ void draw( )
 {
 
 	//glutSolidSphere(1.0 ,10,10);
-	glLightfv(GL_LIGHT0,GL_POSITION,LightPos);
+	//glLightfv(GL_LIGHT0,GL_POSITION,LightPos);
 	drawLight();
 	drawSurface();
 
@@ -556,7 +556,7 @@ void drawLight()
 	//yellow sphere at light position
 	glColor3f(1,1,0);
 	glPushMatrix();
-	glTranslatef(LightPos[0], LightPos[1], LightPos[2]);
+	//glTranslatef(LightPos[0], LightPos[1], LightPos[2]);
 	glutSolidSphere(0.1,6,6);
 	glPopMatrix();
 
