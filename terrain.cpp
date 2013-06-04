@@ -14,7 +14,7 @@
 Terrain::Terrain(float yTop, int xSize, int zSize, float surfaceSize) {
 
 
-	initTexture();
+
 	int newSize = static_cast<int>(xSize / surfaceSize * zSize / surfaceSize * 12);
 		printf("new size vertices array=%d\n",newSize);
 
@@ -135,66 +135,6 @@ Terrain::Terrain(float yTop, int xSize, int zSize, float surfaceSize) {
 
 }
 
-//this function loads the textures in the GPU memory
-//the function is called once when the program starts
-void Terrain::initTexture()
-{
-
-
-/*
-	PPMImage imageSand("sand.ppm");
-	glGenTextures(1, &GameSettings::GameSettings::Texture[3]);
-	glBindTexture(GL_TEXTURE_2D, GameSettings::Texture[3]);
-	gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, imageSand.sizeX, imageSand.sizeY,
-		GL_RGB, GL_UNSIGNED_BYTE, imageSand.data);
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	PPMImage bricks("brick.ppm");
-	glGenTextures(1, &GameSettings::GameSettings::Texture[4]);
-	glBindTexture(GL_TEXTURE_2D, GameSettings::Texture[4]);
-	gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, bricks.sizeX, bricks.sizeY, GL_RGB, GL_UNSIGNED_BYTE, bricks.data);
-	glBindTexture(GL_TEXTURE_2D, 0);
-*/
-}
-
-void Terrain::drawQuad()
-{
-	glPushAttrib(GL_ALL_ATTRIB_BITS);
-	glColor3f(1,1,1);
-	glNormal3f(0,0,1);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,  GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,  GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,  GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,  GL_LINEAR);
-	float texCoord = 0.0f;
-
-	glBegin(GL_QUADS);
-
-		float texSize = 0.5;
-
-		glTexCoord2f(texCoord,texCoord+texSize);
-		//RED
-		//glColor3f(1.0,0.0,0.0);
-		glVertex2f(0,0);
-
-		glTexCoord2f(texCoord+texSize,texCoord+texSize);
-		//glColor3f(0.0,1.0,0.0);
-		glVertex2f(1,0);
-
-		glTexCoord2f(texCoord+texSize,texCoord);
-		//glColor3f(0.0,0.0,1.0);
-		glVertex2f(1,1);
-
-		glTexCoord2f(texCoord,texCoord);
-		//glColor3f(1.0,1.0,0.0);
-		glVertex2f(0,1);
-	glEnd();
-
-	glPopAttrib();
-}
-
-
 Terrain::~Terrain() {
 	// TODO Auto-generated destructor stub
 }
@@ -202,7 +142,7 @@ Terrain::~Terrain() {
 void Terrain::display()
 {
 	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, Texture[0]);
+	glBindTexture(GL_TEXTURE_2D, GameSettings::Texture[3]);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,  GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,  GL_REPEAT);

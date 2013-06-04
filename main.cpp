@@ -48,8 +48,6 @@ Vec3Df CamPos = Vec3Df(0.0f,0.0f,-4.0f);
 Terrain *terrain;
 Model *boss;
 
-void createVertices(int,int,float);
-void drawSurface();
 void drawLight();
 
 //SpaceShip * s = new SpaceShip();
@@ -182,9 +180,9 @@ void draw( )
 {
 
 	//glutSolidSphere(1.0 ,10,10);
-	glLightfv(GL_LIGHT0,GL_POSITION,LightPos);
+	//glLightfv(GL_LIGHT0,GL_POSITION,LightPos);
 	drawLight();
-	drawSurface();
+
 
 	// render player spaceship
 	playerSpaceShip.display();
@@ -195,6 +193,9 @@ void draw( )
 		//printf("main: draw opponent %f", i);
 		opponents.at(i).display();
 	}
+
+	terrain->display();
+	boss->drawModel();
 
 	// render assistent
 	playerSpaceShip.getAssistent()->display();
@@ -345,6 +346,12 @@ void opponentFlow()
 	}
 }
 
+void initLights()
+{
+	GameSettings::LightPos.push_back(Vec3Df(0,2,2));
+	GameSettings::LightColor.push_back(Vec3Df(1,1,1));
+}
+
 void initTextures()
 {
 
@@ -456,9 +463,12 @@ int main(int argc, char** argv)
     
     // Game Set Up
     spaceShipSetUp();
-    //createTerrain(10,10,1);
+
+    terrain = new Terrain(0,10,10,0.1f);
 
     initTextures();
+
+    boss = new Model("DavidHeadCleanMax.obj");
 
     // set initial timer
     initTimer = clock();
@@ -471,6 +481,7 @@ int main(int argc, char** argv)
     glutMotionFunc(tbMotionFunc);  // traqueboule utilise la souris
     glutIdleFunc(idle);
 
+    initLights();
 
     glEnable( GL_LIGHTING );
         glEnable( GL_LIGHT0 );
@@ -556,7 +567,7 @@ void drawLight()
 	//yellow sphere at light position
 	glColor3f(1,1,0);
 	glPushMatrix();
-	glTranslatef(LightPos[0], LightPos[1], LightPos[2]);
+	//glTranslatef(LightPos[0], LightPos[1], LightPos[2]);
 	glutSolidSphere(0.1,6,6);
 	glPopMatrix();
 
