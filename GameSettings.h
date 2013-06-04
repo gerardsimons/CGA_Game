@@ -29,8 +29,6 @@ public:
 
 	static float NEXT_FLOW_TIME;
 
-
-
 	static std::vector<Vec3Df> LightPos;
 	static std::vector<Vec3Df> LightColor;
 	static Vec3Df CamPos;
@@ -38,6 +36,8 @@ public:
 	static std::vector<GLuint> Texture;
 
 	static float PI;
+
+	static void updateCamera(float xDelta, float yDelta, float zDelta);
 
 	GameSettings();
 	virtual ~GameSettings();

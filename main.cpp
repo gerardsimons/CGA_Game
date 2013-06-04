@@ -40,10 +40,7 @@ clock_t initTimer;
 
 float BackgroundColor[]={0,0,0};
 
-//Later in the exercise, you can also modify and use a special color per light source.
-Vec3Df CamPos = Vec3Df(0.0f,0.0f,-4.0f);
-
-//vector<float> SurfaceVertices3f;
+void updateCamera();
 
 Terrain *terrain;
 Model *boss;
@@ -124,31 +121,37 @@ void keyboard(unsigned char key, int x, int y)
 		{
 			if(key == 'd') // right
 			{
-						printf("Move CAM right \n");
-						printf("Campos old: %f \n",CamPos[0]);
-						CamPos[0] = CamPos[0]+0.1f;
-						printf("Campos new: %f \n",CamPos[0]);
 
-
+						GameSettings::updateCamera(0.1f,0.0f,0.0f);
 			}
 			if(key == 'a') // left
 			{
-						printf("Move CAM  left \n");
-						CamPos[0] = CamPos[0]-0.1f;
+
+						GameSettings::updateCamera(-0.1f,0.0f,0.0f);
 
 			}
 			if(key == 'w')	//up
 			{
-						printf("Move CAM  up \n");
-						CamPos[0] = CamPos[1]+0.1f;
+						GameSettings::updateCamera(0.0f,0.1f,0.0f);
 
 			}
 			if(key == 's')	//down
 			{
-						printf("Move CAM  down \n");
-						CamPos[0] = CamPos[1]-0.1f;
+						GameSettings::updateCamera(0.0f,-0.1f,0.0f);
 
 			}
+			if(key == 'z') // right
+			{
+
+						GameSettings::updateCamera(0.0f,0.0f,0.1f);
+			}
+			if(key == 'x') // left
+			{
+
+						GameSettings::updateCamera(0.0f,0.0f,-0.1f);
+
+			}
+			updateCamera();
 			break;
 
 		}
@@ -181,6 +184,10 @@ void draw( )
 
 	//glutSolidSphere(1.0 ,10,10);
 	//glLightfv(GL_LIGHT0,GL_POSITION,LightPos);
+
+
+	//updateCamera();
+
 	drawLight();
 
 
@@ -202,8 +209,31 @@ void draw( )
 
 }
 
+/**
+ * Call this when you changed the camera position so that OpenGL redraws the scene
+ */
+void updateCamera()
+{
+	/*
+	glMatrixMode(GL_MODELVIEW);
+	Vec3Df CamPos = GameSettings::CamPos;
+
+	gluLookAt(10,10,10,0,0,0,0,1,0);
+	*/
+    glMatrixMode( GL_MODELVIEW );
+    glLoadIdentity();
+
+    // set up camera
+    //glRotatef( 0, 1, 0, 0 );
+    //glRotatef( 1, 0, 0, 0);
+    Vec3Df CamPos = GameSettings::CamPos;
+    printf("CamPos=(%f,%f,%f)\n",CamPos[0],CamPos[1],CamPos[2]);
+    glTranslatef( CamPos[0], CamPos[1],CamPos[2]);
+}
+
 void animate()
 {
+
 	// TODO: bullets update here instead of in the spaceShip function
 	// SOLVED: referenced
 
@@ -339,7 +369,7 @@ void opponentFlow()
 
 		for(unsigned int i = 0; i<3; i++)
 		{
-			OpponentSpaceShip oppShip = OpponentSpaceShip(2,float(i/2));
+			OpponentSpaceShip oppShip = OpponentSpaceShip(5,float(i/2.0f));
 			opponents.push_back( oppShip );
 			oppShip.shoot();
 		}
@@ -394,7 +424,6 @@ void initTextures()
 
 void idle()
 {
-	CamPos=getCameraPosition();
 	glutPostRedisplay();
 }
 
@@ -411,24 +440,6 @@ void spaceShipSetUp()
 	//opponents.push_back( OpponentSpaceShip(2,1) );
 }
 
-
-void createTerrain(int xSize, int ySize, float surfaceSize)
-{
-	//12 vertices per loop
-	
-	//terrain = new Terrain(0,xSize,ySize,surfaceSize);
-	//Move to terrain class
-}
-
-void drawSurface()
-{
-	//printf("-------------------|| DRAW SURFACE ||-------------------\n");
-	//printf("Triangle %d\n",t/3);
-	//Moved to terrain
-	//terrain->display();
-	//printf("--------------------------------------------------------\n");
-}
-
 void display(void);
 void reshape(int w, int h);
 void keyboard(unsigned char key, int x, int y);
@@ -441,6 +452,7 @@ int main(int argc, char** argv)
 {
     glutInit (&argc, argv);
 
+    updateCamera();
 
     // couches du framebuffer utilisees par l'application
     glutInitDisplayMode( GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH );
@@ -453,18 +465,20 @@ int main(int argc, char** argv)
     // Initialisation du point de vue
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    glTranslatef(0,0,-4);
-    tbInitTransform();     // initialisation du point de vue
-    tbHelp();                      // affiche l'aide sur la traqueboule
+    //glTranslatef(0,0,-4);
 
-    //glDisable( GL_LIGHTING );
+    //Traqueboule stuff
+    //tbInitTransform();     // initialisation du point de vue
+    //tbHelp();                      // affiche l'aide sur la traqueboule
+
     glEnable(GL_COLOR_MATERIAL);
     glEnable(GL_NORMALIZE);
     
     // Game Set Up
     spaceShipSetUp();
 
-    terrain = new Terrain(0,10,10,0.1f);
+    terrain = new Terrain(30,20,0.1f,-5.0f,-8.0f);
+
 
     initTextures();
 
@@ -473,12 +487,15 @@ int main(int argc, char** argv)
     // set initial timer
     initTimer = clock();
 
+
+
+
     // cablage des callback
     glutReshapeFunc(reshape);
     glutKeyboardFunc(keyboard);
     glutDisplayFunc(display);
-    glutMouseFunc(tbMouseFunc);    // traqueboule utilise la souris
-    glutMotionFunc(tbMotionFunc);  // traqueboule utilise la souris
+    //glutMouseFunc(tbMouseFunc);    // traqueboule utilise la souris
+    //glutMotionFunc(tbMotionFunc);  // traqueboule utilise la souris
     glutIdleFunc(idle);
 
     initLights();
@@ -496,6 +513,9 @@ int main(int argc, char** argv)
     // Effacer tout
     glClearColor (BackgroundColor[0],BackgroundColor[1], BackgroundColor[2], 0.0);
     glClear( GL_COLOR_BUFFER_BIT  | GL_DEPTH_BUFFER_BIT); // la couleur et le z
+
+
+    updateCamera();
    
 
     // lancement de la boucle principale
@@ -542,9 +562,8 @@ void display(void)
 {
     glClear( GL_COLOR_BUFFER_BIT  | GL_DEPTH_BUFFER_BIT); // la couleur et le z
 
-	glLoadIdentity();  // repere camera
 
-    tbVisuTransform(); // origine et orientation de la scene
+    //tbVisuTransform(); // origine et orientation de la scene
 
     drawCoordSystem();
 
@@ -582,6 +601,8 @@ void reshape(int w, int h)
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluPerspective (50, (float)w/h, zNear, zFar);
-    glMatrixMode(GL_MODELVIEW);
+
+
+    updateCamera();
 }
 

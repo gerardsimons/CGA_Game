@@ -29,7 +29,7 @@ float GameSettings::MAX_RANGE = 4;
 
 //float GameSettings::NEXT_FLOW_TIME = 1500000;
 
-float GameSettings::NEXT_FLOW_TIME = 500000;
+float GameSettings::NEXT_FLOW_TIME = 5000000;
 
 
 //float GameSettings::PI = 3.14159265;
@@ -37,6 +37,13 @@ float GameSettings::PI = 22/7;
 
 std::vector<Vec3Df> GameSettings::LightPos;
 std::vector<Vec3Df> GameSettings::LightColor;
-Vec3Df GameSettings::CamPos;
+Vec3Df GameSettings::CamPos = Vec3Df(-1.2,-0.4,-5);
+
+void GameSettings::updateCamera(float xDelta, float yDelta, float zDelta)
+{
+	CamPos[0] += xDelta;
+	CamPos[1] += yDelta;
+	CamPos[2] += zDelta;
+}
 
 std::vector<GLuint> GameSettings::Texture;
