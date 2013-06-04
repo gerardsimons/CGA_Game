@@ -396,10 +396,10 @@ void opponentFlow()
 void initLights()
 {
 	GameSettings::LightPos.push_back(Vec3Df(0,3,2));
-	GameSettings::LightPos.push_back(Vec3Df(0,3,-2));
+	//GameSettings::LightPos.push_back(Vec3Df(0,3,-2));
 
-	GameSettings::LightColor.push_back(Vec3Df(1,0,0));
-	GameSettings::LightColor.push_back(Vec3Df(0,1,0));
+	//GameSettings::LightColor.push_back(Vec3Df(1,0,0));
+	GameSettings::LightColor.push_back(Vec3Df(1,1,1));
 }
 
 void initTextures()
@@ -493,7 +493,7 @@ int main(int argc, char** argv)
 
     initTextures();
 
-    boss = new Model("DavidHeadCleanMax.obj",0,0,0);
+    boss = new Model("ufo.obj",0,0,0);
 
     // set initial timer
     initTimer = clock();
