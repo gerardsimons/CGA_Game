@@ -45,7 +45,7 @@ void updateCamera();
 Terrain *terrain;
 Model *boss;
 
-void drawLight();
+void drawLights();
 
 //SpaceShip * s = new SpaceShip();
 
@@ -187,8 +187,7 @@ void draw( )
 
 
 	//updateCamera();
-
-	drawLight();
+	drawLights();
 
 
 	// render player spaceship
@@ -234,6 +233,8 @@ void updateCamera()
 void animate()
 {
 
+	boss->move(0.1f,0.1f,0.1f);
+	boss->rotate(0.01f,0.01f,0.01f);
 	// TODO: bullets update here instead of in the spaceShip function
 	// SOLVED: referenced
 
@@ -379,6 +380,9 @@ void opponentFlow()
 void initLights()
 {
 	GameSettings::LightPos.push_back(Vec3Df(0,2,2));
+	GameSettings::LightPos.push_back(Vec3Df(0,2,-2));
+
+	GameSettings::LightColor.push_back(Vec3Df(1,1,1));
 	GameSettings::LightColor.push_back(Vec3Df(1,1,1));
 }
 
@@ -462,10 +466,7 @@ int main(int argc, char** argv)
     glutInitWindowSize(W_fen,H_fen);
     glutCreateWindow(argv[0]);	
 
-    // Initialisation du point de vue
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    //glTranslatef(0,0,-4);
+    updateCamera();
 
     //Traqueboule stuff
     //tbInitTransform();     // initialisation du point de vue
@@ -482,7 +483,7 @@ int main(int argc, char** argv)
 
     initTextures();
 
-    boss = new Model("DavidHeadCleanMax.obj");
+    boss = new Model("DavidHeadCleanMax.obj",0,0,0);
 
     // set initial timer
     initTimer = clock();
@@ -513,10 +514,6 @@ int main(int argc, char** argv)
     // Effacer tout
     glClearColor (BackgroundColor[0],BackgroundColor[1], BackgroundColor[2], 0.0);
     glClear( GL_COLOR_BUFFER_BIT  | GL_DEPTH_BUFFER_BIT); // la couleur et le z
-
-
-    updateCamera();
-   
 
     // lancement de la boucle principale
     glutMainLoop();
@@ -563,7 +560,7 @@ void display(void)
     glClear( GL_COLOR_BUFFER_BIT  | GL_DEPTH_BUFFER_BIT); // la couleur et le z
 
 
-    //tbVisuTransform(); // origine et orientation de la scene
+    tbVisuTransform(); // origine et orientation de la scene
 
     drawCoordSystem();
 
@@ -577,19 +574,23 @@ void display(void)
 }
 
 //function that draws the light source as a sphere
-void drawLight()
+void drawLights()
 {
 	//remember all states of the GPU
 	glPushAttrib(GL_ALL_ATTRIB_BITS);
 	//deactivate the lighting state
 	glDisable(GL_LIGHTING);
-	//yellow sphere at light position
-	glColor3f(1,1,0);
-	glPushMatrix();
-	//glTranslatef(LightPos[0], LightPos[1], LightPos[2]);
-	glutSolidSphere(0.1,6,6);
-	glPopMatrix();
 
+	for(int i = 0 ; i < GameSettings::LightPos.size() ; i++)
+	{
+		Vec3Df LightPos = GameSettings::LightPos[i];
+		//yellow sphere at light position
+		glColor3f(1,1,0);
+		glPushMatrix();
+		glTranslatef(LightPos[0], LightPos[1], LightPos[2]);
+		glutSolidSphere(0.1,6,6);
+		glPopMatrix();
+	}
 	//reset to previous state
 	glPopAttrib();
 }
@@ -603,6 +604,6 @@ void reshape(int w, int h)
     gluPerspective (50, (float)w/h, zNear, zFar);
 
 
-    updateCamera();
+    //updateCamera();
 }
 

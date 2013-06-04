@@ -7,13 +7,19 @@
 
 #include "Model.h"
 
-Model::Model(const char* fileName)
+Model::Model(const char* fileName,float x,float y, float z)
 {
+	this->x = x;
+	this->y = y;
+	this->z = z;
+	rotX = 0.0f;
+	rotY = 0.0f;
+	rotZ = 0.0f;
 	loadMesh(fileName);
 }
 
 Model::~Model() {
-	// TODO Auto-generated destructor stub
+
 }
 
 
@@ -45,12 +51,26 @@ Vec3Df Model::blinnPhongShading(Vec3Df &color, Vec3Df &normal)
 	return color *= specular;
 }
 
+Vec3Df Model::ambientLighting(Vec3Df &color)
+{
+	float ambientFactor = 1.0f;
+	return Vec3Df(ambientFactor * color[0],ambientFactor * color[1],ambientFactor * color[2]);
+}
+
 Vec3Df Model::lambertianLighting(Vec3Df &vertexPos,Vec3Df &normal, Vec3Df &color)
 {
-	float lambert = Vec3Df::dotProduct(vertexPos,normal);
-	float distance = (vertexPos - GameSettings::LightPos[0]).getLength();
-	//return Vec3Df(lambert * LightColor[0],lambert * LightColor[1],lambert * LightColor[2]);
-	return Vec3Df(lambert / distance,lambert / distance,lambert / distance) * color;
+
+	Vec3Df totalLight = Vec3Df(0,0,0);
+	for(int i = 0 ; i < GameSettings::LightPos.size() ; i++)
+	{
+		Vec3Df LightPos = GameSettings::LightPos[i];
+		Vec3Df distanceVector = LightPos - vertexPos;
+		float lambert = Vec3Df::dotProduct(distanceVector,normal);
+		float distance = distanceVector.getLength();
+		distance = 1.0f;
+		totalLight += Vec3Df(lambert / distance,lambert / distance,lambert / distance) * color;
+	}
+	return totalLight;
 }
 
 void Model::computeLighting()
@@ -66,19 +86,26 @@ void Model::computeLighting()
 	}
 }
 
-void Model::move(float x, float y, float z)
+void Model::move(float deltaX, float deltaY, float deltaZ)
 {
-	for (unsigned int i=0; i<mesh.vertices.size();++i)
-	{
+	x += deltaX;
+	y += deltaY;
+	z += deltaZ;
+}
 
-	}
+void Model::rotate(float rotXDelta, float rotYDelta, float rotZDelta)
+{
+	rotX += rotXDelta;
+	rotY += rotYDelta;
+	rotZ += rotZDelta;
 }
 
 Vec3Df Model::computeLighting(Vec3Df & vertexPos, Vec3Df & normal, unsigned int light, unsigned int index)
 {
 
 	Vec3Df color = Vec3Df(1,1,1);
-	return lambertianLighting(vertexPos,normal,color) + blinnPhongShading(color,normal);;
+	return ambientLighting(color) + lambertianLighting(vertexPos,normal,color) + blinnPhongShading(color,normal);;
+	//return ambientLighting(color);
 	//return color;
 
 }
@@ -86,5 +113,12 @@ Vec3Df Model::computeLighting(Vec3Df & vertexPos, Vec3Df & normal, unsigned int 
 void Model::drawModel()
 {
 	computeLighting();
+
+	glPushMatrix();
+	//glRotatef(90.0f,1.0f,1.0f,1.0f);
+	glTranslatef(x,y,z);
+
 	mesh.drawWithColors(lighting);
+
+	glPopMatrix();
 }

@@ -15,17 +15,25 @@
 
 class Model {
 public:
-	Model(const char*);
+	Model(const char*,float,float,float);
 	void loadMesh(const char*);
 	void computeLighting();
 	Vec3Df computeLighting(Vec3Df & vertexPos, Vec3Df & normal, unsigned int light, unsigned int index);
 	Vec3Df blinnPhongShading(Vec3Df &color, Vec3Df &normal);
 	Vec3Df lambertianLighting(Vec3Df &vertexPos,Vec3Df &normal, Vec3Df &color);
+	Vec3Df ambientLighting(Vec3Df &color);
 	void drawModel();
 	void move(float,float,float);
+	void rotate(float,float,float);
 	virtual ~Model();
 private:
 	Mesh mesh;
+	float x;
+	float y;
+	float z;
+	float rotX;
+	float rotY;
+	float rotZ;
 	std::vector<Vec3Df> lighting;
 	std::vector<Vec3Df> MeshMaterial;
 };

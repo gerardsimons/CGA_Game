@@ -100,6 +100,7 @@ void Mesh::drawSmooth(){
 
 void Mesh::drawWithColors(const std::vector<Vec3Df> & colors){
 
+
     glBegin(GL_TRIANGLES);
 
     for (int i=0;i<triangles.size();++i)
@@ -113,6 +114,7 @@ void Mesh::drawWithColors(const std::vector<Vec3Df> & colors){
 
     }
     glEnd();
+    glPopMatrix();
 }
 
 
