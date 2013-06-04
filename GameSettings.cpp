@@ -26,4 +26,8 @@ float GameSettings::MAX_RANGE = 4;
 
 float GameSettings::NEXT_FLOW_TIME = 1500000;
 
+std::vector<Vec3Df> GameSettings::LightPos;
+std::vector<Vec3Df> GameSettings::LightColor;
+Vec3Df GameSettings::CamPos;
+
 std::vector<GLuint> GameSettings::Texture;

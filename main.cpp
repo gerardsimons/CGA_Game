@@ -6,6 +6,7 @@
 #include <math.h>
 #include <assert.h>
 #include "traqueboule.h"
+#include "Model.h"
 
 #include "SpaceShip.h"
 #include "OpponentSpaceShip.h"
@@ -22,12 +23,14 @@
 
 //std::vector<SpaceShip>
 
-using namespace std;
 
 unsigned int W_fen = 1200;  // largeur fenetre (default: 800)
 unsigned int H_fen = 800;  // hauteur fenetre
 int zNear = 1;
 int zFar = 10;
+
+/* Model stuff! */
+
 
 // control modes
 enum DisplayModeType {GAME=1, CAMERA=2, LIGHT=3};
@@ -39,17 +42,15 @@ clock_t initTimer;
 
 float BackgroundColor[]={0,0,0};
 
-float LightPos[4] = {0,3,2,1};
-std::vector<Vec3Df> LightColor;
-
+//Later in the exercise, you can also modify and use a special color per light source.
 Vec3Df CamPos = Vec3Df(0.0f,0.0f,-4.0f);
+
 
 //vector<float> SurfaceVertices3f;
 
 Terrain *terrain;
+Model *boss;
 
-void createVertices(int,int,float);
-void drawSurface();
 void drawLight();
 
 //SpaceShip * s = new SpaceShip();
@@ -111,27 +112,26 @@ void keyboard(unsigned char key, int x, int y)
 			{
 						printf("Move CAM right \n");
 						printf("Campos old: %f \n",CamPos[0]);
-						CamPos[0] = CamPos[0]+0.1f;
-						printf("Campos new: %f \n",CamPos[0]);
+
 
 
 			}
 			if(key == 'a') // left
 			{
 						printf("Move CAM  left \n");
-						CamPos[0] = CamPos[0]-0.1f;
+						//CamPos[0] = CamPos[0]-0.1f;
 
 			}
 			if(key == 'w')	//up
 			{
 						printf("Move CAM  up \n");
-						CamPos[0] = CamPos[1]+0.1f;
+						//CamPos[0] = CamPos[1]+0.1f;
 
 			}
 			if(key == 's')	//down
 			{
 						printf("Move CAM  down \n");
-						CamPos[0] = CamPos[1]-0.1f;
+						//CamPos[0] = CamPos[1]-0.1f;
 
 			}
 			break;
@@ -147,27 +147,28 @@ void keyboard(unsigned char key, int x, int y)
 
 }
 
-
-
-
-
-/************************************************************
- * Appel des diff\E9rentes fonctions de dessin
-************************************************************/
-
-
-void dealWithUserInput(int x, int y)
+void initLights(int amount)
 {
+	/*
+	GameSettings::LightPos.resize(amount);
+	GameSettings::LightPos[0] = Vec3Df(0.0f,0.0f,0.0f);
+	//White
+	GameSettings::LightColor.resize(amount);
+	GameSettings::LightColor[0] = Vec3Df(1.0f,1.0f,1.0f);
+	*/
 
+	GameSettings::LightPos.push_back(Vec3Df(0,0,3));
+	GameSettings::LightColor.push_back(Vec3Df(1,1,1));
 }
+
 
 void draw( )
 {
 
 	//glutSolidSphere(1.0 ,10,10);
-	glLightfv(GL_LIGHT0,GL_POSITION,LightPos);
-	drawLight();
-	drawSurface();
+	//glLightfv(GL_LIGHT0,GL_POSITION,GameSettings::LIGHT_POS);
+	//drawLight();
+	//terrain->display();
 
 	// render player spaceship
 	playerSpaceShip.display();
@@ -179,7 +180,9 @@ void draw( )
 		opponents.at(i).display();
 	}
 
+	boss->drawModel();
 }
+
 
 void animate()
 {
@@ -370,24 +373,6 @@ void spaceShipSetUp()
 	//opponents.push_back( OpponentSpaceShip(2,1) );
 }
 
-
-void createTerrain(int xSize, int ySize, float surfaceSize)
-{
-	//12 vertices per loop
-	
-	//terrain = new Terrain(0,xSize,ySize,surfaceSize);
-	//Move to terrain class
-}
-
-void drawSurface()
-{
-	//printf("-------------------|| DRAW SURFACE ||-------------------\n");
-	//printf("Triangle %d\n",t/3);
-	//Moved to terrain
-	//terrain->display();
-	//printf("--------------------------------------------------------\n");
-}
-
 void display(void);
 void reshape(int w, int h);
 void keyboard(unsigned char key, int x, int y);
@@ -422,9 +407,14 @@ int main(int argc, char** argv)
     
     // Game Set Up
     spaceShipSetUp();
-    //createTerrain(10,10,1);
 
     initTextures();
+
+    initLights(1);
+
+    terrain = new Terrain(0,10,10,0.1f);
+
+    boss = new Model("DavidHeadCleanMax.obj");
 
     // set initial timer
     initTimer = clock();
@@ -512,6 +502,11 @@ void display(void)
     glutSwapBuffers();
 }
 
+
+
+
+
+
 //function that draws the light source as a sphere
 void drawLight()
 {
@@ -522,7 +517,8 @@ void drawLight()
 	//yellow sphere at light position
 	glColor3f(1,1,0);
 	glPushMatrix();
-	glTranslatef(LightPos[0], LightPos[1], LightPos[2]);
+	Vec3Df LightOne = GameSettings::LightPos[0];
+	glTranslatef(LightOne[0],LightOne[1],LightOne[2]);
 	glutSolidSphere(0.1,6,6);
 	glPopMatrix();
 

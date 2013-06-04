@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include "stdio.h"
 #include <vector>
+#include "Vec3D.h"
 
 class GameSettings {
 public:
@@ -25,6 +26,10 @@ public:
 	static float MAX_RANGE;
 
 	static float NEXT_FLOW_TIME;
+
+	static std::vector<Vec3Df> LightPos;
+	static std::vector<Vec3Df> LightColor;
+	static Vec3Df CamPos;
 
 	static std::vector<GLuint> Texture;
 
