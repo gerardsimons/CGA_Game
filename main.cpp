@@ -26,16 +26,15 @@ int zFar = 10;
 
 float BackgroundColor[]={0,0,0};
 
-float LightPos[4] = {0,3,2,1};
+float LightPos[4] = {0,3,0	,1};
 std::vector<Vec3Df> LightColor;
 
-Vec3Df CamPos = Vec3Df(0.0f,2.0f,-4.0f);
+Vec3Df CamPos = Vec3Df(-1.0f,2.0f,0.0f);
 
 //vector<float> SurfaceVertices3f;
 
 Terrain *terrain;
 
-void createVertices(int,int,float);
 void drawSurface();
 void drawLight();
 
@@ -136,7 +135,7 @@ void createTerrain(int xSize, int ySize, float surfaceSize)
 {
 	//12 vertices per loop
 	
-	terrain = new Terrain(xSize,ySize,surfaceSize);
+	terrain = new Terrain(0.3f,xSize,ySize,surfaceSize);
 	//Move to terrain class
 }
 
@@ -185,12 +184,12 @@ int main(int argc, char** argv)
     spaceShipSetUp();
 
 
-    createTerrain(10,10,1);
+    createTerrain(10,10,.1f);
     // cablage des callback
     glutReshapeFunc(reshape);
     glutKeyboardFunc(keyboard);
     glutDisplayFunc(display);
-    glutMouseFunc(tbMouseFunc);    // traqueboule utilise la souris
+    glutMouseFunc(tbMouseFunc);    // traqueboule utilise la sourisdddddddddddd
     glutMotionFunc(tbMotionFunc);  // traqueboule utilise la souris
     glutIdleFunc(idle);
 

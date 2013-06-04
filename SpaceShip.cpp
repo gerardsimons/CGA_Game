@@ -24,7 +24,7 @@ SpaceShip::~SpaceShip() {
 
 void SpaceShip::display(){
 
-	printf("drawing plane \n");
+
 
 	// get x
 	float x = getPositionX();

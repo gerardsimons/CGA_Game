@@ -1,6 +1,8 @@
 #include "terrain.h"
 #include <GL/glut.h>
 
+#define PI 3.14159265
+
 /*
  * SpaceShip.cpp
  *
@@ -8,165 +10,193 @@
  *      Author: Gerard Simons
  */
 
-Terrain::Terrain(int xSize, int zSize, float surfaceSize) {
-	// TODO Auto-generated constructor stub
+Terrain::Terrain(float yTop, int xSize, int zSize, float surfaceSize) {
 
 
-	int v1 = rand() % 3;
-	v1 = 1;
+	initTexture();
+	int newSize = static_cast<int>(xSize / surfaceSize * zSize / surfaceSize * 12);
+		printf("new size vertices array=%d\n",newSize);
+
 	int i = 0;
-	SurfaceVertices3f.resize(zSize * xSize * 12 * (1.0f / surfaceSize));
-	SurfaceNormals3f.resize(zSize * xSize * 12 * (1.0f / surfaceSize));
-	SurfaceColors3f.resize(zSize * xSize * 12);
-	for(float x = 0 ; x < xSize ; x += surfaceSize)
+
+	SurfaceVertices3f.resize(newSize);
+	SurfaceNormals3f.resize(newSize);
+	SurfaceColors3f.resize(newSize);
+	SurfaceTexCoords2f.resize(static_cast<int>(xSize / surfaceSize * zSize / surfaceSize * 12));
+	float zModifier = 0.3f;
+	float xModifier = 0.8f;
+
+	//Maximum value possible
+	yTop += zModifier * sin(.5 * PI) + xModifier * cos(0);
+	int texIndex = 0;
+	float xPeriod = 2 * PI / xModifier;
+	printf("xPeriod=%f\n",xPeriod);
+	for(float x = 0 ; x < xSize; x += surfaceSize)
 	{
-		int v2 = rand() % 10;
-		for(float z = 0 ; z < zSize ; z += surfaceSize)
+		for(float z = 0 ; z < zSize; z += surfaceSize)
 		{
-
-			SurfaceVertices3f[i]=x;
-			SurfaceVertices3f[i+1]=z;
-			SurfaceVertices3f[i+2]=cos(x) + sin(z);
-
-			SurfaceVertices3f[i+3]=x+surfaceSize;
-			SurfaceVertices3f[i+4]=z;
-			SurfaceVertices3f[i+5]=cos(x+surfaceSize) + sin(z);
-
-			SurfaceVertices3f[i+6]=x+surfaceSize;
-			SurfaceVertices3f[i+7]=z+surfaceSize;
-			SurfaceVertices3f[i+8]=cos(x+surfaceSize) + sin(z+surfaceSize);
-
-			SurfaceVertices3f[i+9]=x;
-			SurfaceVertices3f[i+10]=z+surfaceSize;
-			SurfaceVertices3f[i+11]=cos(x) + sin(z+surfaceSize);
-
-			//define normals
-			SurfaceNormals3f[i]=cos(x) / surfaceSize;    	//x
-			SurfaceNormals3f[i+1]=0;	//y
-			SurfaceNormals3f[i+2]=sin(x) / surfaceSize;		//z
-
-			SurfaceNormals3f[i+3]=cos(x) / surfaceSize;    	//x
-			SurfaceNormals3f[i+4]=0;
-			SurfaceNormals3f[i+5]=sin(x) / surfaceSize;		//z
-
-			SurfaceNormals3f[i+6]=cos(x) / surfaceSize;    	//x
-			SurfaceNormals3f[i+7]=0;
-			SurfaceNormals3f[i+8]=sin(x) / surfaceSize;		//z
-
-			SurfaceNormals3f[i+9]=cos(x) / surfaceSize;    	//x
-			SurfaceNormals3f[i+10]=0;
-			SurfaceNormals3f[i+11]=sin(x) / surfaceSize;	//z
-
-			/* Colors
-			SurfaceColors3f[i+0]=0.05;
-			SurfaceColors3f[i+1]=1;
-			SurfaceColors3f[i+2]=cos(x);
-
-			SurfaceColors3f[i+3]=cos(x+surfaceSize);
-			SurfaceColors3f[i+4]=1;
-			SurfaceColors3f[i+5]=cos(x+surfaceSize);
-
-			SurfaceColors3f[i+6]=cos(x+surfaceSize);
-			SurfaceColors3f[i+7]=1;
-			SurfaceColors3f[i+8]=cos(x+surfaceSize);
-
-			SurfaceColors3f[i+9]=cos(x);
-			SurfaceColors3f[i+10]=1;
-			SurfaceColors3f[i+11]=cos(x);
-			*/
-			/*
-			SurfaceVertices3f[i]=x;
-			SurfaceVertices3f[i+1]=cos(x);// + sin(z * v1);
-			SurfaceVertices3f[i+2]=z;
+			SurfaceVertices3f[i]=x;					//x
+			SurfaceVertices3f[i+1]=xModifier*cos(x) + zModifier*sin(z)-yTop; //y
+			SurfaceVertices3f[i+2]=z;				//z
 
 			SurfaceVertices3f[i+3]=x+surfaceSize;
-			SurfaceVertices3f[i+4]=cos((x+surfaceSize));// + sin(z * v1);
+			SurfaceVertices3f[i+4]=xModifier*cos(x+surfaceSize) + zModifier*sin(z)-yTop;
 			SurfaceVertices3f[i+5]=z;
 
 			SurfaceVertices3f[i+6]=x+surfaceSize;
-			SurfaceVertices3f[i+7]=cos((x+surfaceSize) * v1);// + sin((z+surfaceSize)*v1);
+			SurfaceVertices3f[i+7]=xModifier*cos(x+surfaceSize) + zModifier*sin(z+surfaceSize)-yTop;
 			SurfaceVertices3f[i+8]=z+surfaceSize;
 
 			SurfaceVertices3f[i+9]=x;
-			SurfaceVertices3f[i+10]=cos(x * v1);// + sin((z + surfaceSize) * v1);
-			SurfaceVertices3f[i+11]=z + surfaceSize;
+			SurfaceVertices3f[i+10]=xModifier*cos(x) + zModifier*sin(z+surfaceSize)-yTop;
+			SurfaceVertices3f[i+11]=z+surfaceSize;
+
+			/*SurfaceTexCoords2f[texIndex]=x;
+			SurfaceTexCoords2f[texIndex+1]=xModifier*cos(x) + zModifier*sin(z)-yTop;;
+
+			SurfaceTexCoords2f[texIndex+2]=x+surfaceSize;
+			SurfaceTexCoords2f[texIndex+3]=xModifier*cos(x+surfaceSize) + zModifier*sin(z)-yTop;;
+
+			SurfaceTexCoords2f[texIndex+4]=x+surfaceSize;
+			SurfaceTexCoords2f[texIndex+5]=xModifier*cos(x+surfaceSize) + zModifier*sin(z+surfaceSize)-yTop;
+
+			SurfaceTexCoords2f[texIndex+6]=x;
+			SurfaceTexCoords2f[texIndex+7]=xModifier*cos(x+surfaceSize) + zModifier*sin(z+surfaceSize)-yTop;*/
 
 
-			SurfaceNormals3f[i]=cos(x) / surfaceSize;    	//x
-			SurfaceNormals3f[i+1]=sin(x) / surfaceSize;	;	//y
-			SurfaceNormals3f[i+2]=0;	//z
+			SurfaceTexCoords2f[texIndex]=x;
+			SurfaceTexCoords2f[texIndex+1]=z;
 
-			SurfaceNormals3f[i+3]=cos(x) / surfaceSize;    	//x
-			SurfaceNormals3f[i+4]=sin(x) / surfaceSize;
-			SurfaceNormals3f[i+5]=0;		//z
+			SurfaceTexCoords2f[texIndex+2]=x+surfaceSize;
+			SurfaceTexCoords2f[texIndex+3]=z;
 
-			SurfaceNormals3f[i+6]=cos(x) / surfaceSize;    	//x
-			SurfaceNormals3f[i+7]=sin(x) / surfaceSize;
-			SurfaceNormals3f[i+8]=0;		//z
+			SurfaceTexCoords2f[texIndex+4]=x+surfaceSize;
+			SurfaceTexCoords2f[texIndex+5]=z+surfaceSize;
 
-			SurfaceNormals3f[i+9]=cos(x) / surfaceSize;    	//x
-			SurfaceNormals3f[i+10]=sin(x) / surfaceSize;
-			SurfaceNormals3f[i+11]=0;	//z
+			SurfaceTexCoords2f[texIndex+6]=x;
+			SurfaceTexCoords2f[texIndex+7]=z+surfaceSize;
 
 
-			SurfaceNormals3f[i]=0;    	//x
-			SurfaceNormals3f[i+1]=sin(x) / surfaceSize;	;	//y
-			SurfaceNormals3f[i+2]=cos(x) / surfaceSize;	//z
 
-			SurfaceNormals3f[i+3]=0;    	//x
-			SurfaceNormals3f[i+4]=sin(x) / surfaceSize;
-			SurfaceNormals3f[i+5]=cos(x) / surfaceSize;		//z
+			SurfaceColors3f[i+0]=0.05;
+			SurfaceColors3f[i+1]=xModifier*cos(x) + zModifier*sin(z)-yTop;;
+			SurfaceColors3f[i+2]=cos(x);
 
-			SurfaceNormals3f[i+6]=0;    	//x
-			SurfaceNormals3f[i+7]=sin(x) / surfaceSize;
-			SurfaceNormals3f[i+8]=cos(x) / surfaceSize;		//z
+			SurfaceColors3f[i+3]=cos(x+surfaceSize);
+			SurfaceColors3f[i+4]=xModifier*cos(x) + zModifier*sin(z)-yTop;;
+			SurfaceColors3f[i+5]=cos(x+surfaceSize);
 
-			SurfaceNormals3f[i+9]=0;    	//x
-			SurfaceNormals3f[i+10]=sin(x) / surfaceSize;
-			SurfaceNormals3f[i+11]=cos(x) / surfaceSize;	//z
+			SurfaceColors3f[i+6]=cos(x+surfaceSize);
+			SurfaceColors3f[i+7]=xModifier*cos(x) + zModifier*sin(z)-yTop;;
+			SurfaceColors3f[i+8]=cos(x+surfaceSize);
 
-			/*
-			SurfaceVertices3f[i]=x;
-			SurfaceVertices3f[i+1]=y;
-			SurfaceVertices3f[i+2]=cos(x);
+			SurfaceColors3f[i+9]=cos(x);
+			SurfaceColors3f[i+10]=xModifier*cos(x) + zModifier*sin(z)-yTop;;
+			SurfaceColors3f[i+11]=cos(x);
 
-			SurfaceVertices3f[i+3]=x+surfaceSize;
-			SurfaceVertices3f[i+4]=y;
-			SurfaceVertices3f[i+5]=cos(x+surfaceSize);
 
-			SurfaceVertices3f[i+6]=x+surfaceSize;
-			SurfaceVertices3f[i+7]=y+surfaceSize;
-			SurfaceVertices3f[i+8]=cos(x+surfaceSize);
+			//v1 = t2 - t1
+			//v2 = t3 - t1
 
-			SurfaceVertices3f[i+9]=x;
-			SurfaceVertices3f[i+10]=y+surfaceSize;
-			SurfaceVertices3f[i+11]=cos(x);
 
-			//define normals
-			SurfaceNormals3f[i]=cos(x) / surfaceSize;    	//x
-			SurfaceNormals3f[i+1]=0;	//y
-			SurfaceNormals3f[i+2]=sin(x) / surfaceSize;		//z
+			Vec3Df v1 = Vec3Df(SurfaceVertices3f[i] - SurfaceVertices3f[i+3],SurfaceVertices3f[i+1] - SurfaceVertices3f[i+4],SurfaceVertices3f[i+2] - SurfaceVertices3f[i+5]);
+			Vec3Df v2 = Vec3Df(SurfaceVertices3f[i+6] - SurfaceVertices3f[i+3],SurfaceVertices3f[i+7] - SurfaceVertices3f[i+4],SurfaceVertices3f[i+8] - SurfaceVertices3f[i+5]);
 
-			SurfaceNormals3f[i+3]=cos(x) / surfaceSize;    	//x
-			SurfaceNormals3f[i+4]=0;
-			SurfaceNormals3f[i+5]=sin(x) / surfaceSize;		//z
+			Vec3Df normal = Vec3Df::crossProduct(v1,v2);
 
-			SurfaceNormals3f[i+6]=cos(x) / surfaceSize;    	//x
-			SurfaceNormals3f[i+7]=0;
-			SurfaceNormals3f[i+8]=sin(x) / surfaceSize;		//z
 
-			SurfaceNormals3f[i+9]=cos(x) / surfaceSize;    	//x
-			SurfaceNormals3f[i+10]=0;
-			SurfaceNormals3f[i+11]=sin(x) / surfaceSize;	//z
-			*/
 
+
+			SurfaceNormals3f[i]=normal[0];    	//x
+			SurfaceNormals3f[i+1]=normal[1];	//y
+			SurfaceNormals3f[i+2]=normal[2];		//z
+
+			SurfaceNormals3f[i+3]=normal[0];    	//x
+			SurfaceNormals3f[i+4]=normal[1];	//y
+			SurfaceNormals3f[i+5]=normal[2];		//z
+
+			SurfaceNormals3f[i+6]=normal[0];    	//x
+			SurfaceNormals3f[i+7]=normal[1];	//y
+			SurfaceNormals3f[i+8]=normal[2];		//z
+
+			SurfaceNormals3f[i+9]=normal[0];    	//x
+			SurfaceNormals3f[i+10]=normal[1];	//y
+			SurfaceNormals3f[i+11]=normal[2];		//z
 
 			i += 12;
-
+			texIndex += 8;
 		}
 
 	}
+
+
+	//printf("i=%d\n",i);
+
 }
+
+//this function loads the textures in the GPU memory
+//the function is called once when the program starts
+void Terrain::initTexture()
+{
+	Texture.resize(3);
+	Texture[0]=0;
+	Texture[1]=0;
+	Texture[2]=0;
+
+
+	PPMImage image("sand.ppm");
+	glGenTextures(1, &Texture[0]);
+	glBindTexture(GL_TEXTURE_2D, Texture[0]);
+	gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, image.sizeX, image.sizeY,
+		GL_RGB, GL_UNSIGNED_BYTE, image.data);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+
+	PPMImage bricks("brick.ppm");
+	glGenTextures(1, &Texture[1]);
+	glBindTexture(GL_TEXTURE_2D, Texture[1]);
+	gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, bricks.sizeX, bricks.sizeY, GL_RGB, GL_UNSIGNED_BYTE, bricks.data);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+}
+
+void Terrain::drawQuad()
+{
+	glPushAttrib(GL_ALL_ATTRIB_BITS);
+	glColor3f(1,1,1);
+	glNormal3f(0,0,1);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,  GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,  GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,  GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,  GL_LINEAR);
+	float texCoord = 0.0f;
+
+	glBegin(GL_QUADS);
+
+		float texSize = 0.5;
+
+		glTexCoord2f(texCoord,texCoord+texSize);
+		//RED
+		//glColor3f(1.0,0.0,0.0);
+		glVertex2f(0,0);
+
+		glTexCoord2f(texCoord+texSize,texCoord+texSize);
+		//glColor3f(0.0,1.0,0.0);
+		glVertex2f(1,0);
+
+		glTexCoord2f(texCoord+texSize,texCoord);
+		//glColor3f(0.0,0.0,1.0);
+		glVertex2f(1,1);
+
+		glTexCoord2f(texCoord,texCoord);
+		//glColor3f(1.0,1.0,0.0);
+		glVertex2f(0,1);
+	glEnd();
+
+	glPopAttrib();
+}
+
 
 Terrain::~Terrain() {
 	// TODO Auto-generated destructor stub
@@ -174,22 +204,30 @@ Terrain::~Terrain() {
 
 void Terrain::display()
 {
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, Texture[0]);
 
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,  GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,  GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,  GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,  GL_LINEAR);
 	glBegin(GL_QUADS);
 	//printf("SurfaceVertices3f.size() = %d\n",SurfaceVertices3f.size());
+	int texIndex = 0;
 	for (int vIndex = 0 ; vIndex < SurfaceVertices3f.size() ; vIndex += 3)
 	{
-		//glTexCoord2fv(&(SurfaceTexCoords2f[2*vIndex]));
-		//glNormal3fv(&(SurfaceNormals3f[3*vIndex]));
-		//glColor3fv(&(SurfaceColors3f[3*vIndex]));
-		//glColor3fv(&(SurfaceColors3f[3*vIndex]));
 		glColor3f(0.9,0.85,0.35);
 		float *vertex = &(SurfaceVertices3f[vIndex]);
 		float *normal = &(SurfaceNormals3f[vIndex]);
+		float *tex = &(SurfaceTexCoords2f[texIndex]);
+		float *color = &(SurfaceTexCoords2f[texIndex]);
 		//printf("Drawing vertex #%d = (%f,%f,%f)\n",i,&vertex,&(vertex+1),&(vertex+2));
-
+		glTexCoord2f(*tex,*(tex+1));
 		glNormal3f(*normal,*(normal+1),*(normal+2));
 		glVertex3f(*vertex,*(vertex+1),*(vertex+2));
+		texIndex += 2;
 	}
 	glEnd();
+	glBindTexture(GL_TEXTURE_2D,0);
+	glDisable(GL_TEXTURE_2D);
 }
