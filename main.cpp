@@ -73,6 +73,7 @@ void keyboard(unsigned char key, int x, int y)
 	{
 		case GAME:
 		{
+
 			if(key == 'd') // right
 			{
 						printf("Move right \n");
@@ -315,10 +316,12 @@ void opponentFlow()
 void initTextures()
 {
 
-		GameSettings::Texture.resize(3);
+		GameSettings::Texture.resize(4);
 		GameSettings::Texture[0]=0;
 		GameSettings::Texture[1]=0;
 		GameSettings::Texture[2]=0;
+		GameSettings::Texture[3]=0;
+
 		PPMImage image("ufo.ppm");
 		glGenTextures(1, &GameSettings::Texture[0]);
 		glBindTexture(GL_TEXTURE_2D, GameSettings::Texture[0]);
@@ -339,6 +342,13 @@ void initTextures()
 		gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, image3.sizeX, image3.sizeY,
 			GL_RGB, GL_UNSIGNED_BYTE, image3.data);
 		glBindTexture(GL_TEXTURE_2D, 1);
+
+		PPMImage imageSand("sand.ppm");
+		glGenTextures(1, &GameSettings::GameSettings::Texture[3]);
+		glBindTexture(GL_TEXTURE_2D, GameSettings::Texture[3]);
+		gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, imageSand.sizeX, imageSand.sizeY,
+			GL_RGB, GL_UNSIGNED_BYTE, imageSand.data);
+		glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void idle()
@@ -365,7 +375,7 @@ void createTerrain(int xSize, int ySize, float surfaceSize)
 {
 	//12 vertices per loop
 	
-	terrain = new Terrain(xSize,ySize,surfaceSize);
+	//terrain = new Terrain(0,xSize,ySize,surfaceSize);
 	//Move to terrain class
 }
 
@@ -374,7 +384,7 @@ void drawSurface()
 	//printf("-------------------|| DRAW SURFACE ||-------------------\n");
 	//printf("Triangle %d\n",t/3);
 	//Moved to terrain
-	terrain->display();
+	//terrain->display();
 	//printf("--------------------------------------------------------\n");
 }
 
@@ -412,7 +422,7 @@ int main(int argc, char** argv)
     
     // Game Set Up
     spaceShipSetUp();
-    createTerrain(10,10,1);
+    //createTerrain(10,10,1);
 
     initTextures();
 

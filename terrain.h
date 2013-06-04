@@ -9,12 +9,13 @@
 #include "stdio.h"
 #include "Vec3D.h"
 #include <vector>
+#include "loadppm.h"
 
 
-/* SpaceShip.h
+/* Terrain.h
  *
  *  Created on: Jun 3, 2013
- *      Author: nathanmol
+ *      Author: gerardsimons
  */
 
 
@@ -23,11 +24,16 @@ private:
 	std::vector<float> SurfaceVertices3f;
 	std::vector<float> SurfaceNormals3f;
 	std::vector<float> SurfaceColors3f;
+	std::vector<float> SurfaceTexCoords2f;
+	std::vector<GLuint> Texture;
 
 public:
-	Terrain(int,int,float);
+	void initTexture();
+	Terrain(float,int,int,float);
+	void initSurfaceMesh(int,int);
 	virtual ~Terrain();
 	void display();
+	void drawQuad();
 };
 
 #endif /* TERRAIN_H */
