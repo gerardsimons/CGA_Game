@@ -1,5 +1,6 @@
 #include "terrain.h"
 #include <GL/glut.h>
+#include "GameSettings.h"
 
 #define PI 3.14159265
 
@@ -138,26 +139,23 @@ Terrain::Terrain(float yTop, int xSize, int zSize, float surfaceSize) {
 //the function is called once when the program starts
 void Terrain::initTexture()
 {
-	Texture.resize(3);
-	Texture[0]=0;
-	Texture[1]=0;
-	Texture[2]=0;
 
 
-	PPMImage image("sand.ppm");
-	glGenTextures(1, &Texture[0]);
-	glBindTexture(GL_TEXTURE_2D, Texture[0]);
-	gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, image.sizeX, image.sizeY,
-		GL_RGB, GL_UNSIGNED_BYTE, image.data);
+
+	PPMImage imageSand("sand.ppm");
+	glGenTextures(1, &GameSettings::GameSettings::Texture[3]);
+	glBindTexture(GL_TEXTURE_2D, GameSettings::Texture[3]);
+	gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, imageSand.sizeX, imageSand.sizeY,
+		GL_RGB, GL_UNSIGNED_BYTE, imageSand.data);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-
+/*
 	PPMImage bricks("brick.ppm");
-	glGenTextures(1, &Texture[1]);
-	glBindTexture(GL_TEXTURE_2D, Texture[1]);
+	glGenTextures(1, &GameSettings::GameSettings::Texture[4]);
+	glBindTexture(GL_TEXTURE_2D, GameSettings::Texture[4]);
 	gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, bricks.sizeX, bricks.sizeY, GL_RGB, GL_UNSIGNED_BYTE, bricks.data);
 	glBindTexture(GL_TEXTURE_2D, 0);
-
+*/
 }
 
 void Terrain::drawQuad()

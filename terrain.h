@@ -12,10 +12,10 @@
 #include "loadppm.h"
 
 
-/* SpaceShip.h
+/* Terrain.h
  *
  *  Created on: Jun 3, 2013
- *      Author: nathanmol
+ *      Author: gerardsimons
  */
 
 
