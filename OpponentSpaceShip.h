@@ -16,6 +16,7 @@ public:
 	OpponentSpaceShip(float x, float y);
 	virtual ~OpponentSpaceShip();
 	void display();
+	void shoot();
 };
 
 #endif /* OPPONENTSPACESHIP_H_ */

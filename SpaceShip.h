@@ -12,6 +12,8 @@
 #include "Vec3D.h"
 #include "Bullet.h"
 
+#include <GL/glut.h>
+
 
 /* SpaceShip.h
  *
@@ -25,20 +27,26 @@ protected:
 	Vec3Df position;
 	float direction;
 	float speed;
-	std::vector<Bullet> bullitsShot;
+	std::vector<Bullet> * bullitsShot;
 
 public:
 	SpaceShip();
 	SpaceShip(float x, float y);
 	virtual ~SpaceShip();
-	void display();
+	virtual void display();
 	void updateX(float x);
 	void updateY(float y);
 	float getPositionX();
 	float getPositionY();
 	Vec3Df getPosition();
 
+	std::vector<Bullet> * getBulletList();
+
+	void removeBullet( int index );
+
 	void shoot();
+
+	bool hasCollision( SpaceShip s );
 };
 
 #endif /* SPACESHIP_H */
