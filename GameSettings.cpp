@@ -24,6 +24,7 @@ float GameSettings::OPPONENT_SPEED = .005;
 float GameSettings::BULLET_SPEED = 0.02;
 float GameSettings::ASSISENT_RADIUS = .4;
 
+int GameSettings::NUMBER_OF_FLOWS = 6;
 
 float GameSettings::MAX_RANGE = 4;
 

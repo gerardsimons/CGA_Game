@@ -72,7 +72,8 @@ void OpponentSpaceShip::display() {
 }
 
 void OpponentSpaceShip::shoot(){
-	Bullet b = Bullet(getPositionX(), getPositionY());
+
+	Bullet b = Bullet(getPositionX(), getPositionY(), -1);
 	SpaceShip::bullitsShot->push_back( b );
 	//printf("I have shot %d times \n", bullitsShot.size());
 

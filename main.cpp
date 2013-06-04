@@ -37,6 +37,10 @@ DisplayModeType displayMode = GAME;
 
 // timer
 clock_t initTimer;
+clock_t shootTimer;
+
+// current FLOW
+int CUR_FLOW = 3;
 
 float BackgroundColor[]={0,0,0};
 
@@ -251,8 +255,8 @@ void updateCamera()
 void animate()
 {
 	boss->rotate(0.0f,0.7f,0.0f);
-	// TODO: bullets update here instead of in the spaceShip function
-	// SOLVED: referenced
+	// TODO: doesnt work yet
+	//boss->move(-1.0f, 0.0f, 0.0f);
 
 	// animate player's bullets
 	for(unsigned int i = 0; i< playerSpaceShip.getBulletList()->size(); i++)
@@ -277,10 +281,9 @@ void animate()
 	// TODO: currently in the Assistentclass
 
 
-
+	// BUG: multiple planes on same position --> bullit collision -> error
 	std::vector< int > dumpBulList;
 	std::vector< int > dumpOppList;
-
 	/*
 	 * BULLET --> OPPONENT // ASSISTENT UPDATE
 	 */
@@ -376,19 +379,50 @@ void animate()
 
 void opponentFlow()
 {
-
 	clock_t currentTimer = clock();
-	//printf("t waiting: %f \n", ((float)currentTimer-(float)initTimer));
-	if( ( (float)currentTimer - (float)initTimer ) > GameSettings::NEXT_FLOW_TIME )
+	if( opponents.size() <= 1 )
 	{
-		// TODO introduce randomly with random directions...
-		initTimer = currentTimer;
-
-		for(unsigned int i = 0; i<3; i++)
+		//printf("t waiting: %f \n", ((float)currentTimer-(float)initTimer));
+		if( ( (float)currentTimer - (float)initTimer ) > GameSettings::NEXT_FLOW_TIME/5 )
 		{
-			OpponentSpaceShip oppShip = OpponentSpaceShip(5,float(i/2.0f));
-			opponents.push_back( oppShip );
-			oppShip.shoot();
+			// TODO introduce randomly with random directions...
+			initTimer = currentTimer;
+
+			if( CUR_FLOW >= GameSettings::NUMBER_OF_FLOWS )
+			{
+				// TODO eindbaas
+				//OpponentSpaceShip oppShip = OpponentSpaceShip(4,1.0f);
+				//opponents.push_back( oppShip );
+			}
+			else
+			{
+				printf("CUR_FLOW: %i \n", CUR_FLOW);
+				float max = CUR_FLOW;
+				if(CUR_FLOW > 4) { max = 4; }
+				float incrX = 0.0f;
+
+				// flow
+				for( signed int i = 1; i<=CUR_FLOW; i++ )
+				{
+					incrX = 1.0f*floor(i/ (max+.05));
+					int j = i % ((int)max);
+					printf("j: %i \n", j);
+					OpponentSpaceShip oppShip = OpponentSpaceShip(4+incrX, float( (j/max )*1.5 ) );
+					opponents.push_back( oppShip );
+					//oppShip.shoot();
+					clock_t shootTimer = clock();
+				}
+
+			}
+			CUR_FLOW++;
+		}
+	}
+	else if( ( (float)currentTimer - (float)shootTimer ) > GameSettings::NEXT_FLOW_TIME )
+	{
+		shootTimer = currentTimer;
+		for(unsigned int i = 0; i<opponents.size(); i++)
+		{
+			opponents.at(i).shoot();
 		}
 	}
 }
@@ -417,8 +451,6 @@ void initTextures()
 		gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, image.sizeX, image.sizeY,
 			GL_RGB, GL_UNSIGNED_BYTE, image.data);
 		glBindTexture(GL_TEXTURE_2D, 0);
-
-		printf("ufo size: %i %i \n", image.sizeX, image.sizeY);
 
 		PPMImage image2("ufo_opp.ppm");
 		glGenTextures(1, &GameSettings::Texture[1]);
@@ -453,11 +485,6 @@ void spaceShipSetUp()
 	// init player spaceship
 	playerSpaceShip = SpaceShip(-1,0);
 
-
-	// TODO: using opponentFlow()
-	//opponents.push_back( OpponentSpaceShip(2,0) );
-	//opponents.push_back( OpponentSpaceShip(2,.5) );
-	//opponents.push_back( OpponentSpaceShip(2,1) );
 }
 
 void display(void);
@@ -493,7 +520,8 @@ int main(int argc, char** argv)
 
     initTextures();
 
-    boss = new Model("ufo.obj",0,0,0);
+    // TODO: initial position doesnt work yet...
+    boss = new Model("ufo_v3.obj",0,1,5);
 
     // set initial timer
     initTimer = clock();

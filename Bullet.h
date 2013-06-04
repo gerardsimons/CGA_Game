@@ -23,9 +23,10 @@ class Bullet {
 private:
 	float x;
 	float y;
+	signed int direction;
 public:
 	Bullet();
-	Bullet(float x, float y);
+	Bullet(float x, float y, signed int dir);
 	virtual ~Bullet();
 	void display();
 	void updateX(float x);
