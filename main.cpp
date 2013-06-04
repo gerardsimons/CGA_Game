@@ -151,6 +151,37 @@ void keyboard(unsigned char key, int x, int y)
 						GameSettings::updateCamera(0.0f,0.0f,-0.1f);
 
 			}
+			if(key == 'h') //xRot
+			{
+
+				GameSettings::updateCameraRot(1.0f,0.0f,0.0f);
+			}
+			if(key == 'j')
+			{
+
+				GameSettings::updateCameraRot(-1.0f,0.0f,0.0f);
+
+			}
+			if(key == 'i') //yRot
+			{
+
+				GameSettings::updateCameraRot(0.0f,1.0f,0.0f);
+			}
+			if(key == 'k') // left
+			{
+				GameSettings::updateCameraRot(0.0f,-1.0f,0.0f);
+
+			}
+			if(key == 'o') // right
+			{
+				GameSettings::updateCameraRot(0.0f,0.0f,1.0f);
+			}
+			if(key == 'l') // left
+			{
+
+				GameSettings::updateCameraRot(0.0f,0.0f,0.1f);
+
+			}
 			updateCamera();
 			break;
 
@@ -181,15 +212,7 @@ void dealWithUserInput(int x, int y)
 
 void draw( )
 {
-
-	//glutSolidSphere(1.0 ,10,10);
-	//glLightfv(GL_LIGHT0,GL_POSITION,LightPos);
-
-
-	//updateCamera();
 	drawLights();
-
-
 	// render player spaceship
 	playerSpaceShip.display();
 
@@ -213,28 +236,21 @@ void draw( )
  */
 void updateCamera()
 {
-	/*
-	glMatrixMode(GL_MODELVIEW);
-	Vec3Df CamPos = GameSettings::CamPos;
-
-	gluLookAt(10,10,10,0,0,0,0,1,0);
-	*/
     glMatrixMode( GL_MODELVIEW );
     glLoadIdentity();
-
-    // set up camera
-    //glRotatef( 0, 1, 0, 0 );
-    //glRotatef( 1, 0, 0, 0);
     Vec3Df CamPos = GameSettings::CamPos;
+    Vec3Df CamRot = GameSettings::CamRot;
     printf("CamPos=(%f,%f,%f)\n",CamPos[0],CamPos[1],CamPos[2]);
     glTranslatef( CamPos[0], CamPos[1],CamPos[2]);
+    //xRot
+    glRotatef(CamRot[0],1,0,0);
+    glRotatef(CamRot[1],0,1,0);
+    glRotatef(CamRot[2],0,0,1);
 }
 
 void animate()
 {
-
-	boss->move(0.1f,0.1f,0.1f);
-	boss->rotate(0.01f,0.01f,0.01f);
+	boss->rotate(0.0f,0.7f,0.0f);
 	// TODO: bullets update here instead of in the spaceShip function
 	// SOLVED: referenced
 
@@ -379,11 +395,11 @@ void opponentFlow()
 
 void initLights()
 {
-	GameSettings::LightPos.push_back(Vec3Df(0,2,2));
-	GameSettings::LightPos.push_back(Vec3Df(0,2,-2));
+	GameSettings::LightPos.push_back(Vec3Df(0,3,2));
+	GameSettings::LightPos.push_back(Vec3Df(0,3,-2));
 
-	GameSettings::LightColor.push_back(Vec3Df(1,1,1));
-	GameSettings::LightColor.push_back(Vec3Df(1,1,1));
+	GameSettings::LightColor.push_back(Vec3Df(1,0,0));
+	GameSettings::LightColor.push_back(Vec3Df(0,1,0));
 }
 
 void initTextures()
@@ -456,8 +472,6 @@ int main(int argc, char** argv)
 {
     glutInit (&argc, argv);
 
-    updateCamera();
-
     // couches du framebuffer utilisees par l'application
     glutInitDisplayMode( GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH );
 
@@ -467,10 +481,6 @@ int main(int argc, char** argv)
     glutCreateWindow(argv[0]);	
 
     updateCamera();
-
-    //Traqueboule stuff
-    //tbInitTransform();     // initialisation du point de vue
-    //tbHelp();                      // affiche l'aide sur la traqueboule
 
     glEnable(GL_COLOR_MATERIAL);
     glEnable(GL_NORMALIZE);
@@ -489,14 +499,12 @@ int main(int argc, char** argv)
     initTimer = clock();
 
 
-
-
     // cablage des callback
     glutReshapeFunc(reshape);
     glutKeyboardFunc(keyboard);
     glutDisplayFunc(display);
-    //glutMouseFunc(tbMouseFunc);    // traqueboule utilise la souris
-    //glutMotionFunc(tbMotionFunc);  // traqueboule utilise la souris
+    glutMouseFunc(tbMouseFunc);    // traqueboule utilise la souris
+    glutMotionFunc(tbMotionFunc);  // traqueboule utilise la souris
     glutIdleFunc(idle);
 
     initLights();
@@ -505,6 +513,8 @@ int main(int argc, char** argv)
         glEnable( GL_LIGHT0 );
         glEnable(GL_COLOR_MATERIAL);
         glEnable(GL_NORMALIZE);
+
+
 
 
     // Details sur le mode de trac\E9
@@ -532,14 +542,15 @@ void drawCoordSystem(float length=1)
 	glDisable(GL_LIGHTING);
 	//draw axes
 	glBegin(GL_LINES);
+		//Red is x
 		glColor3f(1,0,0);
 		glVertex3f(0,0,0);
 		glVertex3f(length,0,0);
-
+		//green is y
 		glColor3f(0,1,0);
 		glVertex3f(0,0,0);
 		glVertex3f(0,length,0);
-
+		//blue is z
 		glColor3f(0,0,1);
 		glVertex3f(0,0,0);
 		glVertex3f(0,0,length);
@@ -559,8 +570,10 @@ void display(void)
 {
     glClear( GL_COLOR_BUFFER_BIT  | GL_DEPTH_BUFFER_BIT); // la couleur et le z
 
-
+    /*
+    glLoadIdentity();  // repere camera
     tbVisuTransform(); // origine et orientation de la scene
+    */
 
     drawCoordSystem();
 
@@ -584,8 +597,9 @@ void drawLights()
 	for(int i = 0 ; i < GameSettings::LightPos.size() ; i++)
 	{
 		Vec3Df LightPos = GameSettings::LightPos[i];
+		Vec3Df LightColor = GameSettings::LightColor[i];
 		//yellow sphere at light position
-		glColor3f(1,1,0);
+		glColor3f(LightColor[0],LightColor[1],LightColor[2]);
 		glPushMatrix();
 		glTranslatef(LightPos[0], LightPos[1], LightPos[2]);
 		glutSolidSphere(0.1,6,6);
@@ -603,7 +617,7 @@ void reshape(int w, int h)
     glLoadIdentity();
     gluPerspective (50, (float)w/h, zNear, zFar);
 
-
+    glMatrixMode(GL_MODELVIEW);
     //updateCamera();
 }
 

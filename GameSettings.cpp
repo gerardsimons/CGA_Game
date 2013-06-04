@@ -38,12 +38,20 @@ float GameSettings::PI = 22/7;
 std::vector<Vec3Df> GameSettings::LightPos;
 std::vector<Vec3Df> GameSettings::LightColor;
 Vec3Df GameSettings::CamPos = Vec3Df(-1.2,-0.4,-5);
+Vec3Df GameSettings::CamRot = Vec3Df(0,0,0);
 
 void GameSettings::updateCamera(float xDelta, float yDelta, float zDelta)
 {
 	CamPos[0] += xDelta;
 	CamPos[1] += yDelta;
 	CamPos[2] += zDelta;
+}
+
+void GameSettings::updateCameraRot(float xDelta, float yDelta, float zDelta)
+{
+	CamRot[0] += xDelta;
+	CamRot[1] += yDelta;
+	CamRot[2] += zDelta;
 }
 
 std::vector<GLuint> GameSettings::Texture;

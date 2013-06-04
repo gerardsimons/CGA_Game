@@ -31,6 +31,7 @@ public:
 
 	static std::vector<Vec3Df> LightPos;
 	static std::vector<Vec3Df> LightColor;
+	static Vec3Df CamRot;
 	static Vec3Df CamPos;
 
 	static std::vector<GLuint> Texture;
@@ -38,6 +39,7 @@ public:
 	static float PI;
 
 	static void updateCamera(float xDelta, float yDelta, float zDelta);
+	static void updateCameraRot(float xDelta, float yDelta, float zDelta);
 
 	GameSettings();
 	virtual ~GameSettings();
