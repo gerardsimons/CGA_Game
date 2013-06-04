@@ -19,19 +19,25 @@ class GameSettings {
 public:
 	static float GAME_SPEED;
 	static float AIRPLANE_SIZE[];
+	static float ASSISTENT_SIZE[];
 	static float BULLET_SIZE[];
 	static float OPPONENT_SPEED;
 	static float BULLET_SPEED;
+	static float ASSISENT_RADIUS;
 
 	static float MAX_RANGE;
 
 	static float NEXT_FLOW_TIME;
+
+
 
 	static std::vector<Vec3Df> LightPos;
 	static std::vector<Vec3Df> LightColor;
 	static Vec3Df CamPos;
 
 	static std::vector<GLuint> Texture;
+
+	static float PI;
 
 	GameSettings();
 	virtual ~GameSettings();

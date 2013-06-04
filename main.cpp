@@ -23,14 +23,12 @@
 
 //std::vector<SpaceShip>
 
+using namespace std;
 
 unsigned int W_fen = 1200;  // largeur fenetre (default: 800)
 unsigned int H_fen = 800;  // hauteur fenetre
 int zNear = 1;
 int zFar = 10;
-
-/* Model stuff! */
-
 
 // control modes
 enum DisplayModeType {GAME=1, CAMERA=2, LIGHT=3};
@@ -45,12 +43,13 @@ float BackgroundColor[]={0,0,0};
 //Later in the exercise, you can also modify and use a special color per light source.
 Vec3Df CamPos = Vec3Df(0.0f,0.0f,-4.0f);
 
-
 //vector<float> SurfaceVertices3f;
 
 Terrain *terrain;
 Model *boss;
 
+void createVertices(int,int,float);
+void drawSurface();
 void drawLight();
 
 //SpaceShip * s = new SpaceShip();
@@ -62,7 +61,7 @@ std::vector<OpponentSpaceShip> opponents;
 
 void keyboard(unsigned char key, int x, int y)
 {
-    printf("key %d pressed at %d,%d\n",key,x,y);
+    //printf("key %d pressed at %d,%d\n",key,x,y);
 
 	if ((key>='1')&&(key<='9'))
 	{
@@ -79,30 +78,47 @@ void keyboard(unsigned char key, int x, int y)
 			{
 						printf("Move right \n");
 						playerSpaceShip.updateX(playerSpaceShip.getPositionX()+.05);
+						playerSpaceShip.getAssistent()->updatePivot(
+								(playerSpaceShip.getPositionX()+(GameSettings::AIRPLANE_SIZE[0]/2)),
+								(playerSpaceShip.getPositionY()+(GameSettings::AIRPLANE_SIZE[1]/2))
+						);
+
 
 			}
 			if(key == 'a') // left
 			{
 						printf("Move left \n");
 						playerSpaceShip.updateX(playerSpaceShip.getPositionX()-.05);
+						playerSpaceShip.getAssistent()->updatePivot(
+								(playerSpaceShip.getPositionX()+(GameSettings::AIRPLANE_SIZE[0]/2)),
+								(playerSpaceShip.getPositionY()+(GameSettings::AIRPLANE_SIZE[1]/2))
+						);
 
 			}
 			if(key == 'w')	//up
 			{
 						printf("Move up \n");
 						playerSpaceShip.updateY(playerSpaceShip.getPositionY()+.05);
+						playerSpaceShip.getAssistent()->updatePivot(
+								(playerSpaceShip.getPositionX()+(GameSettings::AIRPLANE_SIZE[0]/2)),
+								(playerSpaceShip.getPositionY()+(GameSettings::AIRPLANE_SIZE[1]/2))
+						);
 
 			}
 			if(key == 's')	//down
 			{
 						printf("Move down \n");
 						playerSpaceShip.updateY(playerSpaceShip.getPositionY()-.05);
+						playerSpaceShip.getAssistent()->updatePivot(
+								(playerSpaceShip.getPositionX()+(GameSettings::AIRPLANE_SIZE[0]/2)),
+								(playerSpaceShip.getPositionY()+(GameSettings::AIRPLANE_SIZE[1]/2))
+						);
 
 			}
 			if(key == ' ')	//shoot
 			{
-						printf("Fire!!! \n");
-						playerSpaceShip.shoot();
+					printf("Fire!!! \n");
+					playerSpaceShip.shoot();
 			}
 			break;
 		}
@@ -112,26 +128,27 @@ void keyboard(unsigned char key, int x, int y)
 			{
 						printf("Move CAM right \n");
 						printf("Campos old: %f \n",CamPos[0]);
-
+						CamPos[0] = CamPos[0]+0.1f;
+						printf("Campos new: %f \n",CamPos[0]);
 
 
 			}
 			if(key == 'a') // left
 			{
 						printf("Move CAM  left \n");
-						//CamPos[0] = CamPos[0]-0.1f;
+						CamPos[0] = CamPos[0]-0.1f;
 
 			}
 			if(key == 'w')	//up
 			{
 						printf("Move CAM  up \n");
-						//CamPos[0] = CamPos[1]+0.1f;
+						CamPos[0] = CamPos[1]+0.1f;
 
 			}
 			if(key == 's')	//down
 			{
 						printf("Move CAM  down \n");
-						//CamPos[0] = CamPos[1]-0.1f;
+						CamPos[0] = CamPos[1]-0.1f;
 
 			}
 			break;
@@ -147,28 +164,27 @@ void keyboard(unsigned char key, int x, int y)
 
 }
 
-void initLights(int amount)
+
+
+
+
+/************************************************************
+ * Appel des diff\E9rentes fonctions de dessin
+************************************************************/
+
+
+void dealWithUserInput(int x, int y)
 {
-	/*
-	GameSettings::LightPos.resize(amount);
-	GameSettings::LightPos[0] = Vec3Df(0.0f,0.0f,0.0f);
-	//White
-	GameSettings::LightColor.resize(amount);
-	GameSettings::LightColor[0] = Vec3Df(1.0f,1.0f,1.0f);
-	*/
 
-	GameSettings::LightPos.push_back(Vec3Df(0,0,3));
-	GameSettings::LightColor.push_back(Vec3Df(1,1,1));
 }
-
 
 void draw( )
 {
 
 	//glutSolidSphere(1.0 ,10,10);
-	//glLightfv(GL_LIGHT0,GL_POSITION,GameSettings::LIGHT_POS);
-	//drawLight();
-	//terrain->display();
+	glLightfv(GL_LIGHT0,GL_POSITION,LightPos);
+	drawLight();
+	drawSurface();
 
 	// render player spaceship
 	playerSpaceShip.display();
@@ -180,9 +196,10 @@ void draw( )
 		opponents.at(i).display();
 	}
 
-	boss->drawModel();
-}
+	// render assistent
+	playerSpaceShip.getAssistent()->display();
 
+}
 
 void animate()
 {
@@ -208,12 +225,16 @@ void animate()
 		}
 	}
 
+	// animate assistent
+	// TODO: currently in the Assistentclass
+
+
 
 	std::vector< int > dumpBulList;
 	std::vector< int > dumpOppList;
 
 	/*
-	 * BULLET --> OPPONENT UPDATE
+	 * BULLET --> OPPONENT // ASSISTENT UPDATE
 	 */
 
 	// detect collision
@@ -261,10 +282,18 @@ void animate()
 	{
 		for(unsigned int i = 0; i<opponents.at(j).getBulletList()->size(); i++)
 		{
+
+			if( opponents.at(j).getBulletList()->at(i).hasCollision( playerSpaceShip.getAssistent() ) )	// bullit out of range ?
+			{
+				printf("# BAM!!! Saved by the bell =) \n");
+				// register in order to avoid problems within the for loop
+				dumpBulList.push_back( i );
+			}
+
 			if( opponents.at(j).getBulletList()->at(i).hasCollision( playerSpaceShip ) ) // collision with a bullet?
 			{
 				// register in order to avoid problems within the for loop
-				printf("- Collision with bullet: HIT!! \n");
+				printf("# Collision with bullet: WE ARE HIT!! \n");
 				dumpBulList.push_back( i );
 			}
 		}
@@ -332,6 +361,8 @@ void initTextures()
 			GL_RGB, GL_UNSIGNED_BYTE, image.data);
 		glBindTexture(GL_TEXTURE_2D, 0);
 
+		printf("ufo size: %i %i \n", image.sizeX, image.sizeY);
+
 		PPMImage image2("ufo_opp.ppm");
 		glGenTextures(1, &GameSettings::Texture[1]);
 		glBindTexture(GL_TEXTURE_2D, GameSettings::Texture[1]);
@@ -373,6 +404,24 @@ void spaceShipSetUp()
 	//opponents.push_back( OpponentSpaceShip(2,1) );
 }
 
+
+void createTerrain(int xSize, int ySize, float surfaceSize)
+{
+	//12 vertices per loop
+	
+	//terrain = new Terrain(0,xSize,ySize,surfaceSize);
+	//Move to terrain class
+}
+
+void drawSurface()
+{
+	//printf("-------------------|| DRAW SURFACE ||-------------------\n");
+	//printf("Triangle %d\n",t/3);
+	//Moved to terrain
+	//terrain->display();
+	//printf("--------------------------------------------------------\n");
+}
+
 void display(void);
 void reshape(int w, int h);
 void keyboard(unsigned char key, int x, int y);
@@ -407,14 +456,9 @@ int main(int argc, char** argv)
     
     // Game Set Up
     spaceShipSetUp();
+    //createTerrain(10,10,1);
 
     initTextures();
-
-    initLights(1);
-
-    terrain = new Terrain(0,10,10,0.1f);
-
-    boss = new Model("DavidHeadCleanMax.obj");
 
     // set initial timer
     initTimer = clock();
@@ -502,11 +546,6 @@ void display(void)
     glutSwapBuffers();
 }
 
-
-
-
-
-
 //function that draws the light source as a sphere
 void drawLight()
 {
@@ -517,8 +556,7 @@ void drawLight()
 	//yellow sphere at light position
 	glColor3f(1,1,0);
 	glPushMatrix();
-	Vec3Df LightOne = GameSettings::LightPos[0];
-	glTranslatef(LightOne[0],LightOne[1],LightOne[2]);
+	glTranslatef(LightPos[0], LightPos[1], LightPos[2]);
 	glutSolidSphere(0.1,6,6);
 	glPopMatrix();
 
