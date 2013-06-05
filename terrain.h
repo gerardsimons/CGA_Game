@@ -6,10 +6,13 @@
 #endif
 
 #include <stdlib.h>
+#include <GL/glut.h>
+#include "GameSettings.h"
 #include "stdio.h"
 #include "Vec3D.h"
 #include <vector>
 #include "loadppm.h"
+#include "LightManager.h"
 
 
 /* Terrain.h
@@ -28,9 +31,12 @@ private:
 	std::vector<GLuint> Texture;
 
 public:
+	Vec3Df defaultColor;
 	void initTexture();
 	Terrain(int,int,float,float,float);
 	void initSurfaceMesh(int,int);
+	Vec3Df blinnPhongShading(Vec3Df &normal);
+	Vec3Df lambertianLighting(Vec3Df &normal,Vec3Df &vertex);
 	virtual ~Terrain();
 	void display();
 	void drawQuad();

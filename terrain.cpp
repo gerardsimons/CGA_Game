@@ -1,6 +1,5 @@
 #include "terrain.h"
-#include <GL/glut.h>
-#include "GameSettings.h"
+
 
 #define PI 3.14159265
 
@@ -11,9 +10,11 @@
  *      Author: Gerard Simons
  */
 
+
+
 Terrain::Terrain(int xSize, int zSize, float surfaceSize, float startX, float startZ) {
 
-
+	defaultColor = Vec3Df(.8f,0.75f,0.05f);
 
 	int newSize = static_cast<int>(xSize / surfaceSize * zSize / surfaceSize * 12);
 		printf("new size vertices array=%d\n",newSize);
@@ -28,7 +29,7 @@ Terrain::Terrain(int xSize, int zSize, float surfaceSize, float startX, float st
 	float xModifier = 0.8f;
 
 	//Maximum value possible
-	float yTop = zModifier * sin(.5 * PI) + xModifier * cos(0);
+	float yTop = zModifier * sin(.5 * PI) + xModifier * cos(0) - 0.2f;
 	int texIndex = 0;
 	float xPeriod = 2 * PI / xModifier;
 	printf("xPeriod=%f\n",xPeriod);
@@ -64,29 +65,26 @@ Terrain::Terrain(int xSize, int zSize, float surfaceSize, float startX, float st
 			SurfaceTexCoords2f[texIndex+6]=x;
 			SurfaceTexCoords2f[texIndex+7]=z+surfaceSize;
 
-			SurfaceColors3f[i+0]=0.05;
-			SurfaceColors3f[i+1]=xModifier*cos(x) + zModifier*sin(z)-yTop;;
-			SurfaceColors3f[i+2]=cos(x);
+			SurfaceColors3f[i+0]=0.8;
+			SurfaceColors3f[i+1]=0.75;
+			SurfaceColors3f[i+2]=0.05;
 
-			SurfaceColors3f[i+3]=cos(x+surfaceSize);
-			SurfaceColors3f[i+4]=xModifier*cos(x) + zModifier*sin(z)-yTop;;
-			SurfaceColors3f[i+5]=cos(x+surfaceSize);
+			SurfaceColors3f[i+3]=0.8;
+			SurfaceColors3f[i+4]=0.75;
+			SurfaceColors3f[i+5]=0.05;
 
-			SurfaceColors3f[i+6]=cos(x+surfaceSize);
-			SurfaceColors3f[i+7]=xModifier*cos(x) + zModifier*sin(z)-yTop;;
-			SurfaceColors3f[i+8]=cos(x+surfaceSize);
+			SurfaceColors3f[i+6]=0.8;
+			SurfaceColors3f[i+7]=0.75;
+			SurfaceColors3f[i+8]=0.05;
 
-			SurfaceColors3f[i+9]=cos(x);
-			SurfaceColors3f[i+10]=xModifier*cos(x) + zModifier*sin(z)-yTop;;
-			SurfaceColors3f[i+11]=cos(x);
+			SurfaceColors3f[i+9]=0.8;
+			SurfaceColors3f[i+10]=0.75;
+			SurfaceColors3f[i+11]=0.05;
 
 			Vec3Df v1 = Vec3Df(SurfaceVertices3f[i] - SurfaceVertices3f[i+3],SurfaceVertices3f[i+1] - SurfaceVertices3f[i+4],SurfaceVertices3f[i+2] - SurfaceVertices3f[i+5]);
 			Vec3Df v2 = Vec3Df(SurfaceVertices3f[i+6] - SurfaceVertices3f[i+3],SurfaceVertices3f[i+7] - SurfaceVertices3f[i+4],SurfaceVertices3f[i+8] - SurfaceVertices3f[i+5]);
 
 			Vec3Df normal = Vec3Df::crossProduct(v1,v2);
-
-
-
 
 			SurfaceNormals3f[i]=normal[0];    	//x
 			SurfaceNormals3f[i+1]=normal[1];	//y
@@ -118,6 +116,23 @@ Terrain::Terrain(int xSize, int zSize, float surfaceSize, float startX, float st
 Terrain::~Terrain() {
 	// TODO Auto-generated destructor stub
 }
+/*
+Vec3Df Terrain::lambertianLighting(Vec3Df &vertexPos,Vec3Df &normal)
+{
+	Vec3Df totalLight = Vec3Df(0,0,0);
+	for(int i = 0 ; i < GameSettings::LightPos.size() ; i++)
+	{
+		Vec3Df lightColor = GameSettings::LightColor[i];
+		Vec3Df LightPos = GameSettings::LightPos[i];
+		Vec3Df distanceVector = LightPos - vertexPos;
+		float lambert = Vec3Df::dotProduct(distanceVector,normal);
+		float distance = distanceVector.getLength();
+		float intensity = GameSettings::LightIntensities[i];
+		totalLight += intensity * Vec3Df(lambert / distance,lambert / distance,lambert / distance) * color * lightColor;
+	}
+	return totalLight;
+}
+*/
 
 void Terrain::display()
 {
@@ -133,14 +148,24 @@ void Terrain::display()
 	int texIndex = 0;
 	for (int vIndex = 0 ; vIndex < SurfaceVertices3f.size() ; vIndex += 3)
 	{
-		glColor3f(0.9,0.85,0.35);
+
 		float *vertex = &(SurfaceVertices3f[vIndex]);
 		float *normal = &(SurfaceNormals3f[vIndex]);
 		float *tex = &(SurfaceTexCoords2f[texIndex]);
-		float *color = &(SurfaceTexCoords2f[texIndex]);
+		float *color = &(SurfaceColors3f[texIndex]);
 		//printf("Drawing vertex #%d = (%f,%f,%f)\n",i,&vertex,&(vertex+1),&(vertex+2));
+
 		glTexCoord2f(*tex,*(tex+1));
 		glNormal3f(*normal,*(normal+1),*(normal+2));
+
+		Vec3Df normalVec = Vec3Df(*normal,*(normal+1),*(normal+2));
+		Vec3Df vertexVec = Vec3Df(*vertex,*(vertex+1),*(vertex+2));
+		Vec3Df colorVec = Vec3Df(*color,*(color+1),*(color+2));
+
+		//printf("color terrain=(%f,%f,%f)\n",defaultColor[0],defaultColor[1],defaultColor[2]);
+		Vec3Df shading = LightManager::shading(normalVec,defaultColor,vertexVec);
+
+		glColor3f(shading[0],shading[1],shading[2]);
 		glVertex3f(*vertex,*(vertex+1),*(vertex+2));
 		texIndex += 2;
 	}

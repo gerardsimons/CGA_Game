@@ -39,6 +39,7 @@ void Model::loadMesh(const char * fileName){
 	computeLighting();
 }
 
+/*
 Vec3Df Model::blinnPhongShading(Vec3Df &color, Vec3Df &normal)
 {
 	std::vector<Vec3Df> LightPos = GameSettings::LightPos;
@@ -58,6 +59,7 @@ Vec3Df Model::blinnPhongShading(Vec3Df &color, Vec3Df &normal)
 	}
 	return totalLight;
 }
+
 
 Vec3Df Model::ambientLighting(Vec3Df &color)
 {
@@ -80,6 +82,7 @@ Vec3Df Model::lambertianLighting(Vec3Df &vertexPos,Vec3Df &normal, Vec3Df &color
 	}
 	return totalLight;
 }
+*/
 
 void Model::computeLighting()
 {
@@ -89,7 +92,7 @@ void Model::computeLighting()
 	for (unsigned int i=0; i<mesh.vertices.size();++i)
 	{
 		(*result)[i]=Vec3Df();
-		for (int l=0; l<GameSettings::LightPos.size();++l)
+		for (int l=0; l < LightManager::LightPos.size();++l)
 			(*result)[i]+=computeLighting(mesh.vertices[i].p, mesh.vertices[i].n, l, i);
 	}
 }
@@ -112,7 +115,8 @@ Vec3Df Model::computeLighting(Vec3Df & vertexPos, Vec3Df & normal, unsigned int 
 {
 
 	Vec3Df color = Vec3Df(1,1,1);
-	return ambientLighting(color) + lambertianLighting(vertexPos,normal,color) + blinnPhongShading(color,normal);;
+	return LightManager::shading(normal,color,vertexPos);
+	//return ambientLighting(color) + lambertianLighting(vertexPos,normal,color) + blinnPhongShading(color,normal);;
 	//return lambertianLighting(vertexPos,normal,color);
 	//return blinnPhongShading(color,normal);
 	//return ambientLighting(color);

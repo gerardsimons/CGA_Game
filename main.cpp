@@ -78,7 +78,6 @@ void keyboard(unsigned char key, int x, int y)
 
 			if(key == 'd') // right
 			{
-						printf("Move right \n");
 						playerSpaceShip.updateX(playerSpaceShip.getPositionX()+.05);
 						playerSpaceShip.getAssistent()->updatePivot(
 								(playerSpaceShip.getPositionX()+(GameSettings::AIRPLANE_SIZE[0]/2)),
@@ -89,7 +88,6 @@ void keyboard(unsigned char key, int x, int y)
 			}
 			if(key == 'a') // left
 			{
-						printf("Move left \n");
 						playerSpaceShip.updateX(playerSpaceShip.getPositionX()-.05);
 						playerSpaceShip.getAssistent()->updatePivot(
 								(playerSpaceShip.getPositionX()+(GameSettings::AIRPLANE_SIZE[0]/2)),
@@ -99,7 +97,6 @@ void keyboard(unsigned char key, int x, int y)
 			}
 			if(key == 'w')	//up
 			{
-						printf("Move up \n");
 						playerSpaceShip.updateY(playerSpaceShip.getPositionY()+.05);
 						playerSpaceShip.getAssistent()->updatePivot(
 								(playerSpaceShip.getPositionX()+(GameSettings::AIRPLANE_SIZE[0]/2)),
@@ -109,7 +106,6 @@ void keyboard(unsigned char key, int x, int y)
 			}
 			if(key == 's')	//down
 			{
-						printf("Move down \n");
 						playerSpaceShip.updateY(playerSpaceShip.getPositionY()-.05);
 						playerSpaceShip.getAssistent()->updatePivot(
 								(playerSpaceShip.getPositionX()+(GameSettings::AIRPLANE_SIZE[0]/2)),
@@ -187,6 +183,12 @@ void keyboard(unsigned char key, int x, int y)
 			{
 
 				GameSettings::updateCameraRot(0.0f,0.0f,0.1f);
+
+			}
+			if(key == 'p') // toggle specular lighting
+			{
+
+				LightManager::SpecularHardness += 0.05f;
 
 			}
 			updateCamera();
@@ -454,11 +456,8 @@ void opponentFlow()
 
 void initLights()
 {
-	GameSettings::LightPos.push_back(Vec3Df(0,3,2));
-	//GameSettings::LightPos.push_back(Vec3Df(0,3,-2));
-
-	//GameSettings::LightColor.push_back(Vec3Df(1,0,0));
-	GameSettings::LightColor.push_back(Vec3Df(1,1,1));
+	LightManager::addLight(Vec3Df(0,3,0),Vec3Df(1,1,1),Vec3Df(1,1,1),1.0f,1.0f);
+	LightManager::addLight(Vec3Df(0,3,5),Vec3Df(1,1,1),Vec3Df(1,1,1),1.0f,10.0f);
 }
 
 void initTextures()
@@ -540,7 +539,7 @@ int main(int argc, char** argv)
     // Game Set Up
     spaceShipSetUp();
 
-    terrain = new Terrain(30,20,0.1f,-5.0f,-8.0f);
+    terrain = new Terrain(20,20,0.2f,-10.0f,-8.0f);
 
 
     initTextures();
@@ -646,10 +645,10 @@ void drawLights()
 	//deactivate the lighting state
 	glDisable(GL_LIGHTING);
 
-	for(int i = 0 ; i < GameSettings::LightPos.size() ; i++)
+	for(int i = 0 ; i < LightManager::LightPos.size() ; i++)
 	{
-		Vec3Df LightPos = GameSettings::LightPos[i];
-		Vec3Df LightColor = GameSettings::LightColor[i];
+		Vec3Df LightPos = LightManager::LightPos[i];
+		Vec3Df LightColor = LightManager::DiffuseColor[i];
 		//yellow sphere at light position
 		glColor3f(LightColor[0],LightColor[1],LightColor[2]);
 		glPushMatrix();

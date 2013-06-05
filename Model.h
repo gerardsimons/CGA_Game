@@ -12,6 +12,7 @@
 #include "Vec3D.h"
 #include <vector>
 #include "GameSettings.h"
+#include "LightManager.h"
 #include "Bullet.h"
 
 class Model {

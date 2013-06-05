@@ -31,8 +31,6 @@ public:
 
 	static float NEXT_FLOW_TIME;
 
-	static std::vector<Vec3Df> LightPos;
-	static std::vector<Vec3Df> LightColor;
 	static Vec3Df CamRot;
 	static Vec3Df CamPos;
 
