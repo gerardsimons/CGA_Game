@@ -465,7 +465,9 @@ void initLights()
 	//LightManager::addLight(GameSettings::CamPos,Vec3Df(1,1,1),Vec3Df(1,1,1),10.0f,10.0f);
 	//LightManager::addLight(Vec3Df(3,3,0),Vec3Df(1,1,1),Vec3Df(1,1,1),10.0f,10.0f);
 
-	LightManager::addLight(Vec3Df(2,3,0),Vec3Df(1,1,1),Vec3Df(1,1,1),0.0f,5.0f);
+	LightManager::addLight(Vec3Df(2,3,0),Vec3Df(0.8,0.8,0.8),Vec3Df(0,1,1),0.0f,5.0f);
+
+
 	//LightManager::addLight(Vec3Df(3,3,0),Vec3Df(1,1,1),Vec3Df(1,1,1),0.0f,5.0f);
 	//LightManager::addLight(Vec3Df(6,3,0),Vec3Df(1,1,1),Vec3Df(1,1,1),0.0f,5.0f);
 }

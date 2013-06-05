@@ -21,7 +21,7 @@ public:
 	static std::vector<Vec3Df> SpecularColor;
 	static std::vector<float> SpecularPower;
 	static std::vector<float> DiffusePower;
-	static float AmbientLight;
+	static Vec3Df AmbientLight;
 	static float SpecularHardness;
 
 	static void addLight(Vec3Df pos,Vec3Df diffuseColor, Vec3Df specularColor, float specularPower, float diffusePower);

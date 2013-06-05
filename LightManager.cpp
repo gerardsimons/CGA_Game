@@ -12,7 +12,7 @@ std::vector<Vec3Df> LightManager::DiffuseColor;
 std::vector<Vec3Df> LightManager::SpecularColor;
 std::vector<float> LightManager::SpecularPower;
 std::vector<float> LightManager::DiffusePower;
-float LightManager::AmbientLight = 0.2f;
+Vec3Df LightManager::AmbientLight = Vec3Df(0.05f,0.05f,0.05f);
 float LightManager::SpecularHardness = 2.3f;
 
 Vec3Df LightManager::shading(Vec3Df &normal, Vec3Df &color, Vec3Df &vertex, float multiplier)
@@ -45,7 +45,7 @@ Vec3Df LightManager::shading(Vec3Df &normal, Vec3Df &color, Vec3Df &vertex, floa
 		totalLight += specular + diffuse;
 
 	}
-	return totalLight + (totalLight * Vec3Df(AmbientLight,AmbientLight,AmbientLight) * multiplier);
+	return totalLight + (totalLight * multiplier) + AmbientLight;
 	//return color;
 }
 
