@@ -25,7 +25,8 @@ public:
 	static float SpecularHardness;
 
 	static void addLight(Vec3Df pos,Vec3Df diffuseColor, Vec3Df specularColor, float specularPower, float diffusePower);
-	static Vec3Df shading(Vec3Df &normal,Vec3Df &color,Vec3Df &vertex);
+	static Vec3Df shading(Vec3Df &normal,Vec3Df &color,Vec3Df &vertex,float multiplier);
+	static void animateLights();
 };
 
 #endif /* LIGHTMANAGER_H_ */

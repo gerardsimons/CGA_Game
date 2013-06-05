@@ -251,8 +251,10 @@ void updateCamera()
     Vec3Df CamPos = GameSettings::CamPos;
     Vec3Df CamRot = GameSettings::CamRot;
     printf("CamPos=(%f,%f,%f)\n",CamPos[0],CamPos[1],CamPos[2]);
-    glTranslatef( CamPos[0], CamPos[1],CamPos[2]);
     //xRot
+    //glPushMatrix();
+    glTranslatef(-CamPos[0],-CamPos[1],-CamPos[2]);
+
     glRotatef(CamRot[0],1,0,0);
     glRotatef(CamRot[1],0,1,0);
     glRotatef(CamRot[2],0,0,1);
@@ -260,6 +262,10 @@ void updateCamera()
 
 void animate()
 {
+
+	//Light animations
+	LightManager::animateLights();
+
 	//boss->rotate(0.0f,0.7f,0.0f);
 	// TODO: doesnt work yet
 	if(bossEnabled == true && (boss->getPositionX() > 3.0f) )
@@ -456,8 +462,12 @@ void opponentFlow()
 
 void initLights()
 {
-	LightManager::addLight(Vec3Df(0,3,0),Vec3Df(1,1,1),Vec3Df(1,1,1),1.0f,1.0f);
-	LightManager::addLight(Vec3Df(0,3,5),Vec3Df(1,1,1),Vec3Df(1,1,1),1.0f,10.0f);
+	//LightManager::addLight(GameSettings::CamPos,Vec3Df(1,1,1),Vec3Df(1,1,1),10.0f,10.0f);
+	//LightManager::addLight(Vec3Df(3,3,0),Vec3Df(1,1,1),Vec3Df(1,1,1),10.0f,10.0f);
+
+	LightManager::addLight(Vec3Df(2,3,0),Vec3Df(1,1,1),Vec3Df(1,1,1),0.0f,5.0f);
+	//LightManager::addLight(Vec3Df(3,3,0),Vec3Df(1,1,1),Vec3Df(1,1,1),0.0f,5.0f);
+	//LightManager::addLight(Vec3Df(6,3,0),Vec3Df(1,1,1),Vec3Df(1,1,1),0.0f,5.0f);
 }
 
 void initTextures()
@@ -545,6 +555,7 @@ int main(int argc, char** argv)
     initTextures();
 
     boss = new Model("ufo_v3.obj",6,1,1);
+    //boss = new Model("DavidHeadCleanMax.obj",0,0,0);
 
     // set initial timer
     initTimer = clock();

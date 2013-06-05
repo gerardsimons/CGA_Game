@@ -36,7 +36,8 @@ float GameSettings::NEXT_FLOW_TIME = 5000000;
 //float GameSettings::PI = 3.14159265;
 float GameSettings::PI = 22/7;
 
-Vec3Df GameSettings::CamPos = Vec3Df(-1.2,-0.4,-5);
+Vec3Df GameSettings::CamPos = Vec3Df(1.2,0.4,5);
+//Vec3Df GameSettings::CamPos = Vec3Df(1,2,5);
 Vec3Df GameSettings::CamRot = Vec3Df(0,0,0);
 
 void GameSettings::updateCamera(float xDelta, float yDelta, float zDelta)

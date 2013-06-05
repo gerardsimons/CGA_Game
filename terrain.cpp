@@ -65,21 +65,21 @@ Terrain::Terrain(int xSize, int zSize, float surfaceSize, float startX, float st
 			SurfaceTexCoords2f[texIndex+6]=x;
 			SurfaceTexCoords2f[texIndex+7]=z+surfaceSize;
 
-			SurfaceColors3f[i+0]=0.8;
-			SurfaceColors3f[i+1]=0.75;
-			SurfaceColors3f[i+2]=0.05;
+			SurfaceColors3f[i]=defaultColor[0];
+			SurfaceColors3f[i+1]=defaultColor[1];
+			SurfaceColors3f[i+2]=defaultColor[2];
 
-			SurfaceColors3f[i+3]=0.8;
-			SurfaceColors3f[i+4]=0.75;
-			SurfaceColors3f[i+5]=0.05;
+			SurfaceColors3f[i+3]=defaultColor[0];
+			SurfaceColors3f[i+4]=defaultColor[1];
+			SurfaceColors3f[i+5]=defaultColor[2];
 
-			SurfaceColors3f[i+6]=0.8;
-			SurfaceColors3f[i+7]=0.75;
-			SurfaceColors3f[i+8]=0.05;
+			SurfaceColors3f[i+6]=defaultColor[0];
+			SurfaceColors3f[i+7]=defaultColor[1];
+			SurfaceColors3f[i+8]=defaultColor[2];
 
-			SurfaceColors3f[i+9]=0.8;
-			SurfaceColors3f[i+10]=0.75;
-			SurfaceColors3f[i+11]=0.05;
+			SurfaceColors3f[i+9]=defaultColor[0];
+			SurfaceColors3f[i+10]=defaultColor[1];
+			SurfaceColors3f[i+11]=defaultColor[2];
 
 			Vec3Df v1 = Vec3Df(SurfaceVertices3f[i] - SurfaceVertices3f[i+3],SurfaceVertices3f[i+1] - SurfaceVertices3f[i+4],SurfaceVertices3f[i+2] - SurfaceVertices3f[i+5]);
 			Vec3Df v2 = Vec3Df(SurfaceVertices3f[i+6] - SurfaceVertices3f[i+3],SurfaceVertices3f[i+7] - SurfaceVertices3f[i+4],SurfaceVertices3f[i+8] - SurfaceVertices3f[i+5]);
@@ -160,10 +160,13 @@ void Terrain::display()
 
 		Vec3Df normalVec = Vec3Df(*normal,*(normal+1),*(normal+2));
 		Vec3Df vertexVec = Vec3Df(*vertex,*(vertex+1),*(vertex+2));
-		Vec3Df colorVec = Vec3Df(*color,*(color+1),*(color+2));
+		//Vec3Df colorVec = Vec3Df(*color,*(color+1),*(color+2));
 
-		//printf("color terrain=(%f,%f,%f)\n",defaultColor[0],defaultColor[1],defaultColor[2]);
-		Vec3Df shading = LightManager::shading(normalVec,defaultColor,vertexVec);
+		//Vec3Df colorVec = defaultColor;
+		Vec3Df colorVec = Vec3Df(1,1,1);
+
+		//printf("color terrain=(%f,%f,%f)\n",colorVec[0],colorVec[1],colorVec[2]);
+		Vec3Df shading = LightManager::shading(normalVec,colorVec,vertexVec,10.0f);
 
 		glColor3f(shading[0],shading[1],shading[2]);
 		glVertex3f(*vertex,*(vertex+1),*(vertex+2));

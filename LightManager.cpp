@@ -12,10 +12,10 @@ std::vector<Vec3Df> LightManager::DiffuseColor;
 std::vector<Vec3Df> LightManager::SpecularColor;
 std::vector<float> LightManager::SpecularPower;
 std::vector<float> LightManager::DiffusePower;
-float LightManager::AmbientLight = .0f;
+float LightManager::AmbientLight = 0.2f;
 float LightManager::SpecularHardness = 2.3f;
 
-Vec3Df LightManager::shading(Vec3Df &normal, Vec3Df &color, Vec3Df &vertex)
+Vec3Df LightManager::shading(Vec3Df &normal, Vec3Df &color, Vec3Df &vertex, float multiplier)
 {
 	Vec3Df CamPos = GameSettings::CamPos;
 	Vec3Df totalLight = Vec3Df(0,0,0);
@@ -24,7 +24,8 @@ Vec3Df LightManager::shading(Vec3Df &normal, Vec3Df &color, Vec3Df &vertex)
 		Vec3Df viewDir = CamPos - vertex;
 		viewDir /= viewDir.getLength();
 		Vec3Df lightDir = LightPos[i] - vertex;
-		lightDir /= lightDir.getLength();
+		float distance = lightDir.getLength();
+		lightDir /= distance;
 
 		//Diffuse component
 		Vec3Df diffuse = Vec3Df::dotProduct(lightDir,normal) * DiffusePower[i] * DiffuseColor[i] * color;
@@ -44,8 +45,18 @@ Vec3Df LightManager::shading(Vec3Df &normal, Vec3Df &color, Vec3Df &vertex)
 		totalLight += specular + diffuse;
 
 	}
-	return totalLight + Vec3Df(AmbientLight,AmbientLight,AmbientLight);
+	return totalLight + (totalLight * Vec3Df(AmbientLight,AmbientLight,AmbientLight) * multiplier);
 	//return color;
+}
+
+void LightManager::animateLights()
+{
+	float xUpperBound = 4.0f;
+	float xLowerBound = -4.0f;
+	for(int i = 0 ; i < LightPos.size() ; i++)
+	{
+		//LightPos[i][0] -= 0.05f;
+	}
 }
 
 void LightManager::addLight(Vec3Df pos,Vec3Df diffuseColor, Vec3Df specularColor, float specularPower, float diffusePower)
