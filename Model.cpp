@@ -16,6 +16,8 @@ Model::Model(const char* fileName,float x,float y, float z)
 	rotY = 0.0f;
 	rotZ = 0.0f;
 	loadMesh(fileName);
+
+	bullitsShot = new std::vector<Bullet>();
 }
 
 Model::~Model() {
@@ -131,9 +133,36 @@ void Model::drawModel()
 	mesh.drawWithColors(lighting);
 
 	glPopMatrix();
+
 }
 
 float Model::getPositionX()
 {
 	return this->x;
+}
+void Model::shoot(){
+
+	Bullet b1 = Bullet(this->x, (this->y), 	-1);
+	Bullet b2 = Bullet(this->x, (this->y-.3)	, 	-1);
+	Bullet b3 = Bullet(this->x, (this->y-.6), 	-1);
+	bullitsShot->push_back( b1 );
+	bullitsShot->push_back( b2 );
+	bullitsShot->push_back( b3 );
+	printf("I have shot %d times \n", bullitsShot->size());
+
+}
+
+void Model::drawBossBullets()
+{
+
+	// render bullets
+	for(unsigned int i = 0; i<bullitsShot->size(); i++)
+	{
+		bullitsShot->at(i).display();
+	}
+}
+
+std::vector<Bullet> * Model::getBulletList()
+{
+	return bullitsShot;
 }

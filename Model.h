@@ -12,6 +12,7 @@
 #include "Vec3D.h"
 #include <vector>
 #include "GameSettings.h"
+#include "Bullet.h"
 
 class Model {
 public:
@@ -27,6 +28,10 @@ public:
 	void move(float,float,float);
 	void rotate(float,float,float);
 	virtual ~Model();
+
+	void shoot();
+	void drawBossBullets();
+	std::vector<Bullet> * getBulletList();
 private:
 	Mesh mesh;
 	float x;
@@ -37,6 +42,8 @@ private:
 	float rotZ;
 	std::vector<Vec3Df> lighting;
 	std::vector<Vec3Df> MeshMaterial;
+
+	std::vector<Bullet> * bullitsShot;
 };
 
 #endif /* MODEL_H_ */

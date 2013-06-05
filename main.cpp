@@ -40,7 +40,7 @@ clock_t initTimer;
 clock_t shootTimer;
 
 // current FLOW
-int CUR_FLOW = 3;
+int CUR_FLOW = 2;
 
 // BOSS FLOW ??
 bool bossEnabled = false;
@@ -232,6 +232,7 @@ void draw( )
 
 	terrain->display();
 	boss->drawModel();
+	boss->drawBossBullets();
 
 	// render assistent
 	playerSpaceShip.getAssistent()->display();
@@ -271,7 +272,7 @@ void animate()
 		playerSpaceShip.getBulletList()->at(i).updateX( curBullet.getPositionX()+GameSettings::BULLET_SPEED  );
 	}
 
-	// TODO: SIMPLIFY...
+	// TODO: SIMPLIFY... // not working propper..., still called in OpponentSpaceShip
 
 	// animate opponent's bullets
 	for (unsigned int j = 0; j< opponents.size(); j++ )
@@ -281,6 +282,12 @@ void animate()
 			Bullet curBullet = opponents.at(j).getBulletList()->at(i);
 			opponents.at(j).getBulletList()->at(i).updateX( curBullet.getPositionX()-GameSettings::BULLET_SPEED  );
 		}
+	}
+	// animate final boss' bullets
+	for(unsigned int i = 0; i< boss->getBulletList()->size(); i++)
+	{
+		Bullet curBullet = boss->getBulletList()->at(i);
+		boss->getBulletList()->at(i).updateX( curBullet.getPositionX()-GameSettings::BULLET_SPEED  );
 	}
 
 	// animate assistent
@@ -385,7 +392,9 @@ void animate()
 
 void opponentFlow()
 {
+	//printf(" ### cur flow: %i \n", CUR_FLOW);
 	clock_t currentTimer = clock();
+
 	if( opponents.size() <= 1 )
 	{
 		//printf("t waiting: %f \n", ((float)currentTimer-(float)initTimer));
@@ -401,7 +410,7 @@ void opponentFlow()
 			}
 			else
 			{
-				printf("CUR_FLOW: %i \n", CUR_FLOW);
+
 				float max = CUR_FLOW;
 				if(CUR_FLOW > 4) { max = 4; }
 				float incrX = 0.0f;
@@ -411,7 +420,6 @@ void opponentFlow()
 				{
 					incrX = 1.0f*floor(i/ (max+.05));
 					int j = i % ((int)max);
-					printf("j: %i \n", j);
 					OpponentSpaceShip oppShip = OpponentSpaceShip(4+incrX, float( (j/max )*1.5 ) );
 					opponents.push_back( oppShip );
 					//oppShip.shoot();
@@ -422,14 +430,26 @@ void opponentFlow()
 			CUR_FLOW++;
 		}
 	}
-	else if( ( (float)currentTimer - (float)shootTimer ) > GameSettings::NEXT_FLOW_TIME )
+	// opponent spaceships shoot
+	// TODO dirty fix CUR_FLOW-1
+	if( (CUR_FLOW-1) < GameSettings::NUMBER_OF_FLOWS && ( (float)currentTimer - (float)shootTimer ) > GameSettings::NEXT_FLOW_TIME )
 	{
+		printf(" OppSpaceShip: INCOMING \n");
 		shootTimer = currentTimer;
 		for(unsigned int i = 0; i<opponents.size(); i++)
 		{
 			opponents.at(i).shoot();
 		}
 	}
+	// final boss shoots
+	// TODO dirty fix CUR_FLOW-1
+	else if( (CUR_FLOW-1) >= GameSettings::NUMBER_OF_FLOWS && ( (float)currentTimer - (float)shootTimer ) > GameSettings::NEXT_FLOW_TIME )
+	{
+		shootTimer = currentTimer;
+		printf(" BOSS: INCOMING \n");
+		boss->shoot();
+	}
+
 }
 
 void initLights()
