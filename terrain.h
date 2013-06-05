@@ -13,6 +13,7 @@
 #include <vector>
 #include "loadppm.h"
 #include "LightManager.h"
+#include "PNGImage.h"
 
 
 /* Terrain.h
@@ -35,8 +36,6 @@ public:
 	void initTexture();
 	Terrain(int,int,float,float,float);
 	void initSurfaceMesh(int,int);
-	Vec3Df blinnPhongShading(Vec3Df &normal);
-	Vec3Df lambertianLighting(Vec3Df &normal,Vec3Df &vertex);
 	virtual ~Terrain();
 	void display();
 	void drawQuad();

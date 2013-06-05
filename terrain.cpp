@@ -82,9 +82,15 @@ Terrain::Terrain(int xSize, int zSize, float surfaceSize, float startX, float st
 			SurfaceColors3f[i+11]=defaultColor[2];
 
 			Vec3Df v1 = Vec3Df(SurfaceVertices3f[i] - SurfaceVertices3f[i+3],SurfaceVertices3f[i+1] - SurfaceVertices3f[i+4],SurfaceVertices3f[i+2] - SurfaceVertices3f[i+5]);
-			Vec3Df v2 = Vec3Df(SurfaceVertices3f[i+6] - SurfaceVertices3f[i+3],SurfaceVertices3f[i+7] - SurfaceVertices3f[i+4],SurfaceVertices3f[i+8] - SurfaceVertices3f[i+5]);
+			Vec3Df v2 = Vec3Df(SurfaceVertices3f[i] - SurfaceVertices3f[i+6],SurfaceVertices3f[i+1] - SurfaceVertices3f[i+7],SurfaceVertices3f[i+2] - SurfaceVertices3f[i+8]);
+
+
 
 			Vec3Df normal = Vec3Df::crossProduct(v1,v2);
+
+			normal = -normal;
+
+			printf("terrain normal=(%f,%f,%f)\n",normal[0],normal[1],normal[2]);
 
 			SurfaceNormals3f[i]=normal[0];    	//x
 			SurfaceNormals3f[i+1]=normal[1];	//y
@@ -116,35 +122,13 @@ Terrain::Terrain(int xSize, int zSize, float surfaceSize, float startX, float st
 Terrain::~Terrain() {
 	// TODO Auto-generated destructor stub
 }
-/*
-Vec3Df Terrain::lambertianLighting(Vec3Df &vertexPos,Vec3Df &normal)
-{
-	Vec3Df totalLight = Vec3Df(0,0,0);
-	for(int i = 0 ; i < GameSettings::LightPos.size() ; i++)
-	{
-		Vec3Df lightColor = GameSettings::LightColor[i];
-		Vec3Df LightPos = GameSettings::LightPos[i];
-		Vec3Df distanceVector = LightPos - vertexPos;
-		float lambert = Vec3Df::dotProduct(distanceVector,normal);
-		float distance = distanceVector.getLength();
-		float intensity = GameSettings::LightIntensities[i];
-		totalLight += intensity * Vec3Df(lambert / distance,lambert / distance,lambert / distance) * color * lightColor;
-	}
-	return totalLight;
-}
-*/
 
 void Terrain::display()
 {
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, GameSettings::Texture[3]);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,  GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,  GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,  GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,  GL_LINEAR);
+	glDisable(GL_LIGHTING);
 	glBegin(GL_QUADS);
-	//printf("SurfaceVertices3f.size() = %d\n",SurfaceVertices3f.size());
 	int texIndex = 0;
 	for (int vIndex = 0 ; vIndex < SurfaceVertices3f.size() ; vIndex += 3)
 	{
@@ -166,9 +150,10 @@ void Terrain::display()
 		Vec3Df colorVec = Vec3Df(1,1,1);
 
 		//printf("color terrain=(%f,%f,%f)\n",colorVec[0],colorVec[1],colorVec[2]);
-		Vec3Df shading = LightManager::shading(normalVec,colorVec,vertexVec,10.0f);
+		Vec3Df shading = LightManager::shading(normalVec,colorVec,vertexVec,5.0f);
 
 		glColor3f(shading[0],shading[1],shading[2]);
+		//glColor3f(colorVec[0],colorVec[1],colorVec[2]);
 		glVertex3f(*vertex,*(vertex+1),*(vertex+2));
 		texIndex += 2;
 	}

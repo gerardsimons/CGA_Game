@@ -5,12 +5,12 @@
 #include <stdlib.h>
 #include <math.h>
 #include <assert.h>
-#include "traqueboule.h"
 #include "Model.h"
-
+#include "traqueboule.h"
 #include "SpaceShip.h"
 #include "OpponentSpaceShip.h"
 #include "GameSettings.h"
+#include "PNGImage.h"
 
 #include "mesh.h"
 #include "terrain.h"
@@ -29,6 +29,10 @@ unsigned int W_fen = 1200;  // largeur fenetre (default: 800)
 unsigned int H_fen = 800;  // hauteur fenetre
 int zNear = 1;
 int zFar = 10;
+
+float rotateX = 0;
+float rotateY = 0;
+int mouseX,mouseY;
 
 // control modes
 enum DisplayModeType {GAME=1, CAMERA=2, LIGHT=3};
@@ -250,7 +254,11 @@ void updateCamera()
     glLoadIdentity();
     Vec3Df CamPos = GameSettings::CamPos;
     Vec3Df CamRot = GameSettings::CamRot;
-    printf("CamPos=(%f,%f,%f)\n",CamPos[0],CamPos[1],CamPos[2]);
+
+    //Set light to camera for testing;
+    //LightManager::LightPos[0] = CamPos;
+
+    //printf("CamPos=(%f,%f,%f)\n",CamPos[0],CamPos[1],CamPos[2]);
     //xRot
     //glPushMatrix();
     glTranslatef(-CamPos[0],-CamPos[1],-CamPos[2]);
@@ -263,8 +271,10 @@ void updateCamera()
 void animate()
 {
 
-	//Light animations
-	LightManager::animateLights();
+
+
+
+	//LightManager::moveLight(0,.1f,0,0);
 
 	//boss->rotate(0.0f,0.7f,0.0f);
 	// TODO: doesnt work yet
@@ -465,7 +475,7 @@ void initLights()
 	//LightManager::addLight(GameSettings::CamPos,Vec3Df(1,1,1),Vec3Df(1,1,1),10.0f,10.0f);
 	//LightManager::addLight(Vec3Df(3,3,0),Vec3Df(1,1,1),Vec3Df(1,1,1),10.0f,10.0f);
 
-	LightManager::addLight(Vec3Df(2,3,0),Vec3Df(0.8,0.8,0.8),Vec3Df(0,1,1),0.0f,5.0f);
+	LightManager::addLight(Vec3Df(0,3,0),Vec3Df(1.0f,1.0f,1.0f),Vec3Df(1.0f,1.0f,1.0f),1.0f,1.0f);
 
 
 	//LightManager::addLight(Vec3Df(3,3,0),Vec3Df(1,1,1),Vec3Df(1,1,1),0.0f,5.0f);
@@ -475,39 +485,53 @@ void initLights()
 void initTextures()
 {
 
-		GameSettings::Texture.resize(4);
+		GameSettings::Texture.resize(5);
 		GameSettings::Texture[0]=0;
 		GameSettings::Texture[1]=0;
 		GameSettings::Texture[2]=0;
 		GameSettings::Texture[3]=0;
+		GameSettings::Texture[4]=0;
 
 		PPMImage image("ufo.ppm");
 		glGenTextures(1, &GameSettings::Texture[0]);
 		glBindTexture(GL_TEXTURE_2D, GameSettings::Texture[0]);
 		gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, image.sizeX, image.sizeY,
 			GL_RGB, GL_UNSIGNED_BYTE, image.data);
-		glBindTexture(GL_TEXTURE_2D, 0);
+
 
 		PPMImage image2("ufo_opp.ppm");
 		glGenTextures(1, &GameSettings::Texture[1]);
 		glBindTexture(GL_TEXTURE_2D, GameSettings::Texture[1]);
 		gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, image2.sizeX, image2.sizeY,
 			GL_RGB, GL_UNSIGNED_BYTE, image2.data);
-		glBindTexture(GL_TEXTURE_2D, 1);
+
 
 		PPMImage image3("bullet.ppm");
 		glGenTextures(1, &GameSettings::Texture[2]);
 		glBindTexture(GL_TEXTURE_2D, GameSettings::Texture[2]);
 		gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, image3.sizeX, image3.sizeY,
 			GL_RGB, GL_UNSIGNED_BYTE, image3.data);
-		glBindTexture(GL_TEXTURE_2D, 1);
+
 
 		PPMImage imageSand("sand.ppm");
 		glGenTextures(1, &GameSettings::GameSettings::Texture[3]);
 		glBindTexture(GL_TEXTURE_2D, GameSettings::Texture[3]);
 		gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, imageSand.sizeX, imageSand.sizeY,
 			GL_RGB, GL_UNSIGNED_BYTE, imageSand.data);
-		glBindTexture(GL_TEXTURE_2D, 0);
+
+
+		/*
+		bool hasAlpha = true;
+		PNGImage imageTest("test.png",hasAlpha);
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+		glGenTextures(1, &GameSettings::GameSettings::Texture[4]);
+		glBindTexture(GL_TEXTURE_2D, GameSettings::Texture[4]);
+
+		gluBuild2DMipmaps(GL_TEXTURE_2D, 4, imageTest.sizeX, imageTest.sizeY,
+					GL_RGBA, GL_UNSIGNED_BYTE, imageTest.data);
+*/
+
+
 }
 
 void idle()
@@ -528,9 +552,29 @@ void reshape(int w, int h);
 void keyboard(unsigned char key, int x, int y);
 
 
-/************************************************************
- * Programme principal
- ************************************************************/
+
+
+void mousePassive(int x, int y){
+    mouseX = x;
+    mouseY = y;
+}
+
+void mouseMotion(int x, int y){
+    const float SPEED = 2;
+
+    rotateX += (mouseX-x)/SPEED;
+    rotateY += (mouseY-y)/SPEED;
+
+    GameSettings::CamRot[1] = rotateX;
+    GameSettings::CamRot[0] = rotateY;
+
+    updateCamera();
+
+    mousePassive(x, y);
+    glutPostRedisplay();
+}
+
+
 int main(int argc, char** argv)
 {
     glutInit (&argc, argv);
@@ -541,45 +585,42 @@ int main(int argc, char** argv)
     // position et taille de la fenetre
     glutInitWindowPosition(200, 100);
     glutInitWindowSize(W_fen,H_fen);
-    glutCreateWindow(argv[0]);	
+    glutCreateWindow(argv[0]);
 
-    updateCamera();
+    //updateCamera();
 
-    glEnable(GL_COLOR_MATERIAL);
-    glEnable(GL_NORMALIZE);
-    
+    glDisable(GL_LIGHTING);
+
     // Game Set Up
     spaceShipSetUp();
 
     terrain = new Terrain(20,20,0.2f,-10.0f,-8.0f);
 
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    tbInitTransform();     // initialisation du point de vue
+    glTranslatef(GameSettings::CamPos[0],GameSettings::CamPos[1],GameSettings::CamPos[2]);
+    tbHelp();                      // affiche l'aide sur la traqueboule
+
 
     initTextures();
 
-    boss = new Model("ufo_v3.obj",6,1,1);
-    //boss = new Model("DavidHeadCleanMax.obj",0,0,0);
+    boss = new Model("ufo_v3.obj",0,0,0);
 
     // set initial timer
     initTimer = clock();
 
-
-    // cablage des callback
     glutReshapeFunc(reshape);
     glutKeyboardFunc(keyboard);
     glutDisplayFunc(display);
     glutMouseFunc(tbMouseFunc);    // traqueboule utilise la souris
     glutMotionFunc(tbMotionFunc);  // traqueboule utilise la souris
+    // cablage des callback
+    glutReshapeFunc(reshape);
+
     glutIdleFunc(idle);
 
     initLights();
-
-    glEnable( GL_LIGHTING );
-        glEnable( GL_LIGHT0 );
-        glEnable(GL_COLOR_MATERIAL);
-        glEnable(GL_NORMALIZE);
-
-
-
 
     // Details sur le mode de trac\E9
     glEnable( GL_DEPTH_TEST );            // effectuer le test de profondeur
@@ -602,8 +643,6 @@ void drawCoordSystem(float length=1)
 
 	//remember all states of the GPU
 	glPushAttrib(GL_ALL_ATTRIB_BITS);
-	//deactivate the lighting state
-	glDisable(GL_LIGHTING);
 	//draw axes
 	glBegin(GL_LINES);
 		//Red is x
@@ -634,10 +673,13 @@ void display(void)
 {
     glClear( GL_COLOR_BUFFER_BIT  | GL_DEPTH_BUFFER_BIT); // la couleur et le z
 
-    /*
+
     glLoadIdentity();  // repere camera
     tbVisuTransform(); // origine et orientation de la scene
-    */
+
+    GameSettings::CamPos = getCameraPosition();
+
+    //printf("CamPos=(%f,%f,%f)\n",GameSettings::CamPos[0],GameSettings::CamPos[1],GameSettings::CamPos[2]);
 
     drawCoordSystem();
 
@@ -655,9 +697,6 @@ void drawLights()
 {
 	//remember all states of the GPU
 	glPushAttrib(GL_ALL_ATTRIB_BITS);
-	//deactivate the lighting state
-	glDisable(GL_LIGHTING);
-
 	for(int i = 0 ; i < LightManager::LightPos.size() ; i++)
 	{
 		Vec3Df LightPos = LightManager::LightPos[i];

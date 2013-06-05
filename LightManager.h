@@ -24,6 +24,10 @@ public:
 	static Vec3Df AmbientLight;
 	static float SpecularHardness;
 
+	static void moveLight(int,float,float,float);
+
+	static Vec3Df blinnPhongShading(Vec3Df &color, Vec3Df &normal, Vec3Df &vertex);
+	static Vec3Df lambertianLighting(Vec3Df &vertexPos,Vec3Df &normal, Vec3Df &color);
 	static void addLight(Vec3Df pos,Vec3Df diffuseColor, Vec3Df specularColor, float specularPower, float diffusePower);
 	static Vec3Df shading(Vec3Df &normal,Vec3Df &color,Vec3Df &vertex,float multiplier);
 	static void animateLights();

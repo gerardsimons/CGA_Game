@@ -20,7 +20,7 @@ GLdouble tb_matrix[16] =   { 1,0,0,0,
                              0,1,0,0,
                              0,0,1,0,
                              0,0,0,1  };
-GLdouble tb_inverse[16] =  { 1,0,0,0,
+GLdouble tb_inverse[16] =  { 1,0,1,0,
                              0,1,0,0,
                              0,0,1,0,
                              0,0,0,1  };

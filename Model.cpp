@@ -24,7 +24,6 @@ Model::~Model() {
 
 }
 
-
 void Model::loadMesh(const char * fileName){
 
 	//this function loads a mesh
