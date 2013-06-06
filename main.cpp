@@ -23,7 +23,6 @@
 #include "loadppm.h"
 
 
-
 //std::vector<SpaceShip>
 
 using namespace std;
@@ -45,6 +44,7 @@ DisplayModeType displayMode = GAME;
 // timer
 clock_t initTimer;
 clock_t shootTimer;
+clock_t playerShootTimer = 0;
 
 bool WIN = false;
 
@@ -52,6 +52,8 @@ bool WIN = false;
 int CUR_FLOW = 2;
 //int CUR_FLOW = GameSettings::NUMBER_OF_FLOWS+1; // skip directly to final boss
 
+// ANIMATION STEP BOSS
+float sinX = 0.0;
 
 // BOSS FLOW ??
 bool bossEnabled = false;
@@ -293,6 +295,23 @@ void animate()
 		);
 	}
 
+	/*
+	 * BULLET LOCK
+	 */
+	// todo not perfectly working yet
+	clock_t currentTimer = clock();
+	//printf("-BULLET LOCK CHECK; cur[ %f ] - pstime[ %f ] > BUL_LOCK[ %f ]\n", (float)currentTimer, (float)playerShootTimer, GameSettings::BULLET_LOCK );
+	if( ( (float)currentTimer - (float)playerShootTimer ) > GameSettings::BULLET_LOCK && playerSpaceShip.getBulletLock() )
+	{
+		//printf("unlocked\n");
+		playerShootTimer = (float)currentTimer;
+		playerSpaceShip.setBulletLock(false);
+	}
+	else if ( ((float)currentTimer - (float)playerShootTimer) <= GameSettings::BULLET_LOCK && !playerSpaceShip.getBulletLock() )
+	{
+		//printf("locked\n");
+		playerSpaceShip.setBulletLock(true);
+	}
 
 	//LightManager::moveLight(0,.1f,0,0);
 
@@ -301,6 +320,13 @@ void animate()
 	if(bossEnabled == true && (boss->getPositionX() > 3.0f) )
 	{
 		boss->move(-0.02f, 0.0f, 0.0f);
+	}
+	else if(bossEnabled == true && (boss->getPositionX() <= 3.0f) )
+	{
+		sinX+=0.1f;
+		boss->moveToY(((float)0.5*sin(sinX)+1.0f));
+		// TODO: vary x
+		//boss->moveToX(((float)0.5*sin(sinX)+3.0f));
 	}
 
 	// animate player's bullets
@@ -434,12 +460,12 @@ void animate()
 
 
 	/*
-	 * FINAL BOSS BULLET --> OPPONENT UPDATE
+	 * FINAL BOSS BULLET --> PLAYER UPDATE
 	 */
 	for(unsigned int i = 0; i< boss->getBulletList()->size(); i++)
 	{
 		Bullet curBullet = boss->getBulletList()->at(i);
-		if( curBullet.hasCollision( playerSpaceShip.getAssistent() ) )	// bullit out of range ?
+		if( curBullet.hasCollision( playerSpaceShip.getAssistent() ) )	// bullet out of range ?
 		{
 			printf("# BAM!!! Saved by the bell =) \n");
 			// register in order to avoid problems within the for loop
@@ -458,7 +484,7 @@ void animate()
 	// remove bullets
 	for(unsigned int i = 0; i< dumpBulList.size(); i++)
 	{
-		playerSpaceShip.removeBullet( dumpBulList.at(i) );
+		boss->removeBullet( dumpBulList.at(i) );
 	}
 	dumpBulList.clear();
 	// remove opponents
@@ -472,8 +498,6 @@ void animate()
 	/*
 	 * SHIP --> OPPONENT UPDATE
 	 */
-
-	// TODO remove opponent after collision
 	for (unsigned int j = 0; j< opponents.size(); j++ )
 	{
 		if( playerSpaceShip.hasCollision( opponents.at(j) ) ) // collision with an opponent
@@ -484,15 +508,31 @@ void animate()
 			dumpOppList.push_back( j );
 		}
 	}
-
 	// remove opponents
 	for(unsigned int i = 0; i< dumpOppList.size(); i++)
 	{
-		// TODO remove bullets first???
-		//opponents.erase( opponents.begin() + dumpOppList.at(i) );
+		opponents.erase( opponents.begin() + dumpOppList.at(i) );
 	}
 	dumpOppList.clear();
 
+	/*
+	 * OPPONENT --> ASSISTENT SPACESHIP
+	 */
+	for (unsigned int j = 0; j< opponents.size(); j++ )
+	{
+		if( opponents.at(j).hasCollision( playerSpaceShip.getAssistent() ) ) // assisten hits opponent?
+		{
+			printf("Assistent collision with opponent \n");
+			// register in order to avoid problems within the for loop
+			dumpOppList.push_back( j );
+		}
+	}
+	// remove opponents
+	for(unsigned int i = 0; i< dumpOppList.size(); i++)
+	{
+		opponents.erase( opponents.begin() + dumpOppList.at(i) );
+	}
+	dumpOppList.clear();
 
 
 
@@ -592,26 +632,21 @@ void initTextures()
 		GameSettings::Texture[4]=0;
 		GameSettings::Texture[5]=0;
 
-		PPMImage image("ufo.ppm");
-		glGenTextures(1, &GameSettings::Texture[0]);
+		BMPImage image("ufo_opp_small.bmp",true);
+		glGenTextures(1, &GameSettings::GameSettings::Texture[0]);
 		glBindTexture(GL_TEXTURE_2D, GameSettings::Texture[0]);
-		gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, image.sizeX, image.sizeY,
-			GL_RGB, GL_UNSIGNED_BYTE, image.data);
-		glBindTexture(GL_TEXTURE_2D, 0);
+		gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGBA, image.width, image.height,GL_RGBA, GL_UNSIGNED_BYTE, image.data);
 
-		PPMImage image2("ufo_opp.ppm");
-		glGenTextures(1, &GameSettings::Texture[1]);
+		BMPImage image2("ufo_opp_small.bmp",true);
+		glGenTextures(1, &GameSettings::GameSettings::Texture[1]);
 		glBindTexture(GL_TEXTURE_2D, GameSettings::Texture[1]);
-		gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, image2.sizeX, image2.sizeY,
-			GL_RGB, GL_UNSIGNED_BYTE, image2.data);
-		glBindTexture(GL_TEXTURE_2D, 1);
+		gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGBA, image2.width, image2.height,GL_RGBA, GL_UNSIGNED_BYTE, image2.data);
 
-		PPMImage image3("bullet.ppm");
-		glGenTextures(1, &GameSettings::Texture[2]);
+
+		BMPImage image3("bullet_small.bmp",true);
+		glGenTextures(1, &GameSettings::GameSettings::Texture[2]);
 		glBindTexture(GL_TEXTURE_2D, GameSettings::Texture[2]);
-		gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, image3.sizeX, image3.sizeY,
-			GL_RGB, GL_UNSIGNED_BYTE, image3.data);
-		glBindTexture(GL_TEXTURE_2D, 1);
+		gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGBA, image3.width, image3.height,GL_RGBA, GL_UNSIGNED_BYTE, image3.data);
 
 		PPMImage imageSand("sand.ppm");
 		glGenTextures(1, &GameSettings::Texture[3]);
@@ -619,16 +654,18 @@ void initTextures()
 		gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, imageSand.sizeX, imageSand.sizeY,
 			GL_RGB, GL_UNSIGNED_BYTE, imageSand.data);
 
-		BMPImage imageTest("ufo_opp2.bmp",true);
+		BMPImage image4("ufo_assistent_small.bmp",true);
 		glGenTextures(1, &GameSettings::GameSettings::Texture[4]);
 		glBindTexture(GL_TEXTURE_2D, GameSettings::Texture[4]);
-		gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGBA, imageTest.width, imageTest.height,GL_RGBA, GL_UNSIGNED_BYTE, imageTest.data);
+		gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGBA, image4.width, image4.height,GL_RGBA, GL_UNSIGNED_BYTE, image4.data);
 
 		printf("Loading the universe dude...");
+
 		BMPImage galaxyImg("galaxy24bit.bmp",false);
 		glGenTextures(1, &GameSettings::GameSettings::Texture[5]);
 		glBindTexture(GL_TEXTURE_2D, GameSettings::Texture[5]);
 		gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, galaxyImg.width, galaxyImg.height,GL_BGR, GL_UNSIGNED_BYTE, galaxyImg.data);
+
 		/*
 		glTexImage2D(GL_TEXTURE_2D, 0,GL_RGBA, imageTest.width, imageTest.height,0,
 							GL_RGBA, GL_UNSIGNED_BYTE, imageTest.data);*/

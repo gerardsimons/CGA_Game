@@ -54,13 +54,13 @@ void SpaceShip::display(){
 
 		glBegin(GL_QUADS);
 
-			glTexCoord2f(0.0f,0.0f);
-			glVertex3f(x,									y+GameSettings::AIRPLANE_SIZE[1],		1);
 			glTexCoord2f(0.0f,1.0f);
+			glVertex3f(x,									y+GameSettings::AIRPLANE_SIZE[1],		1);
+			glTexCoord2f(0.0f,0.0f);
 			glVertex3f(x,									y,										1);
-			glTexCoord2f(1.0f,1.0f);
-			glVertex3f(x+GameSettings::AIRPLANE_SIZE[0],	y,										1);
 			glTexCoord2f(1.0f,0.0f);
+			glVertex3f(x+GameSettings::AIRPLANE_SIZE[0],	y,										1);
+			glTexCoord2f(1.0f,1.0f);
 			glVertex3f(x+GameSettings::AIRPLANE_SIZE[0],	y+GameSettings::AIRPLANE_SIZE[1],		1);
 
 		glEnd();

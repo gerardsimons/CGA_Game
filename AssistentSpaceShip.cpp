@@ -37,7 +37,7 @@ void AssistentSpaceShip::display(){
 	newPivotY = calculateRelativeY();
 
 	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, GameSettings::Texture[0]);
+	glBindTexture(GL_TEXTURE_2D, GameSettings::Texture[4]);
 
 		//remember all states of the GPU
 		glPushAttrib(GL_ALL_ATTRIB_BITS);
@@ -57,13 +57,13 @@ void AssistentSpaceShip::display(){
 
 		glBegin(GL_QUADS);
 
-			glTexCoord2f(0.0f,0.0f);
-			glVertex3f((spaceShipPivotX+newPivotX-(GameSettings::ASSISTENT_SIZE[0]/2.0f)),	(spaceShipPivotY+newPivotY+(GameSettings::ASSISTENT_SIZE[1]/2.0f)),		1.02);
 			glTexCoord2f(0.0f,1.0f);
+			glVertex3f((spaceShipPivotX+newPivotX-(GameSettings::ASSISTENT_SIZE[0]/2.0f)),	(spaceShipPivotY+newPivotY+(GameSettings::ASSISTENT_SIZE[1]/2.0f)),		1.02);
+			glTexCoord2f(0.0f,0.0f);
 			glVertex3f((spaceShipPivotX+newPivotX-(GameSettings::ASSISTENT_SIZE[0]/2.0f)),	(spaceShipPivotY+newPivotY-(GameSettings::ASSISTENT_SIZE[1]/2.0f)),		1.02);
-			glTexCoord2f(1.0f,1.0f);
-			glVertex3f((spaceShipPivotX+newPivotX+(GameSettings::ASSISTENT_SIZE[0]/2.0f)),	(spaceShipPivotY+newPivotY-(GameSettings::ASSISTENT_SIZE[1]/2.0f)),		1.02);
 			glTexCoord2f(1.0f,0.0f);
+			glVertex3f((spaceShipPivotX+newPivotX+(GameSettings::ASSISTENT_SIZE[0]/2.0f)),	(spaceShipPivotY+newPivotY-(GameSettings::ASSISTENT_SIZE[1]/2.0f)),		1.02);
+			glTexCoord2f(1.0f,1.0f);
 			glVertex3f((spaceShipPivotX+newPivotX+(GameSettings::ASSISTENT_SIZE[0]/2.0f)),	(spaceShipPivotY+newPivotY+(GameSettings::ASSISTENT_SIZE[1]/2.0f)),		1.02);
 
 		glEnd();
