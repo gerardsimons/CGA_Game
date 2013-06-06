@@ -15,6 +15,7 @@
 #include "stdio.h"
 #include "Vec3D.h"
 #include "AssistentSpaceShip.h"
+#include "Model.h"
 
 class SpaceShip;
 //class AssistentSpaceShip;
@@ -36,6 +37,7 @@ public:
 
 	bool hasCollision( SpaceShip s );
 	bool hasCollision( AssistentSpaceShip * ass );
+	bool hasCollision( Model * boss );
 
 	bool outOfRange();
 };

@@ -39,8 +39,12 @@ DisplayModeType displayMode = GAME;
 clock_t initTimer;
 clock_t shootTimer;
 
+bool WIN = false;
+
 // current FLOW
 int CUR_FLOW = 2;
+//int CUR_FLOW = GameSettings::NUMBER_OF_FLOWS+1; // skip directly to final boss
+
 
 // BOSS FLOW ??
 bool bossEnabled = false;
@@ -75,52 +79,55 @@ void keyboard(unsigned char key, int x, int y)
 	{
 		case GAME:
 		{
-
-			if(key == 'd') // right
+			if(WIN == false)
 			{
-						printf("Move right \n");
-						playerSpaceShip.updateX(playerSpaceShip.getPositionX()+.05);
-						playerSpaceShip.getAssistent()->updatePivot(
-								(playerSpaceShip.getPositionX()+(GameSettings::AIRPLANE_SIZE[0]/2)),
-								(playerSpaceShip.getPositionY()+(GameSettings::AIRPLANE_SIZE[1]/2))
-						);
+				if(key == 'd') // right
+				{
+							//printf("Move right \n");
+							playerSpaceShip.updateX(playerSpaceShip.getPositionX()+.05);
+							playerSpaceShip.getAssistent()->updatePivot(
+									(playerSpaceShip.getPositionX()+(GameSettings::AIRPLANE_SIZE[0]/2)),
+									(playerSpaceShip.getPositionY()+(GameSettings::AIRPLANE_SIZE[1]/2))
+							);
 
 
-			}
-			if(key == 'a') // left
-			{
-						printf("Move left \n");
-						playerSpaceShip.updateX(playerSpaceShip.getPositionX()-.05);
-						playerSpaceShip.getAssistent()->updatePivot(
-								(playerSpaceShip.getPositionX()+(GameSettings::AIRPLANE_SIZE[0]/2)),
-								(playerSpaceShip.getPositionY()+(GameSettings::AIRPLANE_SIZE[1]/2))
-						);
+				}
+				if(key == 'a') // left
+				{
+							//printf("Move left \n");
+							playerSpaceShip.updateX(playerSpaceShip.getPositionX()-.05);
+							playerSpaceShip.getAssistent()->updatePivot(
+									(playerSpaceShip.getPositionX()+(GameSettings::AIRPLANE_SIZE[0]/2)),
+									(playerSpaceShip.getPositionY()+(GameSettings::AIRPLANE_SIZE[1]/2))
+							);
 
-			}
-			if(key == 'w')	//up
-			{
-						printf("Move up \n");
-						playerSpaceShip.updateY(playerSpaceShip.getPositionY()+.05);
-						playerSpaceShip.getAssistent()->updatePivot(
-								(playerSpaceShip.getPositionX()+(GameSettings::AIRPLANE_SIZE[0]/2)),
-								(playerSpaceShip.getPositionY()+(GameSettings::AIRPLANE_SIZE[1]/2))
-						);
+				}
+				if(key == 'w')	//up
+				{
+							//printf("Move up \n");
+							playerSpaceShip.updateY(playerSpaceShip.getPositionY()+.05);
+							playerSpaceShip.getAssistent()->updatePivot(
+									(playerSpaceShip.getPositionX()+(GameSettings::AIRPLANE_SIZE[0]/2)),
+									(playerSpaceShip.getPositionY()+(GameSettings::AIRPLANE_SIZE[1]/2))
+							);
 
-			}
-			if(key == 's')	//down
-			{
-						printf("Move down \n");
-						playerSpaceShip.updateY(playerSpaceShip.getPositionY()-.05);
-						playerSpaceShip.getAssistent()->updatePivot(
-								(playerSpaceShip.getPositionX()+(GameSettings::AIRPLANE_SIZE[0]/2)),
-								(playerSpaceShip.getPositionY()+(GameSettings::AIRPLANE_SIZE[1]/2))
-						);
+				}
+				if(key == 's')	//down
+				{
+							//printf("Move down \n");
+							playerSpaceShip.updateY(playerSpaceShip.getPositionY()-.05);
+							playerSpaceShip.getAssistent()->updatePivot(
+									(playerSpaceShip.getPositionX()+(GameSettings::AIRPLANE_SIZE[0]/2)),
+									(playerSpaceShip.getPositionY()+(GameSettings::AIRPLANE_SIZE[1]/2))
+							);
 
-			}
-			if(key == ' ')	//shoot
-			{
-					printf("Fire!!! \n");
-					playerSpaceShip.shoot();
+				}
+				if(key == ' ')	//shoot
+				{
+						printf("Fire!!! \n");
+						playerSpaceShip.shoot();
+				}
+
 			}
 			break;
 		}
@@ -231,8 +238,12 @@ void draw( )
 	}
 
 	terrain->display();
-	boss->drawModel();
-	boss->drawBossBullets();
+
+	if(bossEnabled)
+	{
+		boss->drawModel();
+		boss->drawBossBullets();
+	}
 
 	// render assistent
 	playerSpaceShip.getAssistent()->display();
@@ -258,6 +269,16 @@ void updateCamera()
 
 void animate()
 {
+	if(WIN && playerSpaceShip.getPositionX()<5)
+	{
+		playerSpaceShip.updateX(playerSpaceShip.getPositionX()+.05);
+		playerSpaceShip.getAssistent()->updatePivot(
+				(playerSpaceShip.getPositionX()+(GameSettings::AIRPLANE_SIZE[0]/2)),
+				(playerSpaceShip.getPositionY()+(GameSettings::AIRPLANE_SIZE[1]/2))
+		);
+	}
+
+
 	//boss->rotate(0.0f,0.7f,0.0f);
 	// TODO: doesnt work yet
 	if(bossEnabled == true && (boss->getPositionX() > 3.0f) )
@@ -272,7 +293,7 @@ void animate()
 		playerSpaceShip.getBulletList()->at(i).updateX( curBullet.getPositionX()+GameSettings::BULLET_SPEED  );
 	}
 
-	// TODO: SIMPLIFY... // not working propper..., still called in OpponentSpaceShip
+	// TODO: SIMPLIFY... // not working proper..., still called in OpponentSpaceShip
 
 	// animate opponent's bullets
 	for (unsigned int j = 0; j< opponents.size(); j++ )
@@ -297,10 +318,10 @@ void animate()
 	// BUG: multiple planes on same position --> bullit collision -> error
 	std::vector< int > dumpBulList;
 	std::vector< int > dumpOppList;
+
 	/*
 	 * BULLET --> OPPONENT // ASSISTENT UPDATE
 	 */
-
 	// detect collision
 	for(unsigned int i = 0; i<playerSpaceShip.getBulletList()->size(); i++)
 	{
@@ -313,11 +334,33 @@ void animate()
 		{
 			for (unsigned int j = 0; j< opponents.size(); j++ )
 			{
-				if( playerSpaceShip.getBulletList()->at(i).hasCollision( opponents.at(j) ) ) // collision with a bullet?
+				if( playerSpaceShip.getBulletList()->at(i).hasCollision( opponents.at(j) ) ) // hit opponentSpaceShip?
 				{
 					// register in order to avoid problems within the for loop
 					dumpOppList.push_back( j );
 					dumpBulList.push_back( i );
+				}
+			}
+			if( bossEnabled )
+			{
+				//printf("Positions PLAYER: %f;  %f\n", playerSpaceShip.getPositionX(), playerSpaceShip.getPositionY());
+				//printf("Positions BOSS: %f;  %f\n", boss->getPositionX(), boss->getPositionY());
+				if( playerSpaceShip.getBulletList()->at(i).hasCollision( boss ) ) // hit Final Boss?
+				{
+					// register in order to avoid problems within the for loop
+					dumpBulList.push_back( i );
+					boss->decreaseHealth();
+					printf( "BOSS HEALTH %f \n", boss->getHealth() );
+					if( boss->getHealth() <= 0 )
+					{
+						bossEnabled = false;
+
+						printf("YOU WIN");
+
+						WIN = true;
+						//TODO boss needs to be killed
+						//boss->kill();
+					}
 				}
 			}
 		}
@@ -358,6 +401,7 @@ void animate()
 			{
 				// register in order to avoid problems within the for loop
 				printf("# Collision with bullet: WE ARE HIT!! \n");
+				playerSpaceShip.decreaseHealth();
 				dumpBulList.push_back( i );
 			}
 		}
@@ -370,17 +414,69 @@ void animate()
 		dumpBulList.clear();
 	}
 
+
+	/*
+	 * FINAL BOSS BULLET --> OPPONENT UPDATE
+	 */
+	for(unsigned int i = 0; i< boss->getBulletList()->size(); i++)
+	{
+		Bullet curBullet = boss->getBulletList()->at(i);
+		if( curBullet.hasCollision( playerSpaceShip.getAssistent() ) )	// bullit out of range ?
+		{
+			printf("# BAM!!! Saved by the bell =) \n");
+			// register in order to avoid problems within the for loop
+			dumpBulList.push_back( i );
+		}
+
+		if( curBullet.hasCollision( playerSpaceShip ) ) // collision with a bullet?
+		{
+			// register in order to avoid problems within the for loop
+			printf("# Collision with bullet of FINAL BOSS: WE ARE HIT!! \n");
+			playerSpaceShip.decreaseHealth();
+			dumpBulList.push_back( i );
+		}
+
+	}
+	// remove bullets
+	for(unsigned int i = 0; i< dumpBulList.size(); i++)
+	{
+		playerSpaceShip.removeBullet( dumpBulList.at(i) );
+	}
+	dumpBulList.clear();
+	// remove opponents
+	for(unsigned int i = 0; i< dumpOppList.size(); i++)
+	{
+		opponents.erase( opponents.begin() + dumpOppList.at(i) );
+	}
+	dumpOppList.clear();
+
+
 	/*
 	 * SHIP --> OPPONENT UPDATE
 	 */
+
+	// TODO remove opponent after collision
 	for (unsigned int j = 0; j< opponents.size(); j++ )
 	{
 		if( playerSpaceShip.hasCollision( opponents.at(j) ) ) // collision with an opponent
 		{
+			printf("Collision with opponent \n");
 			// register in order to avoid problems within the for loop
-			printf("game over!! \n");
+			playerSpaceShip.decreaseHealth();
+			dumpOppList.push_back( j );
 		}
 	}
+
+	// remove opponents
+	for(unsigned int i = 0; i< dumpOppList.size(); i++)
+	{
+		// TODO remove bullets first???
+		//opponents.erase( opponents.begin() + dumpOppList.at(i) );
+	}
+	dumpOppList.clear();
+
+
+
 
 	// animate opponents
 	for(unsigned int i = 0; i<opponents.size(); i++)
@@ -405,7 +501,7 @@ void opponentFlow()
 
 			if( CUR_FLOW >= GameSettings::NUMBER_OF_FLOWS )
 			{
-				// TODO eindbaas
+				if ( (boss->getHealth() > 0) )
 				bossEnabled = true;
 			}
 			else
@@ -443,7 +539,10 @@ void opponentFlow()
 	}
 	// final boss shoots
 	// TODO dirty fix CUR_FLOW-1
-	else if( (CUR_FLOW-1) >= GameSettings::NUMBER_OF_FLOWS && ( (float)currentTimer - (float)shootTimer ) > GameSettings::NEXT_FLOW_TIME )
+	else if( (CUR_FLOW-1) >= GameSettings::NUMBER_OF_FLOWS &&
+			 ((float)currentTimer - (float)shootTimer ) > GameSettings::NEXT_FLOW_TIME &&
+			 bossEnabled
+			)
 	{
 		shootTimer = currentTimer;
 		printf(" BOSS: INCOMING \n");
@@ -627,7 +726,7 @@ void display(void)
     tbVisuTransform(); // origine et orientation de la scene
     */
 
-    drawCoordSystem();
+    //drawCoordSystem();
 
     opponentFlow();
 

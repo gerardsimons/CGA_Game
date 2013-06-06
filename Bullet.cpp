@@ -165,6 +165,45 @@ bool Bullet::hasCollision( AssistentSpaceShip * ass )
 
 }
 
+bool Bullet::hasCollision( Model * boss )
+{
+	//printf("within x area??  (%f < %f < %f) \n", (boss->getPositionY()-GameSettings::FINAL_BOSS_SIZE[1]/2), y, (boss->getPositionY()+GameSettings::FINAL_BOSS_SIZE[1]/2));
+
+	if( x >= boss->getPositionX()-GameSettings::FINAL_BOSS_SIZE[0] && x <= (boss->getPositionX()+GameSettings::FINAL_BOSS_SIZE[0])
+			&&
+			(y+GameSettings::BULLET_SIZE[1]) >= boss->getPositionY()-GameSettings::FINAL_BOSS_SIZE[1] && (y+GameSettings::BULLET_SIZE[1]) <= boss->getPositionY()+GameSettings::FINAL_BOSS_SIZE[1]
+		)
+		{
+			return true;
+		}
+		else if( x >= boss->getPositionX()-GameSettings::FINAL_BOSS_SIZE[0] && x <= boss->getPositionX()+GameSettings::FINAL_BOSS_SIZE[0]
+			&&
+			(y) >= boss->getPositionY()-GameSettings::FINAL_BOSS_SIZE[1] && y <= boss->getPositionY()+GameSettings::FINAL_BOSS_SIZE[1]
+		)
+		{
+			return true;
+		}
+		else if( (x+GameSettings::BULLET_SIZE[0]) >= boss->getPositionX()-GameSettings::FINAL_BOSS_SIZE[0] && (x+GameSettings::BULLET_SIZE[0]) <= boss->getPositionX()+GameSettings::FINAL_BOSS_SIZE[0]
+			&&
+			y >= boss->getPositionY()-GameSettings::FINAL_BOSS_SIZE[1] && y <= boss->getPositionY()+GameSettings::FINAL_BOSS_SIZE[1]
+		)
+		{
+			return true;
+		}
+		else if( (x+GameSettings::BULLET_SIZE[0]) >= boss->getPositionX()-GameSettings::FINAL_BOSS_SIZE[0] && (x+GameSettings::BULLET_SIZE[0]) <= boss->getPositionX()+GameSettings::FINAL_BOSS_SIZE[0]
+			&&
+			(y+GameSettings::BULLET_SIZE[1]) >= boss->getPositionY()-GameSettings::FINAL_BOSS_SIZE[1] && (y+GameSettings::BULLET_SIZE[1]) <= boss->getPositionY()+GameSettings::FINAL_BOSS_SIZE[1]
+		)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+
+}
+
 bool Bullet::outOfRange()
 {
 	if( abs(x) > GameSettings::MAX_RANGE  )	{ return true; }

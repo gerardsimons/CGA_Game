@@ -12,7 +12,7 @@
 #include "Vec3D.h"
 #include <vector>
 #include "GameSettings.h"
-#include "Bullet.h"
+class Bullet;
 
 class Model {
 public:
@@ -25,6 +25,7 @@ public:
 	Vec3Df ambientLighting(Vec3Df &color);
 	void drawModel();
 	float getPositionX();
+	float getPositionY();
 	void move(float,float,float);
 	void rotate(float,float,float);
 	virtual ~Model();
@@ -32,6 +33,9 @@ public:
 	void shoot();
 	void drawBossBullets();
 	std::vector<Bullet> * getBulletList();
+	void removeBullet( int index );
+	void decreaseHealth();
+	float getHealth();
 private:
 	Mesh mesh;
 	float x;
@@ -44,6 +48,7 @@ private:
 	std::vector<Vec3Df> MeshMaterial;
 
 	std::vector<Bullet> * bullitsShot;
+	float health;
 };
 
 #endif /* MODEL_H_ */

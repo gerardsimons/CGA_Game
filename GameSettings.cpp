@@ -16,9 +16,13 @@ GameSettings::~GameSettings() {
 	// TODO Auto-generated destructor stub
 }
 
+float GameSettings::INIT_HEALTH = 5;
+float GameSettings::INIT_HEALTH_FINAL_BOSS = 50;
+
 float GameSettings::GAME_SPEED = .02;
 float GameSettings::AIRPLANE_SIZE[] = {.6, .3};
 float GameSettings::ASSISTENT_SIZE[] = {.2, .1};
+float GameSettings::FINAL_BOSS_SIZE[] = {1, .7};
 float GameSettings::BULLET_SIZE[] = {.1, .05};
 float GameSettings::OPPONENT_SPEED = .005;
 float GameSettings::BULLET_SPEED = 0.02;

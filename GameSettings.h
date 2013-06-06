@@ -17,9 +17,13 @@
 
 class GameSettings {
 public:
+	static float INIT_HEALTH;
+	static float INIT_HEALTH_FINAL_BOSS;
+
 	static float GAME_SPEED;
 	static float AIRPLANE_SIZE[];
 	static float ASSISTENT_SIZE[];
+	static float FINAL_BOSS_SIZE[];
 	static float BULLET_SIZE[];
 	static float OPPONENT_SPEED;
 	static float BULLET_SPEED;

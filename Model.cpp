@@ -6,6 +6,7 @@
  */
 
 #include "Model.h"
+#include "Bullet.h"
 
 Model::Model(const char* fileName,float x,float y, float z)
 {
@@ -18,6 +19,7 @@ Model::Model(const char* fileName,float x,float y, float z)
 	loadMesh(fileName);
 
 	bullitsShot = new std::vector<Bullet>();
+	health = GameSettings::INIT_HEALTH_FINAL_BOSS;
 }
 
 Model::~Model() {
@@ -122,17 +124,17 @@ Vec3Df Model::computeLighting(Vec3Df & vertexPos, Vec3Df & normal, unsigned int 
 
 void Model::drawModel()
 {
-	computeLighting();
+		computeLighting();
 
-	glPushMatrix();
-	//glRotatef(rotX,1,0,0);
-	//glRotatef(rotY,0,1,0);
-	//glRotatef(rotZ,0,0,1);
-	glTranslatef(x,y,z);
+		glPushMatrix();
+		//glRotatef(rotX,1,0,0);
+		//glRotatef(rotY,0,1,0);
+		//glRotatef(rotZ,0,0,1);
+		glTranslatef(x,y,z);
 
-	mesh.drawWithColors(lighting);
+		mesh.drawWithColors(lighting);
 
-	glPopMatrix();
+		glPopMatrix();
 
 }
 
@@ -140,6 +142,11 @@ float Model::getPositionX()
 {
 	return this->x;
 }
+float Model::getPositionY()
+{
+	return this->y;
+}
+
 void Model::shoot(){
 
 	Bullet b1 = Bullet(this->x, (this->y), 	-1);
@@ -165,4 +172,20 @@ void Model::drawBossBullets()
 std::vector<Bullet> * Model::getBulletList()
 {
 	return bullitsShot;
+}
+
+void Model::removeBullet( int index )
+{
+	//printf( "removebullet: %f", bullitsShot.at(index).getPositionX() );
+	bullitsShot->erase( bullitsShot->begin() + index );
+}
+
+void Model::decreaseHealth()
+{
+	health--;
+}
+
+float Model::getHealth()
+{
+	return health;
 }

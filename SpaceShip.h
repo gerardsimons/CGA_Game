@@ -25,6 +25,7 @@
 
 class SpaceShip {
 protected:
+	float health;
 	Vec3Df position;
 	float direction;
 	float speed;
@@ -51,6 +52,8 @@ public:
 	bool hasCollision( SpaceShip s );
 
 	AssistentSpaceShip * getAssistent();
+
+	void decreaseHealth();
 };
 
 #endif /* SPACESHIP_H */

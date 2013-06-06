@@ -14,6 +14,7 @@ SpaceShip::SpaceShip(){}
 
 SpaceShip::SpaceShip(float x, float y) {
 	printf("Hi, I'm a weird SpaceShip \n");
+	health = GameSettings::INIT_HEALTH;
 	position  = Vec3Df(x,y,0.0f);
 	bullitsShot = new std::vector<Bullet>();
 	assSpaceShip = AssistentSpaceShip(
@@ -158,4 +159,13 @@ bool SpaceShip::hasCollision( SpaceShip s )
 AssistentSpaceShip * SpaceShip::getAssistent()
 {
 	return &(assSpaceShip);
+}
+
+void SpaceShip::decreaseHealth()
+{
+
+	health--;
+	printf("CURRENT HEALTH: %f\n", health);
+	if (health <= 0)
+		printf("GAME OVER\n");	// todo game over handling
 }
