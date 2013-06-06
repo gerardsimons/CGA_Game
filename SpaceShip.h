@@ -31,6 +31,7 @@ protected:
 	float speed;
 	std::vector<Bullet> * bullitsShot;
 	AssistentSpaceShip assSpaceShip;
+	bool lock;
 
 public:
 	SpaceShip();
@@ -54,6 +55,10 @@ public:
 	AssistentSpaceShip * getAssistent();
 
 	void decreaseHealth();
+
+
+	void setBulletLock( bool l );
+	bool getBulletLock();
 };
 
 #endif /* SPACESHIP_H */

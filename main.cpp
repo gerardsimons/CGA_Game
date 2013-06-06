@@ -42,6 +42,8 @@ DisplayModeType displayMode = GAME;
 // timer
 clock_t initTimer;
 clock_t shootTimer;
+clock_t playerShootTimer = 0;
+
 
 bool WIN = false;
 
@@ -49,6 +51,9 @@ bool WIN = false;
 int CUR_FLOW = 2;
 //int CUR_FLOW = GameSettings::NUMBER_OF_FLOWS+1; // skip directly to final boss
 
+
+// ANIMATION STEP BOSS
+float sinX = 0.0;
 
 // BOSS FLOW ??
 bool bossEnabled = false;
@@ -130,6 +135,7 @@ void keyboard(unsigned char key, int x, int y)
 				{
 						printf("Fire!!! \n");
 						playerSpaceShip.shoot();
+						playerShootTimer = clock();
 				}
 
 			}
@@ -288,8 +294,23 @@ void animate()
 		);
 	}
 
-
-
+	/*
+	 * BULLET LOCK
+	 */
+	// todo not perfectly working yet
+	clock_t currentTimer = clock();
+	//printf("-BULLET LOCK CHECK; cur[ %f ] - pstime[ %f ] > BUL_LOCK[ %f ]\n", (float)currentTimer, (float)playerShootTimer, GameSettings::BULLET_LOCK );
+	if( ( (float)currentTimer - (float)playerShootTimer ) > GameSettings::BULLET_LOCK && playerSpaceShip.getBulletLock() )
+	{
+		//printf("unlocked\n");
+		playerShootTimer = (float)currentTimer;
+		playerSpaceShip.setBulletLock(false);
+	}
+	else if ( ((float)currentTimer - (float)playerShootTimer) <= GameSettings::BULLET_LOCK && !playerSpaceShip.getBulletLock() )
+	{
+		//printf("locked\n");
+		playerSpaceShip.setBulletLock(true);
+	}
 
 	//LightManager::moveLight(0,.1f,0,0);
 
@@ -298,6 +319,16 @@ void animate()
 	if(bossEnabled == true && (boss->getPositionX() > 3.0f) )
 	{
 		boss->move(-0.02f, 0.0f, 0.0f);
+	}
+	else if(bossEnabled == true && (boss->getPositionX() <= 3.0f) )
+	{
+		sinX+=0.1f;
+
+
+		//printf("BOSS Y %f \n", ((float)0.1*sin(sinX)));
+
+		boss->moveToY(((float)0.5*sin(sinX)+1.0f));
+		printf("BOSS Y %f \n", boss->getPositionY());
 	}
 
 	// animate player's bullets

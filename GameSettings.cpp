@@ -28,13 +28,15 @@ float GameSettings::OPPONENT_SPEED = .005;
 float GameSettings::BULLET_SPEED = 0.02;
 float GameSettings::ASSISENT_RADIUS = .4;
 
-int GameSettings::NUMBER_OF_FLOWS = 3;
+int GameSettings::NUMBER_OF_FLOWS = 2;
 
 float GameSettings::MAX_RANGE = 4;
 
 //float GameSettings::NEXT_FLOW_TIME = 1500000;
 
 float GameSettings::NEXT_FLOW_TIME = 5000000;
+
+float GameSettings::BULLET_LOCK = 50000;
 
 
 //float GameSettings::PI = 3.14159265;

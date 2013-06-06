@@ -35,6 +35,8 @@ public:
 
 	static float NEXT_FLOW_TIME;
 
+	static float BULLET_LOCK;
+
 	static Vec3Df CamRot;
 	static Vec3Df CamPos;
 

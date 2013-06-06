@@ -61,6 +61,12 @@ void Model::move(float deltaX, float deltaY, float deltaZ)
 	z += deltaZ;
 }
 
+void Model::moveToY(float deltaY)
+{
+	y = deltaY;
+}
+
+
 void Model::rotate(float rotXDelta, float rotYDelta, float rotZDelta)
 {
 	rotX += rotXDelta;

@@ -29,6 +29,7 @@ public:
 	float getPositionX();
 	float getPositionY();
 	void move(float,float,float);
+	void moveToY(float);
 	void rotate(float,float,float);
 	virtual ~Model();
 
