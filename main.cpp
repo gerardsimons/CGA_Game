@@ -11,6 +11,7 @@
 #include "SpaceShip.h"
 #include "OpponentSpaceShip.h"
 #include "GameSettings.h"
+#include "Background.h"
 
 #include "BMPImage.h"
 
@@ -44,8 +45,6 @@ DisplayModeType displayMode = GAME;
 // timer
 clock_t initTimer;
 clock_t shootTimer;
-clock_t playerShootTimer = 0;
-
 
 bool WIN = false;
 
@@ -53,9 +52,6 @@ bool WIN = false;
 int CUR_FLOW = 2;
 //int CUR_FLOW = GameSettings::NUMBER_OF_FLOWS+1; // skip directly to final boss
 
-
-// ANIMATION STEP BOSS
-float sinX = 0.0;
 
 // BOSS FLOW ??
 bool bossEnabled = false;
@@ -66,6 +62,7 @@ void updateCamera();
 
 Terrain *terrain;
 Model *boss;
+Background *background;
 
 void drawLights();
 
@@ -137,7 +134,6 @@ void keyboard(unsigned char key, int x, int y)
 				{
 						printf("Fire!!! \n");
 						playerSpaceShip.shoot();
-						playerShootTimer = clock();
 				}
 
 			}
@@ -238,7 +234,7 @@ void dealWithUserInput(int x, int y)
 
 void draw( )
 {
-
+	background->draw();
 	terrain->display();
 	drawLights();
 	// render player spaceship
@@ -297,23 +293,8 @@ void animate()
 		);
 	}
 
-	/*
-	 * BULLET LOCK
-	 */
-	// todo not perfectly working yet
-	clock_t currentTimer = clock();
-	//printf("-BULLET LOCK CHECK; cur[ %f ] - pstime[ %f ] > BUL_LOCK[ %f ]\n", (float)currentTimer, (float)playerShootTimer, GameSettings::BULLET_LOCK );
-	if( ( (float)currentTimer - (float)playerShootTimer ) > GameSettings::BULLET_LOCK && playerSpaceShip.getBulletLock() )
-	{
-		//printf("unlocked\n");
-		playerShootTimer = (float)currentTimer;
-		playerSpaceShip.setBulletLock(false);
-	}
-	else if ( ((float)currentTimer - (float)playerShootTimer) <= GameSettings::BULLET_LOCK && !playerSpaceShip.getBulletLock() )
-	{
-		//printf("locked\n");
-		playerSpaceShip.setBulletLock(true);
-	}
+
+
 
 	//LightManager::moveLight(0,.1f,0,0);
 
@@ -322,13 +303,6 @@ void animate()
 	if(bossEnabled == true && (boss->getPositionX() > 3.0f) )
 	{
 		boss->move(-0.02f, 0.0f, 0.0f);
-	}
-	else if(bossEnabled == true && (boss->getPositionX() <= 3.0f) )
-	{
-		sinX+=0.1f;
-		boss->moveToY(((float)0.5*sin(sinX)+1.0f));
-		// TODO: vary x
-		//boss->moveToX(((float)0.5*sin(sinX)+3.0f));
 	}
 
 	// animate player's bullets
@@ -462,12 +436,12 @@ void animate()
 
 
 	/*
-	 * FINAL BOSS BULLET --> PLAYER UPDATE
+	 * FINAL BOSS BULLET --> OPPONENT UPDATE
 	 */
 	for(unsigned int i = 0; i< boss->getBulletList()->size(); i++)
 	{
 		Bullet curBullet = boss->getBulletList()->at(i);
-		if( curBullet.hasCollision( playerSpaceShip.getAssistent() ) )	// bullet out of range ?
+		if( curBullet.hasCollision( playerSpaceShip.getAssistent() ) )	// bullit out of range ?
 		{
 			printf("# BAM!!! Saved by the bell =) \n");
 			// register in order to avoid problems within the for loop
@@ -486,7 +460,7 @@ void animate()
 	// remove bullets
 	for(unsigned int i = 0; i< dumpBulList.size(); i++)
 	{
-		boss->removeBullet( dumpBulList.at(i) );
+		playerSpaceShip.removeBullet( dumpBulList.at(i) );
 	}
 	dumpBulList.clear();
 	// remove opponents
@@ -500,6 +474,8 @@ void animate()
 	/*
 	 * SHIP --> OPPONENT UPDATE
 	 */
+
+	// TODO remove opponent after collision
 	for (unsigned int j = 0; j< opponents.size(); j++ )
 	{
 		if( playerSpaceShip.hasCollision( opponents.at(j) ) ) // collision with an opponent
@@ -510,31 +486,15 @@ void animate()
 			dumpOppList.push_back( j );
 		}
 	}
+
 	// remove opponents
 	for(unsigned int i = 0; i< dumpOppList.size(); i++)
 	{
-		opponents.erase( opponents.begin() + dumpOppList.at(i) );
+		// TODO remove bullets first???
+		//opponents.erase( opponents.begin() + dumpOppList.at(i) );
 	}
 	dumpOppList.clear();
 
-	/*
-	 * OPPONENT --> ASSISTENT SPACESHIP
-	 */
-	for (unsigned int j = 0; j< opponents.size(); j++ )
-	{
-		if( opponents.at(j).hasCollision( playerSpaceShip.getAssistent() ) ) // assisten hits opponent?
-		{
-			printf("Assistent collision with opponent \n");
-			// register in order to avoid problems within the for loop
-			dumpOppList.push_back( j );
-		}
-	}
-	// remove opponents
-	for(unsigned int i = 0; i< dumpOppList.size(); i++)
-	{
-		opponents.erase( opponents.begin() + dumpOppList.at(i) );
-	}
-	dumpOppList.clear();
 
 
 
@@ -626,28 +586,29 @@ void initLights()
 void initTextures()
 {
 
-		GameSettings::Texture.resize(5);
+		GameSettings::Texture.resize(6);
 		GameSettings::Texture[0]=0;
 		GameSettings::Texture[1]=0;
 		GameSettings::Texture[2]=0;
 		GameSettings::Texture[3]=0;
 		GameSettings::Texture[4]=0;
+		GameSettings::Texture[5]=0;
 
-		PPMImage image("ufo_small.ppm");
+		PPMImage image("ufo.ppm");
 		glGenTextures(1, &GameSettings::Texture[0]);
 		glBindTexture(GL_TEXTURE_2D, GameSettings::Texture[0]);
 		gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, image.sizeX, image.sizeY,
 			GL_RGB, GL_UNSIGNED_BYTE, image.data);
 		glBindTexture(GL_TEXTURE_2D, 0);
 
-		PPMImage image2("ufo_opp_small.ppm");
+		PPMImage image2("ufo_opp.ppm");
 		glGenTextures(1, &GameSettings::Texture[1]);
 		glBindTexture(GL_TEXTURE_2D, GameSettings::Texture[1]);
 		gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, image2.sizeX, image2.sizeY,
 			GL_RGB, GL_UNSIGNED_BYTE, image2.data);
 		glBindTexture(GL_TEXTURE_2D, 1);
 
-		PPMImage image3("bullet_small.ppm");
+		PPMImage image3("bullet.ppm");
 		glGenTextures(1, &GameSettings::Texture[2]);
 		glBindTexture(GL_TEXTURE_2D, GameSettings::Texture[2]);
 		gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, image3.sizeX, image3.sizeY,
@@ -660,35 +621,19 @@ void initTextures()
 		gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, imageSand.sizeX, imageSand.sizeY,
 			GL_RGB, GL_UNSIGNED_BYTE, imageSand.data);
 
-
-
-
-		BMPImage imageTest("ufo_opp2.bmp");
+		BMPImage imageTest("ufo_opp2.bmp",true);
 		glGenTextures(1, &GameSettings::GameSettings::Texture[4]);
 		glBindTexture(GL_TEXTURE_2D, GameSettings::Texture[4]);
+		gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGBA, imageTest.width, imageTest.height,GL_RGBA, GL_UNSIGNED_BYTE, imageTest.data);
 
-
+		printf("Loading the universe dude...");
+		BMPImage galaxyImg("giant-galaxy.bmp",false);
+		glGenTextures(1, &GameSettings::GameSettings::Texture[5]);
+		glBindTexture(GL_TEXTURE_2D, GameSettings::Texture[5]);
+		gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, galaxyImg.width, galaxyImg.height,GL_RGB, GL_UNSIGNED_BYTE, galaxyImg.data);
 		/*
 		glTexImage2D(GL_TEXTURE_2D, 0,GL_RGBA, imageTest.width, imageTest.height,0,
 							GL_RGBA, GL_UNSIGNED_BYTE, imageTest.data);*/
-		gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGBA, imageTest.width, imageTest.height,
-					GL_RGBA, GL_UNSIGNED_BYTE, imageTest.data);
-
-
-
-
-
-		/*
-		bool hasAlpha = true;
-		PNGImage imageTest("test.png",hasAlpha);
-		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-		glGenTextures(1, &GameSettings::GameSettings::Texture[4]);
-		glBindTexture(GL_TEXTURE_2D, GameSettings::Texture[4]);
-
-		gluBuild2DMipmaps(GL_TEXTURE_2D, 4, imageTest.sizeX, imageTest.sizeY,
-					GL_RGBA, GL_UNSIGNED_BYTE, imageTest.data);
-*/
-
 
 }
 
@@ -729,45 +674,10 @@ void mouseMotion(int x, int y){
     updateCamera();
 
     mousePassive(x, y);
+
+
+
     glutPostRedisplay();
-}
-void orthogonalStart()
-{
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadIdentity();
-    gluOrtho2D(-W_fen/2, W_fen/2, -H_fen/2, H_fen/2);
-    glMatrixMode(GL_MODELVIEW);
-}
-
-void orthogonalEnd()
-{
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
-    glMatrixMode(GL_MODELVIEW);
-}
-
-void background()
-{
-    glBindTexture( GL_TEXTURE_2D, GameSettings::Texture[1] );
-
-    orthogonalStart();
-
-    // texture width/height
-    const int iw = 500;
-    const int ih = 500;
-
-    glPushMatrix();
-    glTranslatef( -iw/2, -ih/2, 0 );
-    glBegin(GL_QUADS);
-        glTexCoord2i(0,0); glVertex2i(0, 0);
-        glTexCoord2i(1,0); glVertex2i(iw, 0);
-        glTexCoord2i(1,1); glVertex2i(iw, ih);
-        glTexCoord2i(0,1); glVertex2i(0, ih);
-    glEnd();
-    glPopMatrix();
-
-    orthogonalEnd();
 }
 
 int main(int argc, char** argv)
@@ -791,14 +701,12 @@ int main(int argc, char** argv)
 
     updateCamera();
 
-
-
-
     // Game Set Up
     spaceShipSetUp();
 
     terrain = new Terrain(10,10,.125f,-5.0f,-5.0f);
     boss = new Model("ufo_v3.obj",6,1,1);
+    background = new Background(-150,-85,-100,300,170);
 
     // set initial timer
     initTimer = clock();
@@ -878,7 +786,7 @@ void display(void)
 
     glEnable( GL_TEXTURE_2D );
 
-    background();
+
 
     //glLoadIdentity();  // repere camera
     //tbVisuTransform(); // origine et orientation de la scene

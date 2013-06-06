@@ -7,8 +7,8 @@
 
 #include "BMPImage.h"
 
-BMPImage::BMPImage(const char* imagePath) {
-	loadTexture(imagePath);
+BMPImage::BMPImage(const char* imagePath, bool hasAlpha) {
+	loadTexture(imagePath, hasAlpha);
 	// TODO Auto-generated constructor stub
 
 }
@@ -17,7 +17,7 @@ BMPImage::~BMPImage() {
 	// TODO Auto-generated destructor stub
 }
 
-bool BMPImage::loadTexture(const char* imagepath)
+bool BMPImage::loadTexture(const char* imagepath, int alpha)
 {
 
 
@@ -48,7 +48,7 @@ bool BMPImage::loadTexture(const char* imagepath)
 	    height     = *(int*)&(header[0x16]);
 
 	    // Some BMP files are misformatted, guess missing information
-	    imageSize=width*height*4; // 3 : one byte for each Red, Green and Blue component
+	    imageSize=width*height*(3+alpha); // 3 : one byte for each Red, Green and Blue component
 	    if (dataPos==0)      dataPos=500; // The BMP header is done that way
 
 	    // Create a buffer

@@ -19,10 +19,10 @@
 
 class BMPImage {
 public:
-	BMPImage(const char* imagePath);
+	BMPImage(const char* imagePath,bool hasAlpha);
 	int width,height;
 	GLubyte *data;
-	bool loadTexture(const char* imagePath);
+	bool loadTexture(const char* imagePath, int alpha);
 	virtual ~BMPImage();
 };
 
