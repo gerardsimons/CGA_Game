@@ -431,12 +431,12 @@ void animate()
 
 
 	/*
-	 * FINAL BOSS BULLET --> OPPONENT UPDATE
+	 * FINAL BOSS BULLET --> PLAYER UPDATE
 	 */
 	for(unsigned int i = 0; i< boss->getBulletList()->size(); i++)
 	{
 		Bullet curBullet = boss->getBulletList()->at(i);
-		if( curBullet.hasCollision( playerSpaceShip.getAssistent() ) )	// bullit out of range ?
+		if( curBullet.hasCollision( playerSpaceShip.getAssistent() ) )	// bullet out of range ?
 		{
 			printf("# BAM!!! Saved by the bell =) \n");
 			// register in order to avoid problems within the for loop
@@ -455,15 +455,10 @@ void animate()
 	// remove bullets
 	for(unsigned int i = 0; i< dumpBulList.size(); i++)
 	{
-		playerSpaceShip.removeBullet( dumpBulList.at(i) );
+		boss->removeBullet( dumpBulList.at(i) );
 	}
 	dumpBulList.clear();
-	// remove opponents
-	for(unsigned int i = 0; i< dumpOppList.size(); i++)
-	{
-		opponents.erase( opponents.begin() + dumpOppList.at(i) );
-	}
-	dumpOppList.clear();
+
 
 
 	/*
