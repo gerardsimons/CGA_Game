@@ -80,3 +80,40 @@ void OpponentSpaceShip::shoot(){
 	//printf("I have shot %d times \n", bullitsShot.size());
 
 }
+
+bool OpponentSpaceShip::hasCollision( AssistentSpaceShip * ass )
+{
+	if( position[0] >= ass->getPositionX() && position[0] <= (ass->getPositionX()+GameSettings::ASSISTENT_SIZE[0])
+		&&
+		(position[1]+GameSettings::AIRPLANE_SIZE[1]) >= ass->getPositionY() && (position[1]+GameSettings::AIRPLANE_SIZE[1]) <= ass->getPositionY()+GameSettings::ASSISTENT_SIZE[1]
+	)
+	{
+		return true;
+	}
+	else if( position[0] >= ass->getPositionX() && position[0] <= ass->getPositionX()+GameSettings::ASSISTENT_SIZE[0]
+		&&
+		(position[1]) >= ass->getPositionY() && position[1] <= ass->getPositionY()+GameSettings::ASSISTENT_SIZE[1]
+	)
+	{
+		return true;
+	}
+	else if( (position[0]+GameSettings::AIRPLANE_SIZE[0]) >= ass->getPositionX() && (position[0]+GameSettings::AIRPLANE_SIZE[0]) <= ass->getPositionX()+GameSettings::ASSISTENT_SIZE[0]
+		&&
+		position[1] >= ass->getPositionY() && position[1] <= ass->getPositionY()+GameSettings::ASSISTENT_SIZE[1]
+	)
+	{
+		return true;
+	}
+	else if( (position[0]+GameSettings::AIRPLANE_SIZE[0]) >= ass->getPositionX() && (position[0]+GameSettings::AIRPLANE_SIZE[0]) <= ass->getPositionX()+GameSettings::ASSISTENT_SIZE[0]
+		&&
+		(position[1]+GameSettings::AIRPLANE_SIZE[1]) >= ass->getPositionY() && (position[1]+GameSettings::AIRPLANE_SIZE[1]) <= ass->getPositionY()+GameSettings::ASSISTENT_SIZE[1]
+	)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+
+}

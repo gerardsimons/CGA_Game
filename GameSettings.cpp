@@ -36,6 +36,8 @@ float GameSettings::MAX_RANGE = 4;
 
 float GameSettings::NEXT_FLOW_TIME = 5000000;
 
+float GameSettings::BULLET_LOCK = 50000;
+
 
 //float GameSettings::PI = 3.14159265;
 float GameSettings::PI = 22/7;

@@ -15,6 +15,7 @@ SpaceShip::SpaceShip(){}
 SpaceShip::SpaceShip(float x, float y) {
 	printf("Hi, I'm a weird SpaceShip \n");
 	health = GameSettings::INIT_HEALTH;
+	lock = false;
 	position  = Vec3Df(x,y,0.0f);
 	bullitsShot = new std::vector<Bullet>();
 	assSpaceShip = AssistentSpaceShip(
@@ -109,9 +110,13 @@ void SpaceShip::removeBullet( int index )
 }
 
 void SpaceShip::shoot(){
-	Bullet b = Bullet(getPositionX(), getPositionY() , 1);
-	bullitsShot->push_back( b );
-	//printf("I have shot %d times \n", bullitsShot.size());
+
+	printf("is locked ? %i", lock);
+	if(!lock)
+	{
+		Bullet b = Bullet(getPositionX(), getPositionY() , 1);
+		bullitsShot->push_back( b );
+	}
 
 }
 
@@ -168,4 +173,14 @@ void SpaceShip::decreaseHealth()
 	printf("CURRENT HEALTH: %f\n", health);
 	if (health <= 0)
 		printf("GAME OVER\n");	// todo game over handling
+}
+
+void SpaceShip::setBulletLock( bool l )
+{
+	lock = l;
+}
+
+bool SpaceShip::getBulletLock()
+{
+	return lock;
 }

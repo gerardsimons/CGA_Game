@@ -17,6 +17,7 @@ public:
 	virtual ~OpponentSpaceShip();
 	void display();
 	void shoot();
+	bool hasCollision( AssistentSpaceShip * ass );
 };
 
 #endif /* OPPONENTSPACESHIP_H_ */
