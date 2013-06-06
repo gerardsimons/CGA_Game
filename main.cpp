@@ -134,8 +134,13 @@ void keyboard(unsigned char key, int x, int y)
 				}
 				if(key == ' ')	//shoot
 				{
-						printf("Fire!!! \n");
+					printf("is locked ? %i \n", playerSpaceShip.isLocked());
+					if(!playerSpaceShip.isLocked())
+					{
+						//printf("Fire!!! \n");
 						playerSpaceShip.shoot();
+						playerShootTimer = clock();
+					}
 				}
 
 			}
@@ -298,16 +303,16 @@ void animate()
 	/*
 	 * BULLET LOCK
 	 */
-	// todo not perfectly working yet
 	clock_t currentTimer = clock();
-	//printf("-BULLET LOCK CHECK; cur[ %f ] - pstime[ %f ] > BUL_LOCK[ %f ]\n", (float)currentTimer, (float)playerShootTimer, GameSettings::BULLET_LOCK );
-	if( ( (float)currentTimer - (float)playerShootTimer ) > GameSettings::BULLET_LOCK && playerSpaceShip.getBulletLock() )
+	printf("-BULLET LOCK CHECK; cur[ %f ] - pstime[ %f ] > BUL_LOCK[ %f ]\n", (float)currentTimer, (float)playerShootTimer, GameSettings::BULLET_LOCK );
+	printf("-RESULT; %f > BUL_LOCK[ %f ]\n", ((float)currentTimer-(float)playerShootTimer), GameSettings::BULLET_LOCK );
+	if( ( (float)currentTimer - (float)playerShootTimer ) > GameSettings::BULLET_LOCK && playerSpaceShip.isLocked() )
 	{
 		//printf("unlocked\n");
-		playerShootTimer = (float)currentTimer;
+		// playerShootTimer = (float)currentTimer;
 		playerSpaceShip.setBulletLock(false);
 	}
-	else if ( ((float)currentTimer - (float)playerShootTimer) <= GameSettings::BULLET_LOCK && !playerSpaceShip.getBulletLock() )
+	else if ( ((float)currentTimer - (float)playerShootTimer) <= GameSettings::BULLET_LOCK && !playerSpaceShip.isLocked() )
 	{
 		//printf("locked\n");
 		playerSpaceShip.setBulletLock(true);
@@ -315,8 +320,7 @@ void animate()
 
 	//LightManager::moveLight(0,.1f,0,0);
 
-	//boss->rotate(0.0f,0.7f,0.0f);
-	// TODO: doesnt work yet
+
 	if(bossEnabled == true && (boss->getPositionX() > 3.0f) )
 	{
 		boss->move(-0.02f, 0.0f, 0.0f);
@@ -632,7 +636,7 @@ void initTextures()
 		GameSettings::Texture[4]=0;
 		GameSettings::Texture[5]=0;
 
-		BMPImage image("ufo_opp_small.bmp",true);
+		BMPImage image("ufo_small.bmp",true);
 		glGenTextures(1, &GameSettings::GameSettings::Texture[0]);
 		glBindTexture(GL_TEXTURE_2D, GameSettings::Texture[0]);
 		gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGBA, image.width, image.height,GL_RGBA, GL_UNSIGNED_BYTE, image.data);

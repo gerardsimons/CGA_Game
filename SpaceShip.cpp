@@ -111,12 +111,10 @@ void SpaceShip::removeBullet( int index )
 
 void SpaceShip::shoot(){
 
-	printf("is locked ? %i", lock);
-	if(!lock)
-	{
+
+		printf("FIRE!\n");
 		Bullet b = Bullet(getPositionX(), getPositionY() , 1);
 		bullitsShot->push_back( b );
-	}
 
 }
 
@@ -180,7 +178,7 @@ void SpaceShip::setBulletLock( bool l )
 	lock = l;
 }
 
-bool SpaceShip::getBulletLock()
+bool SpaceShip::isLocked()
 {
 	return lock;
 }
