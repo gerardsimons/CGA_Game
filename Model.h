@@ -12,7 +12,8 @@
 #include "Vec3D.h"
 #include <vector>
 #include "GameSettings.h"
-class Bullet;
+#include "LightManager.h"
+#include "Bullet.h"
 
 class Model {
 public:

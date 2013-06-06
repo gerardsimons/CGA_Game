@@ -28,7 +28,7 @@ float GameSettings::OPPONENT_SPEED = .005;
 float GameSettings::BULLET_SPEED = 0.02;
 float GameSettings::ASSISENT_RADIUS = .4;
 
-int GameSettings::NUMBER_OF_FLOWS = 5;
+int GameSettings::NUMBER_OF_FLOWS = 3;
 
 float GameSettings::MAX_RANGE = 4;
 
@@ -40,9 +40,8 @@ float GameSettings::NEXT_FLOW_TIME = 5000000;
 //float GameSettings::PI = 3.14159265;
 float GameSettings::PI = 22/7;
 
-std::vector<Vec3Df> GameSettings::LightPos;
-std::vector<Vec3Df> GameSettings::LightColor;
-Vec3Df GameSettings::CamPos = Vec3Df(-1.2,-0.4,-5);
+Vec3Df GameSettings::CamPos = Vec3Df(1.2,0.4,5);
+//Vec3Df GameSettings::CamPos = Vec3Df(1,2,5);
 Vec3Df GameSettings::CamRot = Vec3Df(0,0,0);
 
 void GameSettings::updateCamera(float xDelta, float yDelta, float zDelta)
