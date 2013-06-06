@@ -13,7 +13,6 @@
 #include <vector>
 #include "loadppm.h"
 #include "LightManager.h"
-#include "PNGImage.h"
 
 
 /* Terrain.h
