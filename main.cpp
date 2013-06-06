@@ -497,8 +497,6 @@ void animate()
 	/*
 	 * SHIP --> OPPONENT UPDATE
 	 */
-
-	// TODO remove opponent after collision
 	for (unsigned int j = 0; j< opponents.size(); j++ )
 	{
 		if( playerSpaceShip.hasCollision( opponents.at(j) ) ) // collision with an opponent
@@ -516,6 +514,24 @@ void animate()
 	}
 	dumpOppList.clear();
 
+	/*
+	 * OPPONENT --> ASSISTENT SPACESHIP
+	 */
+	for (unsigned int j = 0; j< opponents.size(); j++ )
+	{
+		if( opponents.at(j).hasCollision( playerSpaceShip.getAssistent() ) ) // assisten hits opponent?
+		{
+			printf("Assistent collision with opponent \n");
+			// register in order to avoid problems within the for loop
+			dumpOppList.push_back( j );
+		}
+	}
+	// remove opponents
+	for(unsigned int i = 0; i< dumpOppList.size(); i++)
+	{
+		opponents.erase( opponents.begin() + dumpOppList.at(i) );
+	}
+	dumpOppList.clear();
 
 
 
@@ -614,21 +630,21 @@ void initTextures()
 		GameSettings::Texture[3]=0;
 		GameSettings::Texture[4]=0;
 
-		PPMImage image("ufo.ppm");
+		PPMImage image("ufo_small.ppm");
 		glGenTextures(1, &GameSettings::Texture[0]);
 		glBindTexture(GL_TEXTURE_2D, GameSettings::Texture[0]);
 		gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, image.sizeX, image.sizeY,
 			GL_RGB, GL_UNSIGNED_BYTE, image.data);
 		glBindTexture(GL_TEXTURE_2D, 0);
 
-		PPMImage image2("ufo_opp.ppm");
+		PPMImage image2("ufo_opp_small.ppm");
 		glGenTextures(1, &GameSettings::Texture[1]);
 		glBindTexture(GL_TEXTURE_2D, GameSettings::Texture[1]);
 		gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, image2.sizeX, image2.sizeY,
 			GL_RGB, GL_UNSIGNED_BYTE, image2.data);
 		glBindTexture(GL_TEXTURE_2D, 1);
 
-		PPMImage image3("bullet.ppm");
+		PPMImage image3("bullet_small.ppm");
 		glGenTextures(1, &GameSettings::Texture[2]);
 		glBindTexture(GL_TEXTURE_2D, GameSettings::Texture[2]);
 		gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, image3.sizeX, image3.sizeY,
