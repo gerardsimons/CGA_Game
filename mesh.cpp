@@ -100,6 +100,9 @@ void Mesh::drawSmooth(){
 
 void Mesh::drawWithColors(const std::vector<Vec3Df> & colors){
 
+
+    glBegin(GL_TRIANGLES);
+
     for (int i=0;i<triangles.size();++i)
     {
         for(int v = 0; v < 3 ; v++){
@@ -232,8 +235,6 @@ int Mesh::getClosestVertexIndex(const Vec3Df & origin, const Vec3Df & direction)
 }	
 
 void Mesh::draw(){
-
-
     glBegin(GL_TRIANGLES);
 
     for (int i=0;i<triangles.size();++i)

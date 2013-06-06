@@ -323,12 +323,9 @@ void animate()
 	else if(bossEnabled == true && (boss->getPositionX() <= 3.0f) )
 	{
 		sinX+=0.1f;
-
-
-		//printf("BOSS Y %f \n", ((float)0.1*sin(sinX)));
-
 		boss->moveToY(((float)0.5*sin(sinX)+1.0f));
-		printf("BOSS Y %f \n", boss->getPositionY());
+		// TODO: vary x
+		//boss->moveToX(((float)0.5*sin(sinX)+3.0f));
 	}
 
 	// animate player's bullets
