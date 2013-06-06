@@ -458,7 +458,12 @@ void animate()
 		boss->removeBullet( dumpBulList.at(i) );
 	}
 	dumpBulList.clear();
-
+	// remove opponents
+	for(unsigned int i = 0; i< dumpOppList.size(); i++)
+	{
+		opponents.erase( opponents.begin() + dumpOppList.at(i) );
+	}
+	dumpOppList.clear();
 
 
 	/*
@@ -476,12 +481,10 @@ void animate()
 			dumpOppList.push_back( j );
 		}
 	}
-
 	// remove opponents
 	for(unsigned int i = 0; i< dumpOppList.size(); i++)
 	{
-		// TODO remove bullets first???
-		//opponents.erase( opponents.begin() + dumpOppList.at(i) );
+		opponents.erase( opponents.begin() + dumpOppList.at(i) );
 	}
 	dumpOppList.clear();
 
