@@ -31,7 +31,7 @@ using namespace std;
 unsigned int W_fen = 1200;  // largeur fenetre (default: 800)
 unsigned int H_fen = 800;  // hauteur fenetre
 int zNear = 1;
-int zFar = 200;
+int zFar = 400;
 
 float rotateX = 0;
 float rotateY = 0;
@@ -292,8 +292,6 @@ void animate()
 				(playerSpaceShip.getPositionY()+(GameSettings::AIRPLANE_SIZE[1]/2))
 		);
 	}
-
-
 
 
 	//LightManager::moveLight(0,.1f,0,0);
@@ -627,10 +625,10 @@ void initTextures()
 		gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGBA, imageTest.width, imageTest.height,GL_RGBA, GL_UNSIGNED_BYTE, imageTest.data);
 
 		printf("Loading the universe dude...");
-		BMPImage galaxyImg("giant-galaxy.bmp",false);
+		BMPImage galaxyImg("galaxy24bit.bmp",false);
 		glGenTextures(1, &GameSettings::GameSettings::Texture[5]);
 		glBindTexture(GL_TEXTURE_2D, GameSettings::Texture[5]);
-		gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, galaxyImg.width, galaxyImg.height,GL_RGB, GL_UNSIGNED_BYTE, galaxyImg.data);
+		gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, galaxyImg.width, galaxyImg.height,GL_BGR, GL_UNSIGNED_BYTE, galaxyImg.data);
 		/*
 		glTexImage2D(GL_TEXTURE_2D, 0,GL_RGBA, imageTest.width, imageTest.height,0,
 							GL_RGBA, GL_UNSIGNED_BYTE, imageTest.data);*/
@@ -704,9 +702,10 @@ int main(int argc, char** argv)
     // Game Set Up
     spaceShipSetUp();
 
-    terrain = new Terrain(10,10,.125f,-5.0f,-5.0f);
+    terrain = new Terrain(30,10,.125f,-15.0f,-5.0f);
+    terrain = new Terrain(30,10,.125f,-15.0f,-5.0f);
     boss = new Model("ufo_v3.obj",6,1,1);
-    background = new Background(-150,-85,-100,300,170);
+    background = new Background(-150,-85,-200,400,250);
 
     // set initial timer
     initTimer = clock();

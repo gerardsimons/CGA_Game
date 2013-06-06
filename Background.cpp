@@ -19,7 +19,7 @@ Background::Background(int x, int y, int z, int width, int height) {
 void Background::draw()
 {
 	glBindTexture(GL_TEXTURE_2D, GameSettings::Texture[5]);
-	printf("drawing background...\n");
+
 	//remember all states of the GPU
 	glPushAttrib(GL_ALL_ATTRIB_BITS);
 
@@ -47,6 +47,14 @@ void Background::draw()
 
 
 	glDisable(GL_TEXTURE_2D);
+}
+
+int xBound = 10.0f;
+int yBound = 10.0f;
+void Background::animate()
+{
+	x += .1f;
+	y += .1f;
 }
 
 Background::~Background() {

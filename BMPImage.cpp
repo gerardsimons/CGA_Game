@@ -48,6 +48,8 @@ bool BMPImage::loadTexture(const char* imagepath, int alpha)
 	    height     = *(int*)&(header[0x16]);
 
 	    // Some BMP files are misformatted, guess missing information
+	    int channels = 3 + alpha;
+	    printf("Channels found: %i\n",channels);
 	    imageSize=width*height*(3+alpha); // 3 : one byte for each Red, Green and Blue component
 	    if (dataPos==0)      dataPos=500; // The BMP header is done that way
 

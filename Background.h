@@ -17,6 +17,7 @@ private:
 public:
 	Background(int x,int y, int z, int width, int height);
 	void draw();
+	void animate();
 	virtual ~Background();
 };
 
