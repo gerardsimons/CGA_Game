@@ -32,13 +32,14 @@ void OpponentSpaceShip::display() {
 	float x = getPositionX();
 	float y = getPositionY();
 
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, GameSettings::Texture[1]);
+
+	glBindTexture(GL_TEXTURE_2D, GameSettings::Texture[4]);
 
 		//remember all states of the GPU
 		glPushAttrib(GL_ALL_ATTRIB_BITS);
 		glColor3f(1,1,1);
 		glNormal3d(0, 0, 1);
+		glEnable(GL_TEXTURE_2D);
 
 		// texture addition
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,  GL_REPEAT);
@@ -60,6 +61,7 @@ void OpponentSpaceShip::display() {
 		glEnd();
 		//reset to previous state
 		glPopAttrib();
+
 
 	glDisable(GL_TEXTURE_2D);
 

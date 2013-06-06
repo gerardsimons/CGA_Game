@@ -25,32 +25,35 @@ Terrain::Terrain(int xSize, int zSize, float surfaceSize, float startX, float st
 	SurfaceNormals3f.resize(newSize);
 	SurfaceColors3f.resize(newSize);
 	SurfaceTexCoords2f.resize(static_cast<int>(xSize / surfaceSize * zSize / surfaceSize * 12));
-	float zModifier = 0.3f;
+	float zModifier = 0.9f;
 	float xModifier = 0.8f;
+	float yModifier = 1.0f;
 
 	//Maximum value possible
 	float yTop = zModifier * sin(.5 * PI) + xModifier * cos(0) - 0.2f;
 	int texIndex = 0;
 	float xPeriod = 2 * PI / xModifier;
 	printf("xPeriod=%f\n",xPeriod);
-	for(float x = 0 ; x < xSize; x += surfaceSize)
+
+	for(float z = 0 ; z < zSize; z += surfaceSize)
 	{
-		for(float z = 0 ; z < zSize; z += surfaceSize)
+		for(float x = 0 ; x < xSize; x += surfaceSize)
 		{
+
 			SurfaceVertices3f[i]=x+startX;					//x
-			SurfaceVertices3f[i+1]=xModifier*cos(x) + zModifier*sin(z)-yTop; //y
+			SurfaceVertices3f[i+1]=yModifier*xModifier*cos(x) + zModifier*sin(z)-yTop; //y
 			SurfaceVertices3f[i+2]=z+startZ;				//z
 
 			SurfaceVertices3f[i+3]=x+surfaceSize+startX;
-			SurfaceVertices3f[i+4]=xModifier*cos(x+surfaceSize) + zModifier*sin(z)-yTop;
+			SurfaceVertices3f[i+4]=yModifier*xModifier*cos(x+surfaceSize) + zModifier*sin(z)-yTop;
 			SurfaceVertices3f[i+5]=z+startZ;
 
 			SurfaceVertices3f[i+6]=x+surfaceSize+startX;
-			SurfaceVertices3f[i+7]=xModifier*cos(x+surfaceSize) + zModifier*sin(z+surfaceSize)-yTop;
+			SurfaceVertices3f[i+7]=yModifier*xModifier*cos(x+surfaceSize) + zModifier*sin(z+surfaceSize)-yTop;
 			SurfaceVertices3f[i+8]=z+surfaceSize+startZ;
 
 			SurfaceVertices3f[i+9]=x+startX;
-			SurfaceVertices3f[i+10]=xModifier*cos(x) + zModifier*sin(z+surfaceSize)-yTop;
+			SurfaceVertices3f[i+10]=yModifier*xModifier*cos(x) + zModifier*sin(z+surfaceSize)-yTop;
 			SurfaceVertices3f[i+11]=z+surfaceSize+startZ;
 
 			SurfaceTexCoords2f[texIndex]=x;
@@ -90,7 +93,7 @@ Terrain::Terrain(int xSize, int zSize, float surfaceSize, float startX, float st
 
 			normal = -normal;
 
-			printf("terrain normal=(%f,%f,%f)\n",normal[0],normal[1],normal[2]);
+			//printf("terrain normal=(%f,%f,%f)\n",normal[0],normal[1],normal[2]);
 
 			SurfaceNormals3f[i]=normal[0];    	//x
 			SurfaceNormals3f[i+1]=normal[1];	//y
@@ -110,8 +113,8 @@ Terrain::Terrain(int xSize, int zSize, float surfaceSize, float startX, float st
 
 			i += 12;
 			texIndex += 8;
-		}
 
+		}
 	}
 
 
@@ -128,6 +131,7 @@ void Terrain::display()
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, GameSettings::Texture[3]);
 	glDisable(GL_LIGHTING);
+
 	glBegin(GL_QUADS);
 	int texIndex = 0;
 	for (int vIndex = 0 ; vIndex < SurfaceVertices3f.size() ; vIndex += 3)
@@ -157,6 +161,7 @@ void Terrain::display()
 		glVertex3f(*vertex,*(vertex+1),*(vertex+2));
 		texIndex += 2;
 	}
+
 	glEnd();
 	glBindTexture(GL_TEXTURE_2D,0);
 	glDisable(GL_TEXTURE_2D);

@@ -12,6 +12,8 @@
 #include "OpponentSpaceShip.h"
 #include "GameSettings.h"
 
+#include "BMPImage.h"
+
 #include "mesh.h"
 #include "terrain.h"
 
@@ -28,7 +30,7 @@ using namespace std;
 unsigned int W_fen = 1200;  // largeur fenetre (default: 800)
 unsigned int H_fen = 800;  // hauteur fenetre
 int zNear = 1;
-int zFar = 10;
+int zFar = 200;
 
 float rotateX = 0;
 float rotateY = 0;
@@ -230,9 +232,12 @@ void dealWithUserInput(int x, int y)
 
 void draw( )
 {
+
+	terrain->display();
 	drawLights();
 	// render player spaceship
 	playerSpaceShip.display();
+
 
 	// render opponent spaceships
 	for(unsigned int i = 0; i<opponents.size(); i++)
@@ -240,8 +245,6 @@ void draw( )
 		//printf("main: draw opponent %f", i);
 		opponents.at(i).display();
 	}
-
-	terrain->display();
 
 	if(bossEnabled)
 	{
@@ -610,10 +613,27 @@ void initTextures()
 		glBindTexture(GL_TEXTURE_2D, 1);
 
 		PPMImage imageSand("sand.ppm");
-		glGenTextures(1, &GameSettings::GameSettings::Texture[3]);
+		glGenTextures(1, &GameSettings::Texture[3]);
 		glBindTexture(GL_TEXTURE_2D, GameSettings::Texture[3]);
 		gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, imageSand.sizeX, imageSand.sizeY,
 			GL_RGB, GL_UNSIGNED_BYTE, imageSand.data);
+
+
+
+
+		BMPImage imageTest("ufo_opp2.bmp");
+		glGenTextures(1, &GameSettings::GameSettings::Texture[4]);
+		glBindTexture(GL_TEXTURE_2D, GameSettings::Texture[4]);
+
+
+		/*
+		glTexImage2D(GL_TEXTURE_2D, 0,GL_RGBA, imageTest.width, imageTest.height,0,
+							GL_RGBA, GL_UNSIGNED_BYTE, imageTest.data);*/
+		gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGBA, imageTest.width, imageTest.height,
+					GL_RGBA, GL_UNSIGNED_BYTE, imageTest.data);
+
+
+
 
 
 		/*
@@ -669,7 +689,44 @@ void mouseMotion(int x, int y){
     mousePassive(x, y);
     glutPostRedisplay();
 }
+void orthogonalStart()
+{
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    gluOrtho2D(-W_fen/2, W_fen/2, -H_fen/2, H_fen/2);
+    glMatrixMode(GL_MODELVIEW);
+}
 
+void orthogonalEnd()
+{
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+}
+
+void background()
+{
+    glBindTexture( GL_TEXTURE_2D, GameSettings::Texture[1] );
+
+    orthogonalStart();
+
+    // texture width/height
+    const int iw = 500;
+    const int ih = 500;
+
+    glPushMatrix();
+    glTranslatef( -iw/2, -ih/2, 0 );
+    glBegin(GL_QUADS);
+        glTexCoord2i(0,0); glVertex2i(0, 0);
+        glTexCoord2i(1,0); glVertex2i(iw, 0);
+        glTexCoord2i(1,1); glVertex2i(iw, ih);
+        glTexCoord2i(0,1); glVertex2i(0, ih);
+    glEnd();
+    glPopMatrix();
+
+    orthogonalEnd();
+}
 
 int main(int argc, char** argv)
 {
@@ -678,29 +735,27 @@ int main(int argc, char** argv)
     // couches du framebuffer utilisees par l'application
     glutInitDisplayMode( GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH );
 
+    //We have our own lighting of course!
+    glDisable(GL_LIGHTING);
     // position et taille de la fenetre
     glutInitWindowPosition(200, 100);
     glutInitWindowSize(W_fen,H_fen);
-    glutCreateWindow(argv[0]);	
+    glutCreateWindow(argv[0]);
 
-    updateCamera();
-
-    glDisable(GL_LIGHTING);
-
-    // Game Set Up
-    spaceShipSetUp();
-
-    terrain = new Terrain(20,20,0.2f,-10.0f,-8.0f);
-
-    //glMatrixMode(GL_MODELVIEW);
-    //glLoadIdentity();
-    //tbInitTransform();     // initialisation du point de vue
-    //glTranslatef(GameSettings::CamPos[0],GameSettings::CamPos[1],GameSettings::CamPos[2]);
-    //tbHelp();                      // affiche l'aide sur la traqueboule
 
 
     initTextures();
 
+
+    updateCamera();
+
+
+
+
+    // Game Set Up
+    spaceShipSetUp();
+
+    terrain = new Terrain(10,10,.125f,-5.0f,-5.0f);
     boss = new Model("ufo_v3.obj",6,1,1);
 
     // set initial timer
@@ -716,18 +771,20 @@ int main(int argc, char** argv)
     // cablage des callback
     glutReshapeFunc(reshape);
 
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+	glDisable(GL_COLOR_MATERIAL);
     glutIdleFunc(idle);
 
     initLights();
-
-   
 
     // Details sur le mode de trac\E9
     glEnable( GL_DEPTH_TEST );            // effectuer le test de profondeur
     glShadeModel(GL_SMOOTH);
 
     // Effacer tout
-    glClearColor (BackgroundColor[0],BackgroundColor[1], BackgroundColor[2], 0.0);
+    //glClearColor (BackgroundColor[0],BackgroundColor[1], BackgroundColor[2], 0.0);
     glClear( GL_COLOR_BUFFER_BIT  | GL_DEPTH_BUFFER_BIT); // la couleur et le z
 
     // lancement de la boucle principale
@@ -764,6 +821,7 @@ void drawCoordSystem(float length=1)
 }
 
 
+
 /************************************************************
  * Fonctions de gestion opengl \E0 ne pas toucher
  ************************************************************/
@@ -771,12 +829,18 @@ void drawCoordSystem(float length=1)
 // Ne pas changer
 void display(void)
 {
+
     glClear( GL_COLOR_BUFFER_BIT  | GL_DEPTH_BUFFER_BIT); // la couleur et le z
 
-    /*
-    glLoadIdentity();  // repere camera
-    tbVisuTransform(); // origine et orientation de la scene
-    */
+    glClearColor (0.0,0.0,0.0,1.0);
+
+    glEnable( GL_TEXTURE_2D );
+
+    background();
+
+    //glLoadIdentity();  // repere camera
+    //tbVisuTransform(); // origine et orientation de la scene
+
 
     //drawCoordSystem();
 
@@ -787,7 +851,20 @@ void display(void)
     draw();    
 
     glutSwapBuffers();
-}
+
+	/*
+glClearColor (1.0,0.0,0.0,1.0);
+    glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glLoadIdentity();
+    glEnable( GL_TEXTURE_2D );
+
+    background();
+    gluLookAt (0.0, 0.0, 5.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+
+    glutSwapBuffers();
+*/}
+
+
 
 //function that draws the light source as a sphere
 void drawLights()

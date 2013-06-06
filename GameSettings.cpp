@@ -58,4 +58,6 @@ void GameSettings::updateCameraRot(float xDelta, float yDelta, float zDelta)
 	CamRot[2] += zDelta;
 }
 
+
+
 std::vector<GLuint> GameSettings::Texture;
