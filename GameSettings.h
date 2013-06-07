@@ -29,6 +29,9 @@ public:
 	static float BULLET_SPEED;
 	static float ASSISENT_RADIUS;
 
+	static float OPPONENT_SHOOT_TIME;
+	static float FINAL_BOSS_SHOOT_TIME;
+
 	static int NUMBER_OF_FLOWS;
 
 	static float MAX_RANGE;

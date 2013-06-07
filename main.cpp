@@ -44,6 +44,7 @@ DisplayModeType displayMode = GAME;
 // timer
 clock_t initTimer;
 clock_t shootTimer;
+clock_t bossShootTimer = 0;
 clock_t playerShootTimer = 0;
 
 bool WIN = false;
@@ -246,7 +247,7 @@ void draw( )
 	//Draw terrains
 	for(int i = 0 ; i < terrains.size() ; i++)
 	{
-		terrains[i].display();
+		//terrains[i].display();
 	}
 
 	drawLights();
@@ -311,8 +312,6 @@ void animate()
 	 * BULLET LOCK
 	 */
 	clock_t currentTimer = clock();
-	printf("-BULLET LOCK CHECK; cur[ %f ] - pstime[ %f ] > BUL_LOCK[ %f ]\n", (float)currentTimer, (float)playerShootTimer, GameSettings::BULLET_LOCK );
-	printf("-RESULT; %f > BUL_LOCK[ %f ]\n", ((float)currentTimer-(float)playerShootTimer), GameSettings::BULLET_LOCK );
 	if( ( (float)currentTimer - (float)playerShootTimer ) > GameSettings::BULLET_LOCK && playerSpaceShip.isLocked() )
 	{
 		//printf("unlocked\n");
@@ -334,8 +333,8 @@ void animate()
 	}
 	else if(bossEnabled == true && (boss->getPositionX() <= 3.0f) )
 	{
-		sinX+=0.1f;
-		boss->moveToY(((float)0.5*sin(sinX)+1.0f));
+		sinX+=0.03f;
+		boss->moveToY(((float)0.7*sin(sinX)+1.0f));
 		// TODO: vary x
 		//boss->moveToX(((float)0.5*sin(sinX)+3.0f));
 	}
@@ -597,7 +596,7 @@ void opponentFlow()
 	}
 	// opponent spaceships shoot
 	// TODO dirty fix CUR_FLOW-1
-	if( (CUR_FLOW-1) < GameSettings::NUMBER_OF_FLOWS && ( (float)currentTimer - (float)shootTimer ) > GameSettings::NEXT_FLOW_TIME )
+	if( (CUR_FLOW-1) < GameSettings::NUMBER_OF_FLOWS && ( (float)currentTimer - (float)shootTimer ) > GameSettings::OPPONENT_SHOOT_TIME )
 	{
 		printf(" OppSpaceShip: INCOMING \n");
 		shootTimer = currentTimer;
@@ -609,11 +608,11 @@ void opponentFlow()
 	// final boss shoots
 	// TODO dirty fix CUR_FLOW-1
 	else if( (CUR_FLOW-1) >= GameSettings::NUMBER_OF_FLOWS &&
-			 ((float)currentTimer - (float)shootTimer ) > GameSettings::NEXT_FLOW_TIME &&
+			 ((float)currentTimer - (float)bossShootTimer ) > GameSettings::FINAL_BOSS_SHOOT_TIME &&
 			 bossEnabled
 			)
 	{
-		shootTimer = currentTimer;
+		bossShootTimer = currentTimer;
 		printf(" BOSS: INCOMING \n");
 		boss->shoot();
 	}
