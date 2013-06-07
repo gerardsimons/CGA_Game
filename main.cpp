@@ -60,7 +60,7 @@ float BackgroundColor[]={0,0,0};
 
 void updateCamera();
 
-Terrain *terrain;
+std::vector<Terrain> terrains;
 Model *boss;
 Background *background;
 
@@ -235,7 +235,13 @@ void dealWithUserInput(int x, int y)
 void draw( )
 {
 	background->draw();
-	terrain->display();
+
+	//Draw terrains
+	for(int i = 0 ; i < terrains.size() ; i++)
+	{
+		terrains[i].display();
+	}
+
 	drawLights();
 	// render player spaceship
 	playerSpaceShip.display();
@@ -701,9 +707,19 @@ int main(int argc, char** argv)
 
     // Game Set Up
     spaceShipSetUp();
-
-    terrain = new Terrain(30,10,.125f,-15.0f,-5.0f);
-    terrain = new Terrain(30,10,.125f,-15.0f,-5.0f);
+    float zSize = 10.0f;
+    float xSize = 20.0f;
+    float quadSize = 0.25f;
+    for(int z = 0 ; z < 2 ; z++)
+    {
+    	float xModifier = (float)rand()/(float)RAND_MAX * 2.0f - 1.0f;
+    	float zModifier = (float)rand()/(float)RAND_MAX * 2.0f - 1.0f;
+    	float yModifier = (float)rand()/(float)RAND_MAX * 2.0f - 0.0f;
+    	quadSize = pow(quadSize,z+1);
+    	Terrain *terrain = new Terrain(xSize,zSize,quadSize,-xSize/2.0f,-zSize/2.0f-z*zSize,xModifier,yModifier,zModifier);
+    	terrains.push_back(*terrain);
+    }
+    //terrain = new Terrain(30,10,.125f,-15.0f,-5.0f);
     boss = new Model("ufo_v3.obj",6,1,1);
     background = new Background(-150,-85,-200,400,250);
 

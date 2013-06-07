@@ -33,7 +33,7 @@ private:
 public:
 	Vec3Df defaultColor;
 	void initTexture();
-	Terrain(int,int,float,float,float);
+	Terrain(int,int,float,float,float,float,float,float);
 	void initSurfaceMesh(int,int);
 	virtual ~Terrain();
 	void display();

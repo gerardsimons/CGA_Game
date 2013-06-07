@@ -12,7 +12,7 @@
 
 
 
-Terrain::Terrain(int xSize, int zSize, float surfaceSize, float startX, float startZ) {
+Terrain::Terrain(int xSize, int zSize, float surfaceSize, float startX, float startZ, float xModifier, float yModifier, float zModifier) {
 
 	defaultColor = Vec3Df(.8f,0.75f,0.05f);
 
@@ -25,15 +25,16 @@ Terrain::Terrain(int xSize, int zSize, float surfaceSize, float startX, float st
 	SurfaceNormals3f.resize(newSize);
 	SurfaceColors3f.resize(newSize);
 	SurfaceTexCoords2f.resize(static_cast<int>(xSize / surfaceSize * zSize / surfaceSize * 12));
-	float zModifier = 0.9f;
-	float xModifier = 0.8f;
-	float yModifier = 1.0f;
 
 	//Maximum value possible
-	float yTop = zModifier * sin(.5 * PI) + xModifier * cos(0) - 0.2f;
+	float yTop = yModifier * (zModifier + xModifier) + .5f;
+	printf("xModifier=%f\n",xModifier);
+	printf("yModifier=%f\n",yModifier);
+	printf("zModifier=%f\n",zModifier);
+	printf("yTop=%f\n",yTop);
 	int texIndex = 0;
 	float xPeriod = 2 * PI / xModifier;
-	printf("xPeriod=%f\n",xPeriod);
+	//printf("xPeriod=%f\n",xPeriod);
 
 	for(float z = 0 ; z < zSize; z += surfaceSize)
 	{
@@ -41,19 +42,19 @@ Terrain::Terrain(int xSize, int zSize, float surfaceSize, float startX, float st
 		{
 
 			SurfaceVertices3f[i]=x+startX;					//x
-			SurfaceVertices3f[i+1]=yModifier*xModifier*cos(x) + zModifier*sin(z)-yTop; //y
+			SurfaceVertices3f[i+1]=yModifier*(xModifier*cos(x) + zModifier*sin(z))-yTop; //y
 			SurfaceVertices3f[i+2]=z+startZ;				//z
 
 			SurfaceVertices3f[i+3]=x+surfaceSize+startX;
-			SurfaceVertices3f[i+4]=yModifier*xModifier*cos(x+surfaceSize) + zModifier*sin(z)-yTop;
+			SurfaceVertices3f[i+4]=yModifier*(xModifier*cos(x+surfaceSize) + zModifier*sin(z))-yTop;
 			SurfaceVertices3f[i+5]=z+startZ;
 
 			SurfaceVertices3f[i+6]=x+surfaceSize+startX;
-			SurfaceVertices3f[i+7]=yModifier*xModifier*cos(x+surfaceSize) + zModifier*sin(z+surfaceSize)-yTop;
+			SurfaceVertices3f[i+7]=yModifier*(xModifier*cos(x+surfaceSize) + zModifier*sin(z+surfaceSize))-yTop;
 			SurfaceVertices3f[i+8]=z+surfaceSize+startZ;
 
 			SurfaceVertices3f[i+9]=x+startX;
-			SurfaceVertices3f[i+10]=yModifier*xModifier*cos(x) + zModifier*sin(z+surfaceSize)-yTop;
+			SurfaceVertices3f[i+10]=yModifier*(xModifier*cos(x) + zModifier*sin(z+surfaceSize))-yTop;
 			SurfaceVertices3f[i+11]=z+surfaceSize+startZ;
 
 			SurfaceTexCoords2f[texIndex]=x;
