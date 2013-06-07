@@ -247,7 +247,7 @@ void draw( )
 	//Draw terrains
 	for(int i = 0 ; i < terrains.size() ; i++)
 	{
-		//terrains[i].display();
+		terrains[i].display();
 	}
 
 	drawLights();
