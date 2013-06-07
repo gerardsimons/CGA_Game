@@ -58,7 +58,7 @@ public:
 
 
 	void setBulletLock( bool l );
-	bool getBulletLock();
+	bool isLocked();
 };
 
 #endif /* SPACESHIP_H */

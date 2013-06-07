@@ -54,13 +54,13 @@ void SpaceShip::display(){
 
 		glBegin(GL_QUADS);
 
-			glTexCoord2f(0.0f,0.0f);
-			glVertex3f(x,									y+GameSettings::AIRPLANE_SIZE[1],		1);
 			glTexCoord2f(0.0f,1.0f);
+			glVertex3f(x,									y+GameSettings::AIRPLANE_SIZE[1],		1);
+			glTexCoord2f(0.0f,0.0f);
 			glVertex3f(x,									y,										1);
-			glTexCoord2f(1.0f,1.0f);
-			glVertex3f(x+GameSettings::AIRPLANE_SIZE[0],	y,										1);
 			glTexCoord2f(1.0f,0.0f);
+			glVertex3f(x+GameSettings::AIRPLANE_SIZE[0],	y,										1);
+			glTexCoord2f(1.0f,1.0f);
 			glVertex3f(x+GameSettings::AIRPLANE_SIZE[0],	y+GameSettings::AIRPLANE_SIZE[1],		1);
 
 		glEnd();
@@ -111,12 +111,10 @@ void SpaceShip::removeBullet( int index )
 
 void SpaceShip::shoot(){
 
-	printf("is locked ? %i", lock);
-	if(!lock)
-	{
+
+		printf("FIRE!\n");
 		Bullet b = Bullet(getPositionX(), getPositionY() , 1);
 		bullitsShot->push_back( b );
-	}
 
 }
 
@@ -180,7 +178,7 @@ void SpaceShip::setBulletLock( bool l )
 	lock = l;
 }
 
-bool SpaceShip::getBulletLock()
+bool SpaceShip::isLocked()
 {
 	return lock;
 }

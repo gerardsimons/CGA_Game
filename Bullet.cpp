@@ -46,24 +46,24 @@ void Bullet::display(){
 
 			if(direction == 1)
 			{
-				glTexCoord2f(0.0f,0.0f);
-				glVertex3f(x,								y+GameSettings::BULLET_SIZE[1],		1.1);
 				glTexCoord2f(0.0f,1.0f);
+				glVertex3f(x,								y+GameSettings::BULLET_SIZE[1],		1.1);
+				glTexCoord2f(0.0f,0.0f);
 				glVertex3f(x,								y,									1.1);
-				glTexCoord2f(1.0f,1.0f);
-				glVertex3f(x+GameSettings::BULLET_SIZE[0],	y,									1.1);
 				glTexCoord2f(1.0f,0.0f);
+				glVertex3f(x+GameSettings::BULLET_SIZE[0],	y,									1.1);
+				glTexCoord2f(1.0f,1.0f);
 				glVertex3f(x+GameSettings::BULLET_SIZE[0],	y+GameSettings::BULLET_SIZE[1],		1.1);
 			}
 			if(direction == -1)
 			{
-				glTexCoord2f(1.0f,0.0f);
-				glVertex3f(x,								y+GameSettings::BULLET_SIZE[1],		1.1);
 				glTexCoord2f(1.0f,1.0f);
+				glVertex3f(x,								y+GameSettings::BULLET_SIZE[1],		1.1);
+				glTexCoord2f(1.0f,0.0f);
 				glVertex3f(x,								y,									1.1);
-				glTexCoord2f(0.0f,1.0f);
-				glVertex3f(x+GameSettings::BULLET_SIZE[0],	y,									1.1);
 				glTexCoord2f(0.0f,0.0f);
+				glVertex3f(x+GameSettings::BULLET_SIZE[0],	y,									1.1);
+				glTexCoord2f(0.0f,1.0f);
 				glVertex3f(x+GameSettings::BULLET_SIZE[0],	y+GameSettings::BULLET_SIZE[1],		1.1);
 			}
 		glEnd();
