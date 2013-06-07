@@ -12,15 +12,15 @@ std::vector<Vec3Df> LightManager::DiffuseColor;
 std::vector<Vec3Df> LightManager::SpecularColor;
 std::vector<float> LightManager::SpecularPower;
 std::vector<float> LightManager::DiffusePower;
-Vec3Df LightManager::AmbientLight = Vec3Df(0.05f,0.05f,0.05f);
-float LightManager::SpecularHardness = 4.3f;
+Vec3Df LightManager::AmbientLight = Vec3Df(0.1f,0.1f,0.1f);
+float LightManager::SpecularHardness = 2.3f;
 
 Vec3Df LightManager::shading(Vec3Df &normal, Vec3Df &color, Vec3Df &vertex, float multiplier)
 {
 	normal.normalize();
 	//return Vec3Df(.5,.1,.1);
 	//return lambertianLighting(vertex,normal,color);
-	return blinnPhongShading(color,normal,vertex) + AmbientLight;
+	return blinnPhongShading(color,normal,vertex);
 	//return lambertianLighting(vertex,normal,color) + blinnPhongShading(color,normal,vertex);//+
 }
 
@@ -33,6 +33,7 @@ Vec3Df LightManager::blinnPhongShading(Vec3Df &color, Vec3Df &normal, Vec3Df &ve
 		Vec3Df viewDir = CamPos - vertex;
 		Vec3Df lightDir = LightPos[i] - vertex;
 		float distance = lightDir.getLength();
+		distance *= distance;
 		distance = 1;
 		lightDir.normalize();
 
@@ -43,7 +44,7 @@ Vec3Df LightManager::blinnPhongShading(Vec3Df &color, Vec3Df &normal, Vec3Df &ve
 		float intensity = pow(NdotH, SpecularHardness);
 		total += SpecularColor[i] * SpecularPower[i] * intensity / distance;
 	}
-	total += AmbientLight;
+	total +=AmbientLight * total;
 	return total;
 }
 

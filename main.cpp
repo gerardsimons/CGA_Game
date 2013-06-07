@@ -263,6 +263,7 @@ void draw( )
 
 	if(bossEnabled)
 	{
+		printf("Drawing boss...\n");
 		boss->drawModel();
 		boss->drawBossBullets();
 	}
@@ -650,13 +651,13 @@ void initTextures()
 		BMPImage image2("ufo_opp_small.bmp",true);
 		glGenTextures(1, &GameSettings::GameSettings::Texture[1]);
 		glBindTexture(GL_TEXTURE_2D, GameSettings::Texture[1]);
-		gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGBA, image2.width, image2.height,GL_RGBA, GL_UNSIGNED_BYTE, image2.data);
+		gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGBA, image2.width, image2.height,GL_BGRA, GL_UNSIGNED_BYTE, image2.data);
 
 
 		BMPImage image3("bullet_small.bmp",true);
 		glGenTextures(1, &GameSettings::GameSettings::Texture[2]);
 		glBindTexture(GL_TEXTURE_2D, GameSettings::Texture[2]);
-		gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGBA, image3.width, image3.height,GL_RGBA, GL_UNSIGNED_BYTE, image3.data);
+		gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGBA, image3.width, image3.height,GL_BGRA, GL_UNSIGNED_BYTE, image3.data);
 
 		PPMImage imageSand("sand.ppm");
 		glGenTextures(1, &GameSettings::Texture[3]);
@@ -748,16 +749,18 @@ int main(int argc, char** argv)
 
     // Game Set Up
     spaceShipSetUp();
-    float zSize = 10.0f;
-    float xSize = 20.0f;
-    float quadSize = 0.25f;
-    for(int z = 0 ; z < 2 ; z++)
+    float detail[] = {.125f,.5f};
+    float xModifiers[] = {1.0f,3.0f};
+    float yModifiers[] = {1.0f,2.0f};
+    float zModifiers[] = {1.0f,1.0f};
+    float xSizes[] = {20.0f,40.0f};
+    float zSizes[] = {20.0f,20.0f};
+    float yStart[] = {0.0f,5.0f};
+    for(int z = 0 ; z < 1 ; z++)
     {
-    	float xModifier = (float)rand()/(float)RAND_MAX * 2.0f - 1.0f;
-    	float zModifier = (float)rand()/(float)RAND_MAX * 2.0f - 1.0f;
-    	float yModifier = (float)rand()/(float)RAND_MAX * 2.0f - 0.0f;
-    	quadSize = pow(quadSize,z+1);
-    	Terrain *terrain = new Terrain(xSize,zSize,quadSize,-xSize/2.0f,-zSize/2.0f-z*zSize,xModifier,yModifier,zModifier);
+    	//float yModifier = (float)rand()/(float)RAND_MAX * 2.0f - 0.0f;
+    	//quadSize = pow(quadSize,-(z+1));
+    	Terrain *terrain = new Terrain(xSizes[z],zSizes[z],detail[z],-xSizes[z]/2.0f,-zSizes[z]/2.0f-z*zSizes[z],yStart[z],xModifiers[z],yModifiers[z],zModifiers[z]);
     	terrains.push_back(*terrain);
     }
     //terrain = new Terrain(30,10,.125f,-15.0f,-5.0f);

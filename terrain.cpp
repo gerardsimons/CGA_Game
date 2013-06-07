@@ -12,11 +12,11 @@
 
 
 
-Terrain::Terrain(int xSize, int zSize, float surfaceSize, float startX, float startZ, float xModifier, float yModifier, float zModifier) {
+Terrain::Terrain(int xSize, int zSize, float quadSize, float startX, float startZ, float startY, float xModifier, float yModifier, float zModifier) {
 
 	defaultColor = Vec3Df(.8f,0.75f,0.05f);
 
-	int newSize = static_cast<int>(xSize / surfaceSize * zSize / surfaceSize * 12);
+	int newSize = static_cast<int>(xSize / quadSize * zSize / quadSize * 12);
 		printf("new size vertices array=%d\n",newSize);
 
 	int i = 0;
@@ -24,10 +24,10 @@ Terrain::Terrain(int xSize, int zSize, float surfaceSize, float startX, float st
 	SurfaceVertices3f.resize(newSize);
 	SurfaceNormals3f.resize(newSize);
 	SurfaceColors3f.resize(newSize);
-	SurfaceTexCoords2f.resize(static_cast<int>(xSize / surfaceSize * zSize / surfaceSize * 12));
+	SurfaceTexCoords2f.resize(static_cast<int>(xSize / quadSize * zSize / quadSize * 12));
 
 	//Maximum value possible
-	float yTop = yModifier * (zModifier + xModifier) + .5f;
+	float yTop = yModifier * (zModifier * xModifier) - startY;
 	printf("xModifier=%f\n",xModifier);
 	printf("yModifier=%f\n",yModifier);
 	printf("zModifier=%f\n",zModifier);
@@ -36,38 +36,38 @@ Terrain::Terrain(int xSize, int zSize, float surfaceSize, float startX, float st
 	float xPeriod = 2 * PI / xModifier;
 	//printf("xPeriod=%f\n",xPeriod);
 
-	for(float z = 0 ; z < zSize; z += surfaceSize)
+	for(float z = 0 ; z < zSize; z += quadSize)
 	{
-		for(float x = 0 ; x < xSize; x += surfaceSize)
+		for(float x = 0 ; x < xSize; x += quadSize)
 		{
 
 			SurfaceVertices3f[i]=x+startX;					//x
-			SurfaceVertices3f[i+1]=yModifier*(xModifier*cos(x) + zModifier*sin(z))-yTop; //y
+			SurfaceVertices3f[i+1]=yModifier*(xModifier*cos(x) * zModifier*sin(z))-yTop; //y
 			SurfaceVertices3f[i+2]=z+startZ;				//z
 
-			SurfaceVertices3f[i+3]=x+surfaceSize+startX;
-			SurfaceVertices3f[i+4]=yModifier*(xModifier*cos(x+surfaceSize) + zModifier*sin(z))-yTop;
+			SurfaceVertices3f[i+3]=x+quadSize+startX;
+			SurfaceVertices3f[i+4]=yModifier*(xModifier*cos(x+quadSize) * zModifier*sin(z))-yTop;
 			SurfaceVertices3f[i+5]=z+startZ;
 
-			SurfaceVertices3f[i+6]=x+surfaceSize+startX;
-			SurfaceVertices3f[i+7]=yModifier*(xModifier*cos(x+surfaceSize) + zModifier*sin(z+surfaceSize))-yTop;
-			SurfaceVertices3f[i+8]=z+surfaceSize+startZ;
+			SurfaceVertices3f[i+6]=x+quadSize+startX;
+			SurfaceVertices3f[i+7]=yModifier*(xModifier*cos(x+quadSize) * zModifier*sin(z+quadSize))-yTop;
+			SurfaceVertices3f[i+8]=z+quadSize+startZ;
 
 			SurfaceVertices3f[i+9]=x+startX;
-			SurfaceVertices3f[i+10]=yModifier*(xModifier*cos(x) + zModifier*sin(z+surfaceSize))-yTop;
-			SurfaceVertices3f[i+11]=z+surfaceSize+startZ;
+			SurfaceVertices3f[i+10]=yModifier*(xModifier*cos(x) * zModifier*sin(z+quadSize))-yTop;
+			SurfaceVertices3f[i+11]=z+quadSize+startZ;
 
 			SurfaceTexCoords2f[texIndex]=x;
 			SurfaceTexCoords2f[texIndex+1]=z;
 
-			SurfaceTexCoords2f[texIndex+2]=x+surfaceSize;
+			SurfaceTexCoords2f[texIndex+2]=x+quadSize;
 			SurfaceTexCoords2f[texIndex+3]=z;
 
-			SurfaceTexCoords2f[texIndex+4]=x+surfaceSize;
-			SurfaceTexCoords2f[texIndex+5]=z+surfaceSize;
+			SurfaceTexCoords2f[texIndex+4]=x+quadSize;
+			SurfaceTexCoords2f[texIndex+5]=z+quadSize;
 
 			SurfaceTexCoords2f[texIndex+6]=x;
-			SurfaceTexCoords2f[texIndex+7]=z+surfaceSize;
+			SurfaceTexCoords2f[texIndex+7]=z+quadSize;
 
 			SurfaceColors3f[i]=defaultColor[0];
 			SurfaceColors3f[i+1]=defaultColor[1];
@@ -114,8 +114,8 @@ Terrain::Terrain(int xSize, int zSize, float surfaceSize, float startX, float st
 
 			i += 12;
 			texIndex += 8;
-
 		}
+
 	}
 
 

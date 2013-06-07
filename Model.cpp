@@ -82,7 +82,8 @@ Vec3Df Model::computeLighting(Vec3Df & vertexPos, Vec3Df & normal, unsigned int 
 {
 
 	Vec3Df color = Vec3Df(0.5f,0.5f,0.5f);
-	return LightManager::shading(normal,color,vertexPos,0.3f);
+	//return LightManager::shading(normal,color,vertexPos,0.3f);
+	return color;
 }
 
 void Model::drawModel()
